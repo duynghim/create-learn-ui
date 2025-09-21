@@ -8,6 +8,13 @@ import {
 import React from 'react';
 import Header from '@/app/components/header/Header';
 import { theme } from '@/app/theme/theme';
+import { Roboto } from 'next/font/google';
+
+const roboto = Roboto({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-roboto',
+});
 
 export default function RootLayout({
   children,
@@ -20,7 +27,7 @@ export default function RootLayout({
         <ColorSchemeScript />
         <title>Create Learn</title>
       </head>
-      <body>
+      <body className={roboto.className}>
         <MantineProvider theme={theme}>
           <Header />
           {children}

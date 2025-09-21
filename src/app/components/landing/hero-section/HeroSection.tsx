@@ -12,24 +12,41 @@ import {
   Box,
   Center,
 } from '@mantine/core';
+import CodeIcon from '@/app/components/icons/CodeIcon';
+import MITIcon from '@/app/components/icons/MITIcon';
+import HarvardIcon from '@/app/components/icons/HarvardIcon';
+import StandfordIcon from '@/app/components/icons/StanfordIcon';
+import AppleIcon from '@/app/components/icons/AppleIcon';
+import GoogleIcon from '@/app/components/icons/GoogleIcon';
+import styles from './HeroSection.module.css';
+import GradientBox from '@/app/components/gradient-box/GradientBox';
 
 const HeroSection = () => {
   return (
     <>
-      <Center bg="blue" py={5}>
+      <GradientBox py={5}>
         <Text c="white" mr={10} fw={500}>
           Special Congressional App Challenge events
         </Text>
         <Button variant="filled" color="fresh-green">
           Learn More
         </Button>
-      </Center>
+      </GradientBox>
+
       <Box>
         {/*Desktop view - Above 1120 px*/}
         <Grid visibleFrom="smmd">
           {/*Text Section - Left*/}
           <Grid.Col span={5}>
-            <Stack h="100%" justify="center" pl="5rem">
+            <Stack
+              h="100%"
+              justify="center"
+              pl={{
+                base: '5rem',
+                xxl: '20rem',
+                xl: '25rem',
+              }}
+            >
               <Title size="2.78rem" c="blue">
                 Join Fun Creative Adventures
               </Title>
@@ -52,6 +69,7 @@ const HeroSection = () => {
               style={{
                 clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 30% 100%)',
               }}
+              h={540}
             />
           </Grid.Col>
         </Grid>
@@ -91,6 +109,40 @@ const HeroSection = () => {
           </Flex>
         </BackgroundImage>
       </Box>
+
+      {/*Design by experts from section desktop view*/}
+      <Center py={20} visibleFrom="smmd">
+        <Box pb={6} px={20}>
+          <Text fw={400} c="rgba(0, 0, 0, 0.6)">
+            Designed by experts from:
+          </Text>
+        </Box>
+        <Flex align="center" gap="xs">
+          <GoogleIcon height="36px" />
+          <AppleIcon height="46px" />
+          <StandfordIcon height="36px" />
+          <HarvardIcon height="36px" />
+          <MITIcon height="36px" />
+          <CodeIcon height="36px" />
+        </Flex>
+      </Center>
+
+      {/*Design by experts from section mobile view*/}
+      <Stack align="center" gap="xs" py={20} hiddenFrom="smmd">
+        <Center>
+          <Text fw={400} c="rgba(0, 0, 0, 0.6)">
+            Designed by experts from:
+          </Text>
+        </Center>
+        <Flex align="center" gap="xs">
+          <GoogleIcon className={styles.iconResponsive} />
+          <AppleIcon className={styles.iconApple} />
+          <StandfordIcon className={styles.iconResponsive} />
+          <HarvardIcon className={styles.iconResponsive} />
+          <MITIcon className={styles.iconResponsive} />
+          <CodeIcon className={styles.iconResponsive} />
+        </Flex>
+      </Stack>
     </>
   );
 };
