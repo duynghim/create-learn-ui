@@ -47,17 +47,26 @@ const HeroSection = () => {
                 xl: '25rem',
               }}
             >
-              <Title size="2.78rem" c="blue">
+              <Title
+                fz={{ sm: '2.57rem', md: '2.78rem', xl: '2.99rem' }}
+                c="fresh-blue"
+              >
                 Join Fun Creative Adventures
               </Title>
-              <Title size="2.02rem" c="blue">
+              <Title
+                size="2.02rem"
+                fz={{ sm: '1.8rem', md: '2.02rem', xl: '2.02rem' }}
+                c="fresh-blue"
+              >
                 Coding Classes for Kids
               </Title>
               <Text fw={500}>
                 Learn coding, AI, robotics, and more with live online
                 small-group classes led by expert instructors.
               </Text>
-              <Button w="fit-content">Book Free Coding Classes</Button>
+              <Button w="fit-content" color="fresh-blue">
+                Book Free Coding Classes
+              </Button>
             </Stack>
           </Grid.Col>
 
@@ -94,10 +103,10 @@ const HeroSection = () => {
             px={20}
           >
             <Stack align="center" gap="sm">
-              <Title size="2.78rem" ta="center" c="blue">
+              <Title size="2.78rem" ta="center" c="fresh-blue">
                 Join Fun Creative Adventures
               </Title>
-              <Title size="2.02rem" ta="center" c="blue">
+              <Title size="2.02rem" ta="center" c="fresh-blue">
                 Coding Classes for Kids
               </Title>
               <Text c="white" ta="center" size="lg">

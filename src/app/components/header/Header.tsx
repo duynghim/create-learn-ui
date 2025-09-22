@@ -75,7 +75,12 @@ const Header = () => {
                 MK
               </Avatar>
             ) : (
-              <Button component="a" href="/login" visibleFrom="md">
+              <Button
+                component="a"
+                href="/login"
+                visibleFrom="md"
+                color="fresh-green"
+              >
                 Login
               </Button>
             )}
@@ -119,7 +124,7 @@ const Header = () => {
           ))}
           <Divider my="md" />
 
-          <Button component="a" href="/login">
+          <Button component="a" href="/login" color="fresh-green">
             Login
           </Button>
         </Stack>

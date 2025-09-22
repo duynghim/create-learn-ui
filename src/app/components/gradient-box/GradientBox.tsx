@@ -16,8 +16,8 @@ type GradientBoxProps = BoxProps & {
 };
 
 const GradientBox = ({
-  from = 'blue',
-  to = 'blue',
+  from = 'fresh-blue',
+  to = 'fresh-blue',
   deg = 90,
   justify = 'center',
   align = 'center',
