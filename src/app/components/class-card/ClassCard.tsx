@@ -1,10 +1,10 @@
 'use client';
 import { Button, Card, Flex, Image, Stack, Text } from '@mantine/core';
 import React from 'react';
-import { ClassItem } from '@/app/types/class.types';
+import { ClassCardTypeProps } from '@/app/types/ClassCardProps.types';
 
 interface ClassCardProps {
-  classItem: ClassItem;
+  classItem: ClassCardTypeProps;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({ classItem }) => {
@@ -18,7 +18,12 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem }) => {
       withBorder
     >
       <Card.Section p={5}>
-                <Image src={classItem.imageUrl} alt={classItem.title} height={165} />
+        <Image
+          src={classItem.imageUrl}
+          alt={classItem.title}
+          height={165}
+          radius="md"
+        />
       </Card.Section>
 
       <Flex justify="space-between" direction="column" h="100%">
@@ -33,7 +38,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem }) => {
         </Stack>
 
         <Button color="fresh-green" fullWidth radius="md">
-          Learn more
+          {classItem.titleButton}
         </Button>
       </Flex>
     </Card>
