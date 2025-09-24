@@ -1,5 +1,4 @@
 'use client';
-
 import {
   Button,
   Grid,
@@ -11,6 +10,7 @@ import {
   Flex,
   Box,
   Center,
+  Container,
 } from '@mantine/core';
 import CodeIcon from '@/app/components/icons/CodeIcon';
 import MITIcon from '@/app/components/icons/MITIcon';
@@ -21,138 +21,158 @@ import GoogleIcon from '@/app/components/icons/GoogleIcon';
 import styles from './HeroSection.module.css';
 import GradientBox from '@/app/components/gradient-box/GradientBox';
 
+const HERO_CONTENT = {
+  mainTitle: 'Join Fun Creative Adventures',
+  subtitle: 'Coding Classes for Kids',
+  description:
+    'Learn coding, AI, robotics, and more with live online small-group classes led by expert instructors.',
+  ctaText: 'Book Free Coding Classes',
+  expertsText: 'Designed by experts from:',
+  bannerText: 'Special Congressional App Challenge events',
+  bannerCtaText: 'Learn More',
+} as const;
+
+const RESPONSIVE_STYLES = {
+  titleSize: { sm: '2.57rem', md: '2.78rem', xl: '2.99rem' },
+  subtitleSize: { sm: '1.8rem', md: '2.02rem', xl: '2.02rem' },
+  leftPadding: { base: '5rem', xxl: '20rem', xl: '25rem' },
+} as const;
+
+const ExpertIcons = ({ isMobile = false }: { isMobile?: boolean }) => (
+  <Flex align="center" gap="xs">
+    <GoogleIcon
+      height={isMobile ? undefined : '36px'}
+      className={isMobile ? styles.iconResponsive : undefined}
+    />
+    <AppleIcon
+      height={isMobile ? undefined : '46px'}
+      className={isMobile ? styles.iconApple : undefined}
+    />
+    <StandfordIcon
+      height={isMobile ? undefined : '36px'}
+      className={isMobile ? styles.iconResponsive : undefined}
+    />
+    <HarvardIcon
+      height={isMobile ? undefined : '36px'}
+      className={isMobile ? styles.iconResponsive : undefined}
+    />
+    <MITIcon
+      height={isMobile ? undefined : '36px'}
+      className={isMobile ? styles.iconResponsive : undefined}
+    />
+    <CodeIcon
+      height={isMobile ? undefined : '36px'}
+      className={isMobile ? styles.iconResponsive : undefined}
+    />
+  </Flex>
+);
+
+const HeroContent = () => (
+  <>
+    <Title fz={RESPONSIVE_STYLES.titleSize} c="fresh-blue">
+      {HERO_CONTENT.mainTitle}
+    </Title>
+    <Title size="2.02rem" fz={RESPONSIVE_STYLES.subtitleSize} c="fresh-blue">
+      {HERO_CONTENT.subtitle}
+    </Title>
+    <Text fw={500}>{HERO_CONTENT.description}</Text>
+    <Button w="fit-content" color="fresh-blue">
+      {HERO_CONTENT.ctaText}
+    </Button>
+  </>
+);
+
+const DesktopHero = () => (
+  <Grid visibleFrom="smmd">
+    <Grid.Col span={5}>
+      <Stack h="100%" justify="center" pl={RESPONSIVE_STYLES.leftPadding}>
+        <HeroContent />
+      </Stack>
+    </Grid.Col>
+    <Grid.Col span={7}>
+      <Image
+        src="/images/coding-kids-hero.png"
+        alt="Kids learning coding"
+        style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 30% 100%)' }}
+        h={540}
+      />
+    </Grid.Col>
+  </Grid>
+);
+
+const MobileHero = () => (
+  <BackgroundImage
+    src="/images/coding-kids-hero.png"
+    hiddenFrom="smmd"
+    h={540}
+    pos="relative"
+  >
+    <Box pos="absolute" inset={0} bg="rgba(0,0,0,0.5)" />
+    <Flex
+      pos="absolute"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      bg="rgba(0, 0, 0, 0.4)"
+      align="center"
+      justify="center"
+      px={20}
+    >
+      <Stack align="center" gap="sm">
+        <Title size="2.78rem" ta="center" c="fresh-blue">
+          {HERO_CONTENT.mainTitle}
+        </Title>
+        <Title size="2.02rem" ta="center" c="fresh-blue">
+          {HERO_CONTENT.subtitle}
+        </Title>
+        <Text c="white" ta="center" size="lg">
+          {HERO_CONTENT.description}
+        </Text>
+        <Button size="sm">{HERO_CONTENT.ctaText}</Button>
+      </Stack>
+    </Flex>
+  </BackgroundImage>
+);
+
+const ExpertsSection = () => (
+  <>
+    <Center py={20} visibleFrom="smmd">
+      <Box pb={6} px={20}>
+        <Text fw={400} c="rgba(0, 0, 0, 0.6)">
+          {HERO_CONTENT.expertsText}
+        </Text>
+      </Box>
+      <ExpertIcons />
+    </Center>
+    <Stack align="center" gap="xs" py={20} hiddenFrom="smmd">
+      <Center>
+        <Text fw={400} c="rgba(0, 0, 0, 0.6)">
+          {HERO_CONTENT.expertsText}
+        </Text>
+      </Center>
+      <ExpertIcons isMobile />
+    </Stack>
+  </>
+);
+
 const HeroSection = () => {
   return (
-    <>
+    <Container fluid p={0}>
       <GradientBox py={5}>
         <Text c="white" mr={10} fw={500}>
-          Special Congressional App Challenge events
+          {HERO_CONTENT.bannerText}
         </Text>
         <Button variant="filled" color="fresh-green">
-          Learn More
+          {HERO_CONTENT.bannerCtaText}
         </Button>
       </GradientBox>
-
       <Box>
-        {/*Desktop view - Above 1120 px*/}
-        <Grid visibleFrom="smmd">
-          {/*Text Section - Left*/}
-          <Grid.Col span={5}>
-            <Stack
-              h="100%"
-              justify="center"
-              pl={{
-                base: '5rem',
-                xxl: '20rem',
-                xl: '25rem',
-              }}
-            >
-              <Title
-                fz={{ sm: '2.57rem', md: '2.78rem', xl: '2.99rem' }}
-                c="fresh-blue"
-              >
-                Join Fun Creative Adventures
-              </Title>
-              <Title
-                size="2.02rem"
-                fz={{ sm: '1.8rem', md: '2.02rem', xl: '2.02rem' }}
-                c="fresh-blue"
-              >
-                Coding Classes for Kids
-              </Title>
-              <Text fw={500}>
-                Learn coding, AI, robotics, and more with live online
-                small-group classes led by expert instructors.
-              </Text>
-              <Button w="fit-content" color="fresh-blue">
-                Book Free Coding Classes
-              </Button>
-            </Stack>
-          </Grid.Col>
-
-          {/*Image Section - Right*/}
-          <Grid.Col span={7}>
-            <Image
-              src="/images/coding-kids-hero.png"
-              alt="Kids learning coding"
-              style={{
-                clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 30% 100%)',
-              }}
-              h={540}
-            />
-          </Grid.Col>
-        </Grid>
-
-        {/*Mobile/Tablet view - Below 1120px*/}
-        <BackgroundImage
-          src="/images/coding-kids-hero.png"
-          hiddenFrom="smmd"
-          h={540}
-          pos="relative"
-        >
-          <Box pos="absolute" inset={0} bg="rgba(0,0,0,0.5)" />
-          <Flex
-            pos="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            bg="rgba(0, 0, 0, 0.4)"
-            align="center"
-            justify="center"
-            px={20}
-          >
-            <Stack align="center" gap="sm">
-              <Title size="2.78rem" ta="center" c="fresh-blue">
-                Join Fun Creative Adventures
-              </Title>
-              <Title size="2.02rem" ta="center" c="fresh-blue">
-                Coding Classes for Kids
-              </Title>
-              <Text c="white" ta="center" size="lg">
-                Learn coding, AI, robotics, and more with live online
-                small-group classes led by expert instructors.
-              </Text>
-              <Button size="sm">Book Free Coding Classes</Button>
-            </Stack>
-          </Flex>
-        </BackgroundImage>
+        <DesktopHero />
+        <MobileHero />
       </Box>
-
-      {/*Design by experts from section desktop view*/}
-      <Center py={20} visibleFrom="smmd">
-        <Box pb={6} px={20}>
-          <Text fw={400} c="rgba(0, 0, 0, 0.6)">
-            Designed by experts from:
-          </Text>
-        </Box>
-        <Flex align="center" gap="xs">
-          <GoogleIcon height="36px" />
-          <AppleIcon height="46px" />
-          <StandfordIcon height="36px" />
-          <HarvardIcon height="36px" />
-          <MITIcon height="36px" />
-          <CodeIcon height="36px" />
-        </Flex>
-      </Center>
-
-      {/*Design by experts from section mobile view*/}
-      <Stack align="center" gap="xs" py={20} hiddenFrom="smmd">
-        <Center>
-          <Text fw={400} c="rgba(0, 0, 0, 0.6)">
-            Designed by experts from:
-          </Text>
-        </Center>
-        <Flex align="center" gap="xs">
-          <GoogleIcon className={styles.iconResponsive} />
-          <AppleIcon className={styles.iconApple} />
-          <StandfordIcon className={styles.iconResponsive} />
-          <HarvardIcon className={styles.iconResponsive} />
-          <MITIcon className={styles.iconResponsive} />
-          <CodeIcon className={styles.iconResponsive} />
-        </Flex>
-      </Stack>
-    </>
+      <ExpertsSection />
+    </Container>
   );
 };
 
