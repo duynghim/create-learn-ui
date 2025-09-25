@@ -158,7 +158,7 @@ const ExpertsSection = () => (
 
 const HeroSection = () => {
   return (
-    <Container fluid p={0}>
+    <Container maw="100%">
       <GradientBox py={5}>
         <Text c="white" mr={10} fw={500}>
           {HERO_CONTENT.bannerText}

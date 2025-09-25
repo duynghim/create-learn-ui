@@ -149,6 +149,7 @@ const Header = () => {
               opened={isDrawerOpen}
               onClick={open}
               aria-label="Toggle navigation"
+              hiddenFrom="md"
             />
           </Flex>
         </Container>

@@ -5,7 +5,8 @@ import FeatureCardSection from '@/app/components/landing/feature-card-section/Fe
 import PopularClassSection from '@/app/components/landing/popular-class-section/PopularClassSection';
 import FreeClassesSection from '@/app/components/landing/free-classes-section/FreeClassesSection';
 import PopularSubjectSection from '@/app/components/landing/popular-subject-section/PopularSubjectSection';
-import FindBestClassSection from '../components/landing/find-best-class-section/FindBestClassSection';
+import CustomerReviewSection from '@/app/components/landing/customer-review-section/CustomerReviewSection';
+import FindBestClassSection from '@/app/components/landing/find-best-class-section/FindBestClassSection';
 
 const LandingPage = () => {
   return (
@@ -16,6 +17,7 @@ const LandingPage = () => {
       <FreeClassesSection />
       <PopularSubjectSection />
       <FindBestClassSection />
+      <CustomerReviewSection />
     </>
   );
 };
