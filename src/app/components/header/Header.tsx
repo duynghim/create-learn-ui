@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  ActionIcon,
   Avatar,
+  Burger,
   Button,
   Container,
   Divider,
@@ -14,7 +14,6 @@ import {
   Group,
   Stack,
 } from '@mantine/core';
-import { RxHamburgerMenu } from 'react-icons/rx';
 import { useDisclosure } from '@mantine/hooks';
 
 const NAVIGATION_LINKS = [
@@ -137,25 +136,20 @@ const Header = () => {
         <Container fluid>
           <Flex justify="space-between" align="center" px={20} py={10}>
             <Logo />
-
             {/* Desktop Navigation */}
             <Group gap="xs" visibleFrom="md">
               <NavigationLinks />
             </Group>
-
             {/* Desktop User Section */}
             <UserSection isLoggedIn={isLoggedIn} />
-
             {/* Mobile Menu Button */}
-            <ActionIcon
-              variant="white"
-              color="black"
-              hiddenFrom="md"
+            <Burger
+              lineSize={2}
+              size="md"
+              opened={isDrawerOpen}
               onClick={open}
-              aria-label="Open menu"
-            >
-              <RxHamburgerMenu />
-            </ActionIcon>
+              aria-label="Toggle navigation"
+            />
           </Flex>
         </Container>
       </header>

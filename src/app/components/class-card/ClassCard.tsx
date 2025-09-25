@@ -34,7 +34,9 @@ const ClassCard: React.FC<ClassCardProps> = ({ classItem }) => {
           <Text fz="1rem" c="rgba(0,0,0,0.6)" fw={500}>
             {classItem.grade}
           </Text>
-          <Text mt={5}>{classItem.description}</Text>
+          <Text lineClamp={3} mt={5}>
+            {classItem.description}
+          </Text>
         </Stack>
 
         <Button color="fresh-green" fullWidth radius="md">
