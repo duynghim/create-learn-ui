@@ -1,12 +1,25 @@
 'use client';
-
 import { ClassCardTypeProps } from '@/app/types/ClassCardProps.types';
 import GradientBox from '@/app/components/gradient-box/GradientBox';
 import { Flex, Stack, Text } from '@mantine/core';
 import ClassCard from '@/app/components/class-card/ClassCard';
 
+// Constants
 const FREE_CLASSES_BUTTON_TEXT = 'Earn Free';
-const freeClassesList: ClassCardTypeProps[] = [
+const CONTAINER_MAX_WIDTH = 1152;
+const SECTION_PADDING = 48;
+const CONTENT_GAP = 40;
+const CARDS_GAP = 20;
+const SMALL_CARDS_GAP = 8;
+const TEXT_SECTION_PADDING_RIGHT = 40;
+const CARD_GAP_ADJUSTMENT = 10;
+const GRID_GAP_ADJUSTMENT = 15;
+const SMALL_GRID_GAP_ADJUSTMENT = 4;
+
+const TITLE_FONT_SIZES = { base: '2.57rem', sm: '2.78rem', lg: '2.99rem' };
+const DESCRIPTION_FONT_SIZE = '1.25rem';
+
+const FREE_CLASSES_LIST: ClassCardTypeProps[] = [
   {
     imageUrl: 'https://picsum.photos/400/200?random=1',
     title: 'Free Intro to Scratch Coding',
@@ -57,62 +70,65 @@ const freeClassesList: ClassCardTypeProps[] = [
 
 const FreeClassesSection = () => {
   return (
-    <GradientBox>
-      <Stack maw={1152} w="100%" gap={40}>
+    <GradientBox py={SECTION_PADDING}>
+      <Stack maw={CONTAINER_MAX_WIDTH} w="100%" gap={CONTENT_GAP}>
         {/* First Row: Text + First 2 Cards (lg+) OR Just Text (smaller screens) */}
-        <Flex direction={{ base: 'column', lg: 'row' }} gap={20}>
+        <Flex direction={{ base: 'column', lg: 'row' }} gap={CARDS_GAP}>
           {/* Text Section */}
-          <Flex flex={1} direction="column" justify="center" pr={{ lg: 40 }}>
-            <Text
-              c="white"
-              fz={{ base: '2.57rem', sm: '2.78rem', lg: '2.99rem' }}
-            >
+          <Flex
+            flex={1}
+            direction="column"
+            justify="center"
+            pr={{ lg: TEXT_SECTION_PADDING_RIGHT }}
+          >
+            <Text c="white" fz={TITLE_FONT_SIZES}>
               Start With
             </Text>
-            <Text
-              c="white"
-              fz={{ base: '2.57rem', sm: '2.78rem', lg: '2.99rem' }}
-            >
+            <Text c="white" fz={TITLE_FONT_SIZES}>
               Free Classes
             </Text>
-            <Text c="white" fz="1.25rem">
+            <Text c="white" fz={DESCRIPTION_FONT_SIZE}>
               Join a free coding class to experience the magic! Learn in a small
               group with experienced instructors and have fun! Students new to
               coding should start with a Scratch class
             </Text>
           </Flex>
-
           {/* First 2 Cards - Only visible on lg+ screens */}
           <Flex
             flex={1}
             wrap="wrap"
-            gap={20}
+            gap={CARDS_GAP}
             justify="center"
             display={{ base: 'none', lg: 'flex' }}
           >
-            {freeClassesList.slice(0, 2).map((freeClass) => (
-              <Flex key={freeClass.title} w="calc(50% - 10px)" justify="center">
+            {FREE_CLASSES_LIST.slice(0, 2).map((freeClass) => (
+              <Flex
+                key={freeClass.title}
+                w={`calc(50% - ${CARD_GAP_ADJUSTMENT}px)`}
+                justify="center"
+              >
                 <ClassCard classItem={freeClass} />
               </Flex>
             ))}
           </Flex>
         </Flex>
-
         {/* Cards Section for smaller screens OR remaining 4 cards for large screens */}
         <Flex
           wrap="wrap"
-          columnGap={{ base: 8, lg: 20 }}
-          rowGap={{ base: 20, lg: 20 }}
+          columnGap={{ base: SMALL_CARDS_GAP, lg: CARDS_GAP }}
+          rowGap={{ base: CARDS_GAP, lg: CARDS_GAP }}
           justify="center"
         >
           {/* On large screens: show last 4 cards */}
           {/* On smaller screens: show all 6 cards, 2 per row */}
-          {freeClassesList
-            .slice(0, 6) // All 6 cards for small screens
+          {FREE_CLASSES_LIST.slice(0, 6) // All 6 cards for small screens
             .map((freeClass, index) => (
               <Flex
                 key={freeClass.title}
-                w={{ base: 'calc(50% - 4px)', lg: 'calc(25% - 15px)' }}
+                w={{
+                  base: `calc(50% - ${SMALL_GRID_GAP_ADJUSTMENT}px)`,
+                  lg: `calc(25% - ${GRID_GAP_ADJUSTMENT}px)`,
+                }}
                 justify="center"
                 display={{
                   base: 'flex',
