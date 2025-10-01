@@ -132,7 +132,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="w-full border-b bg-white">
+      <header className="w-full bg-white">
         <Container fluid>
           <Flex justify="space-between" align="center" px={20} py={10}>
             <Logo />

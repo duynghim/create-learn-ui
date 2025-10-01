@@ -1,8 +1,12 @@
 'use client';
-import React from 'react';
-import { Card, Text, Group, Rating, Blockquote } from '@mantine/core';
+
+import React, { useMemo } from 'react';
+import { Card, Text, Group, Rating, Stack } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import GradientBox from '@/app/components/gradient-box/GradientBox';
+import { format } from 'date-fns';
+
+import classes from './CustomerReviewSection.module.css';
 
 type ReviewCardProps = {
   review: string;
@@ -11,37 +15,54 @@ type ReviewCardProps = {
   date: string;
 };
 
-const ReviewCard: React.FC<ReviewCardProps> = ({
-  review,
-  rating,
-  name,
-  date,
-}) => {
-  return (
-    <Card radius="md" w={272} h={213}>
-      <Blockquote p={5}>
-        <Text size="md" mb="sm" lineClamp={3}>
-          {review}
-        </Text>
-      </Blockquote>
-      <Rating value={rating} readOnly mb="sm" />
+const ReviewCard: React.FC<ReviewCardProps> = React.memo(
+  ({ review, rating, name, date }) => {
+    return (
+      <Card radius="md" h={213} p="md">
+        <Stack h="100%" justify="space-between">
+          <Text fw={400} fz="1rem" lineClamp={4}>
+            <Text
+              component="span"
+              fw={900}
+              fz="1.2rem"
+              style={{ lineHeight: 1 }}
+            >
+              &#34;
+            </Text>
+            {` ${review} `}
+            <Text
+              component="span"
+              fw={900}
+              fz="1.2rem"
+              style={{ lineHeight: 1 }}
+            >
+              &#34;
+            </Text>
+          </Text>
 
-      <Group justify="space-between" mt="md">
-        <Text fw={500} size="sm">
-          {name}
-        </Text>
-        <Text size="xs" c="dimmed">
-          {date}
-        </Text>
-      </Group>
-    </Card>
-  );
-};
+          <Group justify="space-between" align="center">
+            <Rating value={rating} readOnly />
+            <Stack gap={0} align="flex-end">
+              <Text fw={600} fz="0.8rem">
+                - {name}
+              </Text>
+              <Text fw={600} fz="0.8rem">
+                {format(new Date(date), 'yyyy-MMM-dd')}
+              </Text>
+            </Stack>
+          </Group>
+        </Stack>
+      </Card>
+    );
+  }
+);
+
+ReviewCard.displayName = 'ReviewCard';
 
 const REVIEW_DATA = [
   {
     review:
-      'Excellent service! The team was professional and delivered exactly what we needed. Highly recommend!',
+      'Excellent service! The team was professional and delivered exactly what we needed',
     rating: 5,
     name: 'Sarah Johnson',
     date: '2024-01-15',
@@ -111,25 +132,38 @@ const REVIEW_DATA = [
 ];
 
 const CustomerReviewSection: React.FC = () => {
+  const slides = useMemo(
+    () =>
+      REVIEW_DATA.map((review, index) => (
+        <Carousel.Slide key={`${review.name}-${index}`}>
+          <ReviewCard {...review} />
+        </Carousel.Slide>
+      )),
+    []
+  );
+
   return (
-    <GradientBox py={48}>
+    <GradientBox py={48} direction="column">
+      <Text
+        fz={{ base: '1.82rem', sm: '2.03rem' }}
+        fw={500}
+        ta="center"
+        c="white"
+      >
+        Trusted by 100,000+ Students and Parents Worldwide
+      </Text>
+      <Text fz="1rem" fw={400} ta="center" c="white" mb="2.5rem">
+        Trusted by 100,000+ Students and Parents Worldwide
+      </Text>
       <Carousel
+        maw={{ base: '90%', sm: '70%', md: '90%', xl: '70%' }}
         withIndicators
-        w="100%"
-        slideSize={{ base: '100%', sm: '50%', md: '33.333333%' }}
+        slideSize={{ base: '100%', sm: '50%', md: '33.333333%', xl: '25%' }}
         slideGap={{ base: 0, sm: 'md' }}
         emblaOptions={{ loop: true, align: 'start' }}
+        classNames={{ control: classes.control }}
       >
-        {REVIEW_DATA.map((review) => (
-          <Carousel.Slide key={review.name}>
-            <ReviewCard
-              review={review.review}
-              rating={review.rating}
-              name={review.name}
-              date={review.date}
-            />
-          </Carousel.Slide>
-        ))}
+        {slides}
       </Carousel>
     </GradientBox>
   );

@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import '@mantine/core/styles.css';
 
+body {
+    overflow-x: hidden;
+}
+
 p {
     color: rgba(0, 0, 0, 0.87);
 }

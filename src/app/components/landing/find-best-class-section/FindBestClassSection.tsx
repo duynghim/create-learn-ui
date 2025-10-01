@@ -99,7 +99,12 @@ const RecommendedClassesList = ({
           <div key={classItem.title}>
             <Grid>
               <Grid.Col span={2}>
-                <Text fw={700} className="cursor-pointer" fz="1rem" c="#0288d1">
+                <Text
+                  fw={700}
+                  className="cursor-pointer"
+                  fz="0.875rem"
+                  c="#0288d1"
+                >
                   {classItem.title}
                 </Text>
               </Grid.Col>
@@ -109,7 +114,7 @@ const RecommendedClassesList = ({
                 </Badge>
               </Grid.Col>
               <Grid.Col span={8}>
-                <Text fw={400} c="gray.6">
+                <Text fw={400} c="gray.6" fz="0.875rem" ta="left">
                   {classItem.description}
                 </Text>
               </Grid.Col>
