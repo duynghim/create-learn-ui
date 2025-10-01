@@ -1,5 +1,6 @@
 'use client';
-
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Box,
   Button,
@@ -10,9 +11,66 @@ import {
   TextInput,
   Image,
   Title,
+  Alert,
 } from '@mantine/core';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 const LoginPage = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const authenticateUser = async (email: string, password: string) => {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.error ?? 'Login failed');
+    }
+
+    return data;
+  };
+
+  const handleRedirectAfterLogin = (userRole: 'admin' | 'user' | undefined) => {
+    const redirect = searchParams.get('redirect');
+
+    if (userRole === 'admin') {
+      if (redirect?.startsWith('/management')) {
+        router.replace(redirect);
+      } else {
+        router.replace('/management');
+      }
+    } else if (redirect?.startsWith('/management')) {
+      router.replace('/not-authorized');
+    } else {
+      router.replace('/');
+    }
+  };
+
+  const handleLogin = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const data = await authenticateUser(email, password);
+      const role = data?.user?.role as 'admin' | 'user' | undefined;
+      handleRedirectAfterLogin(role);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Login failed';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container fluid p={0}>
       <Flex
@@ -30,7 +88,16 @@ const LoginPage = () => {
             >
               Welcome back to Create Learn
             </Title>
-
+            {error && (
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                color="red"
+                w={{ base: '80%', md: '389px' }}
+                maw={389}
+              >
+                {error}
+              </Alert>
+            )}
             <TextInput
               label="Email address"
               placeholder="hello@gmail.com"
@@ -38,6 +105,8 @@ const LoginPage = () => {
               radius="md"
               w={{ base: '80%', md: '389px' }}
               maw={389}
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
             />
             <PasswordInput
               label="Password"
@@ -47,6 +116,8 @@ const LoginPage = () => {
               radius="md"
               w={{ base: '80%', md: '389px' }}
               maw={389}
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
             />
             <Button
               mt="xl"
@@ -55,6 +126,8 @@ const LoginPage = () => {
               color="fresh-blue"
               w={{ base: '80%', md: '389px' }}
               maw={389}
+              loading={loading}
+              onClick={handleLogin}
             >
               Login
             </Button>

@@ -131,8 +131,19 @@ const Header = () => {
   const [isDrawerOpen, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
-    // TODO: Replace with actual authentication logic
-    setIsLoggedIn(false);
+    let cancelled = false;
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { cache: 'no-store' });
+        if (!cancelled) setIsLoggedIn(res.ok);
+      } catch {
+        if (!cancelled) setIsLoggedIn(false);
+      }
+    };
+    checkAuth();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
