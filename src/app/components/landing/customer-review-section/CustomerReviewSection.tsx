@@ -159,7 +159,7 @@ const CustomerReviewSection: React.FC = () => {
         maw={{ base: '90%', sm: '70%', md: '90%', xl: '70%' }}
         withIndicators
         slideSize={{ base: '100%', sm: '50%', md: '33.333333%', xl: '25%' }}
-        slideGap={{ base: 0, sm: 'md' }}
+        slideGap={{ base: 'xs', sm: 'md' }}
         emblaOptions={{ loop: true, align: 'start' }}
         classNames={{ control: classes.control }}
       >
