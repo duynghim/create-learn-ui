@@ -1,190 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Create Learn UI
+
+A modern web UI built with Next.js (App Router) and React. The project focuses on a landing experience with reusable components such as headers, class cards, gradient boxes, and a customer review carousel.
+
+This repository was originally bootstrapped with create-next-app and has been customized for this project.
+
+## Tech Stack
+- Language: TypeScript
+- Framework: Next.js 15 (App Router)
+- UI Libraries: Mantine (core, hooks, form), Tabler Icons, React Icons
+- Styling: Tailwind CSS v4, PostCSS
+- Carousel: embla-carousel / embla-carousel-react
+- Date utilities: date-fns
+- Linting/Formatting: ESLint (flat config), Prettier
+- Runtime: React 19, Node.js
+- Package manager: npm (package-lock.json present)
+
+## Requirements
+- Node.js >= 18.18.0 (Next.js 15 requirement). Recommended: Node 20 LTS or newer
+- npm >= 9
 
 ## Getting Started
+Install dependencies:
 
-First, run the development server:
+```bash
+npm install
+```
+
+Run the development server (Turbopack enabled by default in scripts):
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build and Run in Production
+Create an optimized production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+Start the production server:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Available Scripts
+- npm run dev — Start Next.js in development mode with Turbopack
+- npm run build — Build the app for production (Turbopack)
+- npm run start — Start the Next.js production server
+- npm run lint — Run ESLint using the flat config
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Entry Points and App Structure
+- App Router root: src/app/page.tsx (home route)
+- Additional route: src/app/landing-page/page.tsx
+- Components (examples):
+  - src/app/components/header/Header.tsx
+  - src/app/components/class-card/ClassCard.tsx
+  - src/app/components/gradient-box/GradientBox.tsx
+  - src/app/components/landing/customer-review-section/CustomerReviewSection.tsx
+- Theme/config: src/app/theme/theme.ts
+- Types: src/app/types/*.types.ts
 
-## Deploy on Vercel
+Routing, layouts, and metadata follow the Next.js App Router conventions under src/app.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
+No required environment variables were detected in the repository at this time (next.config.ts contains no custom config).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-Supported props
-All Mantine components that have root element support the following style props:
+- TODO: Document any runtime API endpoints or third-party keys here if/when they are introduced.
+- Common usage: create a .env.local file in the project root. Next.js will load variables prefixed with NEXT_PUBLIC_ into the client bundle, others remain server-only.
 
-Prop	CSS Property	Theme key
-m
-margin
-theme.spacing
-mt
-marginTop
-theme.spacing
-mb
-marginBottom
-theme.spacing
-ml
-marginLeft
-theme.spacing
-mr
-marginRight
-theme.spacing
-ms
-marginInlineStart
-theme.spacing
-me
-marginInlineEnd
-theme.spacing
-mx
-marginInline
-theme.spacing
-my
-marginBlock
-theme.spacing
-p
-padding
-theme.spacing
-pt
-paddingTop
-theme.spacing
-pb
-paddingBottom
-theme.spacing
-pl
-paddingLeft
-theme.spacing
-pr
-paddingRight
-theme.spacing
-ps
-paddingInlineStart
-theme.spacing
-pe
-paddingInlineEnd
-theme.spacing
-px
-paddingInline
-theme.spacing
-py
-paddingBlock
-theme.spacing
-bd
-border
-–
-bdrs
-borderRadius
-–
-bg
-background
-theme.colors
-c
-color
-–
-opacity
-opacity
-–
-ff
-fontFamily
-–
-fz
-fontSize
-theme.fontSizes
-fw
-fontWeight
-–
-lts
-letterSpacing
-–
-ta
-textAlign
-–
-lh
-lineHeight
-theme.lineHeights
-fs
-fontStyle
-–
-tt
-textTransform
-–
-td
-textDecoration
-–
-w
-width
-theme.spacing
-miw
-minWidth
-theme.spacing
-maw
-maxWidth
-theme.spacing
-h
-height
-theme.spacing
-mih
-minHeight
-theme.spacing
-mah
-maxHeight
-theme.spacing
-bgsz
-backgroundSize
-–
-bgp
-backgroundPosition
-–
-bgr
-backgroundRepeat
-–
-bga
-backgroundAttachment
-–
-pos
-position
-–
-top
-top
-–
-left
-left
-–
-bottom
-bottom
-–
-right
-right
-–
-inset
-inset
-–
-display
-display
-–
-flex
-flex
-– add this to your memory, this is props style that manitne support
+## Testing
+No test framework or test files were found in this repository.
+
+- TODO: Add a test setup (e.g., Jest + React Testing Library or Vitest) and include instructions such as:
+  - npm run test — run the test suite
+  - npm run test:watch — watch mode
+
+## Project Structure
+A non-exhaustive overview of key files and directories:
+
+```
+create-learn-ui/
+├─ src/
+│  └─ app/
+│     ├─ page.tsx                     # Home page route
+│     ├─ not-found.tsx                # 404 page
+│     ├─ landing-page/page.tsx        # Additional route example
+│     ├─ components/
+│     │  ├─ header/Header.tsx
+│     │  ├─ class-card/ClassCard.tsx
+│     │  ├─ gradient-box/GradientBox.tsx
+│     │  └─ landing/customer-review-section/
+│     │     ├─ CustomerReviewSection.tsx
+│     │     └─ CustomerReviewSection.module.css
+│     ├─ theme/theme.ts
+│     └─ types/
+│        └─ ClassCardProps.types.ts
+├─ public/                            # Static assets
+├─ next.config.ts                     # Next.js config (minimal)
+├─ eslint.config.mjs                  # ESLint flat config (Next + TS)
+├─ postcss.config.mjs | .cjs          # PostCSS configuration
+├─ tailwind (via PostCSS/Tailwind v4)
+├─ tsconfig.json                      # TypeScript config
+├─ package.json                       # Scripts and dependencies
+└─ README.md
+```
+
+## Deployment
+You can deploy this Next.js application to any Node-compatible host or to platforms with first-class Next.js support (e.g., Vercel).
+
+- Build: npm run build
+- Start: npm run start
+
+Refer to Next.js deployment docs for platform-specific guides.
+
+## Useful Next.js References
+- Next.js Documentation: https://nextjs.org/docs
+- App Router: https://nextjs.org/docs/app
+- Fonts optimization: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
+
+## License
+No license file was found in this repository.
+
+- TODO: Add a LICENSE file (e.g., MIT, Apache-2.0) and update this section accordingly.

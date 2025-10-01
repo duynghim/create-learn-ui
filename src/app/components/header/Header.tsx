@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   Avatar,
   Burger,
@@ -30,25 +31,27 @@ interface NavigationLinksProps {
   onLinkClick?: () => void;
 }
 
-const NavigationLinks = ({ onLinkClick }: NavigationLinksProps) => (
-  <>
-    {NAVIGATION_LINKS.map((link) => (
-      <Button
-        variant="white"
-        key={link.name}
-        component="a"
-        href={link.href}
-        color="black"
-        onClick={(event) => {
-          event.preventDefault();
-          onLinkClick?.();
-        }}
-      >
-        {link.name}
-      </Button>
-    ))}
-  </>
-);
+const NavigationLinks = ({ onLinkClick }: NavigationLinksProps) => {
+  const router = useRouter();
+
+  return (
+    <>
+      {NAVIGATION_LINKS.map((link) => (
+        <Button
+          variant="white"
+          key={link.name}
+          color="black"
+          onClick={() => {
+            router.push(link.href);
+            onLinkClick?.();
+          }}
+        >
+          {link.name}
+        </Button>
+      ))}
+    </>
+  );
+};
 
 const Logo = () => (
   <Link href="/" className="flex items-center space-x-2 cursor-pointer">
@@ -66,6 +69,8 @@ interface UserSectionProps {
 }
 
 const UserSection = ({ isLoggedIn }: UserSectionProps) => {
+  const router = useRouter();
+
   if (isLoggedIn) {
     return (
       <Avatar color="cyan" radius="xl" visibleFrom="md">
@@ -76,11 +81,9 @@ const UserSection = ({ isLoggedIn }: UserSectionProps) => {
 
   return (
     <Button
-      component="a"
-      href="/login"
       visibleFrom="md"
       color="fresh-green"
-      onClick={(event) => event.preventDefault()}
+      onClick={() => router.push('/login')}
     >
       Login
     </Button>
@@ -92,34 +95,36 @@ interface MobileDrawerProps {
   onClose: () => void;
 }
 
-const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => (
-  <Drawer
-    opened={isOpen}
-    onClose={onClose}
-    withCloseButton={false}
-    overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
-    position="right"
-    size={200}
-    offset={8}
-    radius="md"
-  >
-    <Stack align="stretch" gap="xs">
-      <NavigationLinks onLinkClick={onClose} />
-      <Divider my="md" />
-      <Button
-        component="a"
-        href="/login"
-        color="fresh-green"
-        onClick={(event) => {
-          event.preventDefault();
-          onClose();
-        }}
-      >
-        Login
-      </Button>
-    </Stack>
-  </Drawer>
-);
+const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
+  const router = useRouter();
+
+  return (
+    <Drawer
+      opened={isOpen}
+      onClose={onClose}
+      withCloseButton={false}
+      overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
+      position="right"
+      size={200}
+      offset={8}
+      radius="md"
+    >
+      <Stack align="stretch" gap="xs">
+        <NavigationLinks onLinkClick={onClose} />
+        <Divider my="md" />
+        <Button
+          color="fresh-green"
+          onClick={() => {
+            router.push('/login');
+            onClose();
+          }}
+        >
+          Login
+        </Button>
+      </Stack>
+    </Drawer>
+  );
+};
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
