@@ -1,7 +1,7 @@
 'use client';
 import { Button, Card, Flex, Image, Stack, Text } from '@mantine/core';
 import React from 'react';
-import { ClassCardTypeProps } from '@/app/types/ClassCardProps.types';
+import { ClassCardTypeProps } from '@/types/ClassCardProps.types';
 
 interface ClassCardProps {
   classItem: ClassCardTypeProps;

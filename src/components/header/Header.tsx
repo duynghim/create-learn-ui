@@ -32,7 +32,13 @@ const NavigationLinks = () => {
   return (
     <>
       {NAVIGATION_LINKS.map((link) => (
-        <Button variant="white" key={link.name} color="black" component={Link}>
+        <Button
+          variant="white"
+          key={link.name}
+          color="black"
+          component={Link}
+          href={link.href}
+        >
           {link.name}
         </Button>
       ))}
@@ -97,7 +103,7 @@ const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
       radius="md"
     >
       <Stack align="stretch" gap="xs">
-        <NavigationLinks onLinkClick={onClose} />
+        <NavigationLinks />
         <Divider my="md" />
         <Button
           color="fresh-green"

@@ -1,8 +1,8 @@
 'use client';
-import { ClassCardTypeProps } from '@/app/types/ClassCardProps.types';
-import GradientBox from '@/app/components/gradient-box/GradientBox';
+import { ClassCardTypeProps } from '@/types/ClassCardProps.types';
 import { Flex, Stack, Text } from '@mantine/core';
-import ClassCard from '@/app/components/class-card/ClassCard';
+import GradientBox from '@/components/gradient-box/GradientBox';
+import ClassCard from '@/components/class-card/ClassCard';
 
 // Constants
 const FREE_CLASSES_BUTTON_TEXT = 'Earn Free';

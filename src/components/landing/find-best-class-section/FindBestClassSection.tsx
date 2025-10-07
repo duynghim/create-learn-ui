@@ -14,7 +14,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
-import GradientBox from '@/app/components/gradient-box/GradientBox';
+import GradientBox from '@/components/gradient-box/GradientBox';
 import classes from './FindBestClassSection.module.css';
 
 interface ClassCardTypeProps {
@@ -47,7 +47,7 @@ const FORM_INITIAL_VALUES: FormValues = {
 };
 
 const FORM_VALIDATION = {
-  gradeLevel: (value: string) => (!value ? 'Grade level is required' : null),
+  gradeLevel: (value: string) => (value ? null : 'Grade level is required'),
 };
 
 // Extracted mock data function

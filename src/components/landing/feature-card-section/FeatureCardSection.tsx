@@ -10,7 +10,7 @@ import {
   Title,
   Container,
 } from '@mantine/core';
-import GradientBox from '@/app/components/gradient-box/GradientBox';
+import GradientBox from '@/components/gradient-box/GradientBox';
 
 interface FeatureCardProps {
   icon: string;

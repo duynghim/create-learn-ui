@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Card, Text, Group, Rating, Stack } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
-import GradientBox from '@/app/components/gradient-box/GradientBox';
+import GradientBox from '@/components/gradient-box/GradientBox';
 import { format } from 'date-fns';
 
 import classes from './CustomerReviewSection.module.css';

@@ -12,14 +12,14 @@ import {
   Center,
   Container,
 } from '@mantine/core';
-import CodeIcon from '@/app/components/icons/CodeIcon';
-import MITIcon from '@/app/components/icons/MITIcon';
-import HarvardIcon from '@/app/components/icons/HarvardIcon';
-import StandfordIcon from '@/app/components/icons/StanfordIcon';
-import AppleIcon from '@/app/components/icons/AppleIcon';
-import GoogleIcon from '@/app/components/icons/GoogleIcon';
+import CodeIcon from '@/components/icons/CodeIcon';
+import MITIcon from '@/components/icons/MITIcon';
+import HarvardIcon from '@/components/icons/HarvardIcon';
+import StandfordIcon from '@/components/icons/StanfordIcon';
+import AppleIcon from '@/components/icons/AppleIcon';
+import GoogleIcon from '@/components/icons/GoogleIcon';
 import styles from './HeroSection.module.css';
-import GradientBox from '@/app/components/gradient-box/GradientBox';
+import GradientBox from '@/components/gradient-box/GradientBox';
 
 const HERO_CONTENT = {
   mainTitle: 'Join Fun Creative Adventures',

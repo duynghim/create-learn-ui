@@ -8,9 +8,9 @@ import {
   mantineHtmlProps,
 } from '@mantine/core';
 import React from 'react';
-import Header from '@/app/components/header/Header';
 import { theme } from '@/app/theme/theme';
 import { Roboto } from 'next/font/google';
+import Header from '@/components/header/Header';
 
 const roboto = Roboto({
   subsets: ['latin'],
