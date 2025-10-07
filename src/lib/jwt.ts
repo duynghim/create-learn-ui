@@ -5,8 +5,8 @@ export type JWTPayload = {
   email: string;
   name: string;
   role: 'admin' | 'user';
-  exp: number; // seconds since epoch
-  iat: number; // seconds since epoch
+  exp: number;
+  iat: number;
 };
 
 const base64url = (input: Buffer | string) =>
@@ -18,6 +18,14 @@ const base64url = (input: Buffer | string) =>
 
 const sign = (data: string, secret: string) =>
   base64url(crypto.createHmac('sha256', secret).update(data).digest());
+
+// Timing-safe comparison for edge runtime
+const timingSafeEqual = (a: string, b: string): boolean => {
+  if (a.length !== b.length) return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return crypto.timingSafeEqual(bufA, bufB);
+};
 
 export const signJWT = async (
   payload: Omit<JWTPayload, 'iat' | 'exp'>,
@@ -42,13 +50,15 @@ export const verifyJWT = async (
   try {
     const [headerEnc, payloadEnc, signature] = token.split('.');
     if (!headerEnc || !payloadEnc || !signature) return null;
+
     const data = `${headerEnc}.${payloadEnc}`;
     const expectedSig = sign(data, secret);
-    if (
-      !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig))
-    ) {
+
+    // Use timing-safe comparison
+    if (!timingSafeEqual(signature, expectedSig)) {
       return null;
     }
+
     const payloadJson = Buffer.from(
       payloadEnc.replaceAll('-', '+').replaceAll('_', '/'),
       'base64'
