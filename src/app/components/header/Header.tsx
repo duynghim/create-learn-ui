@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
@@ -16,6 +15,7 @@ import {
   Stack,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import Link from 'next/link';
 
 const NAVIGATION_LINKS = [
   { name: 'Classes', href: '/classes' },
@@ -27,25 +27,12 @@ const NAVIGATION_LINKS = [
   { name: 'Blog', href: '/blog' },
 ] as const;
 
-interface NavigationLinksProps {
-  onLinkClick?: () => void;
-}
-
-const NavigationLinks = ({ onLinkClick }: NavigationLinksProps) => {
-  const router = useRouter();
-
+const NavigationLinks = () => {
+  useRouter();
   return (
     <>
       {NAVIGATION_LINKS.map((link) => (
-        <Button
-          variant="white"
-          key={link.name}
-          color="black"
-          onClick={() => {
-            router.push(link.href);
-            onLinkClick?.();
-          }}
-        >
+        <Button variant="white" key={link.name} color="black" component={Link}>
           {link.name}
         </Button>
       ))}

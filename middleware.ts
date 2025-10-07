@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyJWT } from '@/lib/jwt';
 
 const getJWTSecret = (): string => {
   const secret = process.env.JWT_SECRET;

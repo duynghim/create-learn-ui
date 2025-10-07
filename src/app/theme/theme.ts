@@ -22,23 +22,23 @@ export const theme = createTheme({
       '#9dd89d', // 2
       '#77c977', // 3
       '#51bb51', // 4
-      '#37b24d', // 5 - your original color
+      '#37b24d', // 5
       '#2f9e44', // 6
       '#2b8a3e', // 7
       '#267038', // 8
       '#1c5630', // 9 - darkest
     ],
     'fresh-blue': [
-      '#e0f7ff', // 0 - lightest
-      '#b3ecff', // 1
-      '#80e1ff', // 2
-      '#4dd6ff', // 3
-      '#1acbff', // 4
-      '#00b0ff', // 5 - your original color
-      '#00b0ff', // 5
-      '#0084cc', // 7
-      '#006eb3', // 8
-      '#005899', // 9 - darkest
+      '#e7f5ff',
+      '#d0ebff',
+      '#a5d8ff',
+      '#74c0fc',
+      '#339af0',
+      '#228be6',
+      '#1c7ed6',
+      '#1971c2',
+      '#1864ab',
+      '#0c4b7a',
     ],
   },
   defaultGradient: {

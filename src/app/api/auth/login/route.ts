@@ -31,7 +31,7 @@ export const POST = async (req: NextRequest) => {
     TOKEN_TTL
   );
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.set('token', token, {
     httpOnly: true,
     sameSite: 'lax',
