@@ -6,6 +6,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useRef,
   ReactNode,
 } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,7 +16,7 @@ import type { LoginRequest, AuthState } from '@/types';
 interface AuthContextType extends AuthState {
   login: (
     credentials: LoginRequest
-  ) => Promise<{ success: boolean; user: { id: string } }>;
+  ) => Promise<{ success: boolean; user: AuthState['user'] }>;
   logout: () => Promise<void>;
   checkAuthStatus: () => Promise<void>;
   redirectIfLoggedIn: (redirectTo?: string) => void;
@@ -28,6 +29,16 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+/** Type guard for errors that carry an HTTP status code */
+function hasStatus(e: unknown): e is { status: number } {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    'status' in e &&
+    typeof (e as { status: unknown }).status === 'number'
+  );
+}
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>({
     isLoggedIn: false,
@@ -35,7 +46,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading: true,
     error: null,
   });
+
   const router = useRouter();
+
+  // Prevent duplicate initialization in React 18 Strict Mode (dev)
+  const initializedRef = useRef(false);
+
+  // Snapshot to reduce UI flicker during refresh/HMR
+  const SNAPSHOT_KEY = 'auth:snapshot';
+
+  const writeSnapshot = useCallback(
+    (s: Pick<AuthState, 'isLoggedIn' | 'user'>) => {
+      try {
+        sessionStorage.setItem(
+          SNAPSHOT_KEY,
+          JSON.stringify({ isLoggedIn: s.isLoggedIn, user: s.user })
+        );
+      } catch {
+        // ignore storage errors (quota/SSR)
+      }
+    },
+    []
+  );
+
+  const readSnapshot = useCallback((): Pick<
+    AuthState,
+    'isLoggedIn' | 'user'
+  > | null => {
+    try {
+      const raw = sessionStorage.getItem(SNAPSHOT_KEY);
+      return raw
+        ? (JSON.parse(raw) as { isLoggedIn: boolean; user: AuthState['user'] })
+        : null;
+    } catch {
+      return null;
+    }
+  }, []);
 
   const setError = useCallback((error: string | null) => {
     setAuthState((prev) => ({ ...prev, error }));
@@ -46,57 +92,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+    const token = authApiClient.getStoredToken();
 
-    try {
-      const token = authApiClient.getStoredToken();
-      console.log('Checking auth status, token:', token ? 'exists' : 'none');
-
-      if (!token) {
-        console.log('No token found, setting logged out');
-        setAuthState({
-          isLoggedIn: false,
-          user: null,
-          isLoading: false,
-          error: null,
-        });
-        return;
-      }
-
-      // Validate token with backend
-      const { valid } = await authApiClient.validateToken();
-      console.log('Token validation result:', valid);
-
-      if (valid) {
-        console.log('Token valid, setting logged in');
-        setAuthState({
-          isLoggedIn: true,
-          user: { id: 'user' },
-          isLoading: false,
-          error: null,
-        });
-      } else {
-        console.log('Token invalid, removing and setting logged out');
-        authApiClient.removeTokens();
-        setAuthState({
-          isLoggedIn: false,
-          user: null,
-          isLoading: false,
-          error: null,
-        });
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      authApiClient.removeTokens();
-      setAuthState({
+    if (token) {
+      // Token exists, assume valid until we get 401 from API calls
+      const nextState: AuthState = {
+        isLoggedIn: true,
+        user: { id: 'user' },
+        isLoading: false,
+        error: null,
+      };
+      setAuthState(nextState);
+      writeSnapshot({
+        isLoggedIn: nextState.isLoggedIn,
+        user: nextState.user,
+      });
+    } else {
+      // No token, user is logged out
+      const nextState: AuthState = {
         isLoggedIn: false,
         user: null,
         isLoading: false,
         error: null,
-      });
+      };
+      setAuthState(nextState);
+      writeSnapshot({ isLoggedIn: nextState.isLoggedIn, user: nextState.user });
     }
-  }, [setLoading, setError]);
+  }, [writeSnapshot]);
 
   const login = useCallback(
     async (credentials: LoginRequest) => {
@@ -104,31 +126,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setError(null);
 
       try {
-        console.log('Attempting login...');
         const response = await authApiClient.login(credentials);
 
         if (response.status === 200 && response.data) {
-          console.log('Login successful, storing tokens');
-
           // Store tokens
           authApiClient.setToken(response.data.accessToken);
           authApiClient.setRefreshToken(response.data.refreshToken);
 
           // Update auth state
-          setAuthState({
+          const nextState: AuthState = {
             isLoggedIn: true,
             user: { id: 'user' },
             isLoading: false,
             error: null,
+          };
+          setAuthState(nextState);
+          writeSnapshot({
+            isLoggedIn: nextState.isLoggedIn,
+            user: nextState.user,
           });
 
-          console.log('Auth state updated to logged in');
-          return { success: true, user: { id: 'user' } };
-        } else {
-          throw new Error(response.message || 'Login failed');
+          return { success: true, user: nextState.user };
         }
-      } catch (error) {
-        console.error('Login failed:', error);
+
+        throw new Error(
+          (response as { message?: string })?.message ?? 'Login failed'
+        );
+      } catch (error: unknown) {
         const errorMessage =
           error instanceof Error ? error.message : 'Login failed';
         setAuthState((prev) => ({
@@ -136,33 +160,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           isLoading: false,
           error: errorMessage,
         }));
-        throw error;
+        throw error instanceof Error ? error : new Error(errorMessage);
       }
     },
-    [setLoading, setError]
+    [setLoading, setError, writeSnapshot]
   );
 
   const logout = useCallback(async () => {
-    console.log('Logging out...');
     setLoading(true);
 
     try {
       await authApiClient.logout();
-    } catch (error) {
-      console.error('Logout API call failed:', error);
+    } catch {
+      // Ignore API failure during logout; we still clear local state.
     }
 
     authApiClient.removeTokens();
-    setAuthState({
+    const nextState: AuthState = {
       isLoggedIn: false,
       user: null,
       isLoading: false,
       error: null,
-    });
+    };
+    setAuthState(nextState);
+    writeSnapshot({ isLoggedIn: nextState.isLoggedIn, user: nextState.user });
 
-    console.log('Logged out, redirecting to home');
     router.push('/');
-  }, [router, setLoading]);
+  }, [router, setLoading, writeSnapshot]);
 
   const redirectIfLoggedIn = useCallback(
     (redirectTo: string = '/') => {
@@ -177,16 +201,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
   }, [setError]);
 
-  // Check auth status on mount
+  // On first client mount, try to hydrate quick from snapshot to avoid flicker,
+  // then immediately verify with backend.
   useEffect(() => {
-    console.log('AuthProvider mounting, checking auth status');
-    checkAuthStatus();
-  }, [checkAuthStatus]);
+    if (initializedRef.current) return;
+    initializedRef.current = true;
 
-  // Debug logging
-  useEffect(() => {
-    console.log('Auth state changed:', authState);
-  }, [authState]);
+    const snap = readSnapshot();
+    if (snap) {
+      setAuthState((prev) => ({
+        ...prev,
+        isLoggedIn: snap.isLoggedIn,
+        user: snap.user,
+        isLoading: true, // we’ll still verify with backend
+        error: null,
+      }));
+    }
+
+    // Fire and forget; checkAuthStatus will set final state
+    void checkAuthStatus();
+  }, [checkAuthStatus, readSnapshot]);
+
+  // Optional: debug state changes
+  // useEffect(() => {
+  //   console.log('Auth state changed:', authState);
+  // }, [authState]);
 
   const contextValue: AuthContextType = React.useMemo(
     () => ({

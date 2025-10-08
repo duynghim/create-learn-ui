@@ -1,23 +1,80 @@
-import Link from 'next/link';
-import { Container, Group, Title } from '@mantine/core';
-import type { ReactNode } from 'react';
+// src/app/management/layout.tsx
+'use client';
 
-const ManagementLayout = ({ children }: { children: ReactNode }) => {
+import { useState } from 'react';
+import { Flex, Box, Container, Burger } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import type { ReactNode } from 'react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import Sidebar from './sidebar/SideBar';
+interface ManagementLayoutProps {
+  children: ReactNode;
+}
+
+const ManagementLayout = ({ children }: ManagementLayoutProps) => {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpened, { toggle: toggleMobileMenu }] = useDisclosure(false);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
   return (
-    <div>
-      <Container fluid p={20}>
-        <Group justify="space-between" align="center">
-          <Title order={2} c="fresh-blue">Management</Title>
-          <Group>
-            <Link href="/management">Dashboard</Link>
-            <Link href="/management/accounts">Accounts</Link>
-            <Link href="/management/classes">Classes</Link>
-            <Link href="/management/consultants">Consultants</Link>
-          </Group>
-        </Group>
-      </Container>
-      <Container p={20}>{children}</Container>
-    </div>
+    <ProtectedRoute>
+      <Flex>
+        {/* Desktop Sidebar */}
+        <Box visibleFrom="md">
+          <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
+        </Box>
+
+        {/* Mobile Menu Button */}
+        <Box
+          hiddenFrom="md"
+          pos="fixed"
+          top={16}
+          left={16}
+          style={{ zIndex: 1000 }}
+        >
+          <Burger
+            opened={mobileMenuOpened}
+            onClick={toggleMobileMenu}
+            size="sm"
+            aria-label="Toggle navigation"
+          />
+        </Box>
+
+        {/* Mobile Sidebar Overlay */}
+        {mobileMenuOpened && (
+          <>
+            <Box
+              pos="fixed"
+              inset={0}
+              bg="rgba(0, 0, 0, 0.5)"
+              style={{ zIndex: 999 }}
+              onClick={toggleMobileMenu}
+              hiddenFrom="md"
+            />
+            <Box
+              pos="fixed"
+              top={0}
+              left={0}
+              h="100vh"
+              style={{ zIndex: 1001 }}
+              hiddenFrom="md"
+            >
+              <Sidebar />
+            </Box>
+          </>
+        )}
+
+        {/* Main Content */}
+        <Box style={{ flex: 1, minHeight: '100vh' }}>
+          <Container fluid p="xl">
+            {children}
+          </Container>
+        </Box>
+      </Flex>
+    </ProtectedRoute>
   );
 };
 

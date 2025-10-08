@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 

@@ -17,7 +17,7 @@ import {
 } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
-import { useAuth } from '@/contexts';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -34,34 +34,29 @@ const LoginPage = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm({
+    mode: 'uncontrolled',
     initialValues: {
       username: '',
       password: '',
     },
     validate: {
-      username: (v) => (v.trim().length ? null : 'Username is required'),
-      password: (v) => (v.length ? null : 'Password is required'),
+      username: (v) => (v?.trim().length ? null : 'Username is required'),
+      password: (v) => (v?.length ? null : 'Password is required'),
     },
-    validateInputOnBlur: true,
   });
 
   // If already logged in, redirect
   useEffect(() => {
+    console.log('🔄 Login page auth check:', { isLoggedIn, authLoading });
+
     if (!authLoading && isLoggedIn) {
       const redirect = searchParams.get('redirect') || '/management';
+      console.log('✅ User logged in, redirecting to:', redirect);
       router.replace(redirect);
     }
   }, [isLoggedIn, authLoading, router, searchParams]);
 
-    useEffect(() => {
-    console.log('Auth state changed:', { isLoggedIn, authLoading });
-  }, [isLoggedIn, authLoading]);
-
-    useEffect(() => {
-    console.log('Auth state changed:', { isLoggedIn, authLoading });
-  }, [isLoggedIn, authLoading]);
-
-  // Bubble auth hook errors into a top-level alert
+  // Handle auth errors
   useEffect(() => {
     if (authError) {
       setSubmitError(authError);
@@ -70,16 +65,22 @@ const LoginPage = () => {
   }, [authError, clearError]);
 
   const handleSubmit = form.onSubmit(async (values) => {
+    console.log('🚀 Form submitted:', { username: values.username });
     setSubmitError(null);
     setLoading(true);
 
     try {
-      const result = await login({ username: values.username, password: values.password });
-      console.log('Login result:', result); // Add this for debugging
-      
-      const redirect = searchParams.get('redirect') || '/management';
-      router.replace(redirect);
+      const result = await login({
+        username: values.username,
+        password: values.password,
+      });
+
+      console.log('✅ Login successful:', result);
+
+      // Don't manually redirect here, let the useEffect handle it
+      // The auth state change will trigger the redirect
     } catch (err) {
+      console.error('❌ Login failed:', err);
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setSubmitError(errorMessage);
     } finally {
@@ -87,6 +88,7 @@ const LoginPage = () => {
     }
   });
 
+  // Show loading while checking initial auth status
   if (authLoading) {
     return (
       <Container fluid p={0}>
@@ -97,12 +99,14 @@ const LoginPage = () => {
     );
   }
 
+  // If already logged in, don't show login form
   if (isLoggedIn) {
     return null;
   }
 
   const canSubmit =
-    form.values.username.trim() !== '' && form.values.password !== '';
+    form.getValues().username?.trim() !== '' &&
+    form.getValues().password !== '';
 
   return (
     <Container fluid p={0}>
@@ -145,6 +149,7 @@ const LoginPage = () => {
                 maw={389}
                 disabled={loading}
                 required
+                key={form.key('username')}
                 {...form.getInputProps('username')}
               />
 
@@ -158,6 +163,7 @@ const LoginPage = () => {
                 maw={389}
                 disabled={loading}
                 required
+                key={form.key('password')}
                 {...form.getInputProps('password')}
               />
 

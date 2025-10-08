@@ -1,4 +1,5 @@
-import type { ApiConfig, LoginRequest, LoginResponse, User } from '@/types';
+// src/api/authApi.ts
+import type { ApiConfig, LoginRequest, LoginResponse } from '@/types';
 
 const config: ApiConfig = {
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080',
@@ -16,9 +17,13 @@ class AuthApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    useBackendDirectly = false
   ): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    // Choose between Next.js API route or direct backend call
+    const baseUrl = useBackendDirectly ? this.baseURL : '';
+    const url = `${baseUrl}${endpoint}`;
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -62,70 +67,100 @@ class AuthApiClient {
   }
 
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    return this.request<LoginResponse>('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    });
+    // Use direct backend call for login
+    return this.request<LoginResponse>(
+      '/api/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      },
+      true
+    );
   }
 
   async logout(): Promise<void> {
-    return this.request<void>('/api/auth/logout', {
-      method: 'POST',
-    });
+    // Use direct backend call for logout
+    return this.request<void>(
+      '/api/auth/logout',
+      {
+        method: 'POST',
+      },
+      true
+    );
   }
 
   async validateToken(): Promise<{ valid: boolean }> {
     try {
-      return await this.request<{ valid: boolean }>('/api/auth/validate', {
-        method: 'GET',
-      });
-    } catch {
+      // Use direct backend call for token validation
+
+      return await this.request<{ valid: boolean }>(
+        '/api/auth/validate',
+        {
+          method: 'GET',
+        },
+        true // Call backend directly
+      );
+    } catch (error) {
+      console.error('Token validation failed:', error);
       return { valid: false };
     }
   }
 
-  async getCurrentUser(): Promise<User | null> {
-    try {
-      const response = await this.request<{ user: User }>('/api/auth/me');
-      return response.user;
-    } catch {
-      return null;
-    }
-  }
-
+  // Token management methods remain the same
   getStoredToken(): string | null {
     if (typeof globalThis !== 'undefined') {
-      return localStorage.getItem('auth_token');
+      try {
+        return localStorage.getItem('auth_token');
+      } catch (error) {
+        console.error('Error getting token from localStorage:', error);
+        return null;
+      }
     }
     return null;
   }
 
   setToken(token: string): void {
     if (typeof globalThis !== 'undefined') {
-      localStorage.setItem('auth_token', token);
+      try {
+        localStorage.setItem('auth_token', token);
+      } catch (error) {
+        console.error('Error storing token in localStorage:', error);
+      }
     }
   }
 
   setRefreshToken(token: string): void {
     if (typeof globalThis !== 'undefined') {
-      localStorage.setItem('refresh_token', token);
+      try {
+        localStorage.setItem('refresh_token', token);
+      } catch (error) {
+        console.error('Error storing refresh token in localStorage:', error);
+      }
     }
   }
 
   getRefreshToken(): string | null {
     if (typeof globalThis !== 'undefined') {
-      return localStorage.getItem('refresh_token');
+      try {
+        return localStorage.getItem('refresh_token');
+      } catch (error) {
+        console.error('Error getting refresh token from localStorage:', error);
+        return null;
+      }
     }
     return null;
   }
 
   removeTokens(): void {
     if (typeof globalThis !== 'undefined') {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('refresh_token');
+      try {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
+      } catch (error) {
+        console.error('Error removing tokens from localStorage:', error);
+      }
     }
   }
-  
 }
 
 export const authApiClient = new AuthApiClient(config);

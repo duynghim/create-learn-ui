@@ -1,3 +1,4 @@
+// src/hooks/useTeacher.ts
 'use client';
 
 import { useState, useCallback } from 'react';
@@ -19,16 +20,18 @@ interface UseTeacherState {
   limit: number;
 }
 
+const initialState: UseTeacherState = {
+  teachers: [],
+  currentTeacher: null,
+  isLoading: false,
+  error: null,
+  total: 0,
+  page: 1,
+  limit: 10,
+};
+
 export const useTeacher = () => {
-  const [state, setState] = useState<UseTeacherState>({
-    teachers: [],
-    currentTeacher: null,
-    isLoading: false,
-    error: null,
-    total: 0,
-    page: 1,
-    limit: 10,
-  });
+  const [state, setState] = useState<UseTeacherState>(initialState);
 
   const setLoading = useCallback((isLoading: boolean) => {
     setState((prev) => ({ ...prev, isLoading }));
@@ -46,21 +49,54 @@ export const useTeacher = () => {
       try {
         const response = await teacherApiClient.getAll(filters);
 
-        if (response.status === 200) {
+        if (response && response.status === 200) {
+          // Handle the actual API response format
+          let teachers: Teacher[] = [];
+          let total = 0;
+          let page = filters?.page || 1;
+          let limit = filters?.limit || 10;
+
+          // Check if response.data is an array (your current API format)
+          if (Array.isArray(response.data)) {
+            teachers = response.data;
+            total = response.data.length;
+          }
+          // Check if response.data has the expected paginated format
+          else if (response.data && typeof response.data === 'object') {
+            if (
+              'items' in response.data &&
+              Array.isArray(response.data.items)
+            ) {
+              teachers = response.data.items;
+              total = response.data.total || response.data.items.length;
+              page = response.data.page || page;
+              limit = response.data.limit || limit;
+            } else {
+              // Fallback: treat response.data as the teachers array
+              teachers = [];
+              total = 0;
+            }
+          }
+
           setState((prev) => ({
             ...prev,
-            teachers: response.data.items,
-            total: response.data.total,
-            page: response.data.page,
-            limit: response.data.limit,
+            teachers,
+            total,
+            page,
+            limit,
             isLoading: false,
           }));
         }
       } catch (error) {
+        console.error('Get teachers failed:', error);
         const errorMessage =
           error instanceof Error ? error.message : 'Failed to fetch teachers';
         setError(errorMessage);
-        setLoading(false);
+        setState((prev) => ({
+          ...prev,
+          teachers: [], // Ensure teachers is always an array
+          isLoading: false,
+        }));
       }
     },
     [setLoading, setError]
@@ -74,7 +110,7 @@ export const useTeacher = () => {
       try {
         const response = await teacherApiClient.getById(id);
 
-        if (response.status === 200) {
+        if (response && response.status === 200) {
           setState((prev) => ({
             ...prev,
             currentTeacher: response.data,
@@ -101,10 +137,11 @@ export const useTeacher = () => {
       try {
         const response = await teacherApiClient.create(teacherData);
 
-        if (response.status === 201 || response.status === 200) {
+        if (response && (response.status === 201 || response.status === 200)) {
           setState((prev) => ({
             ...prev,
-            teachers: [...prev.teachers, response.data],
+            teachers: [...(prev.teachers || []), response.data],
+            total: (prev.total || 0) + 1,
             isLoading: false,
           }));
           return response.data;
@@ -128,10 +165,10 @@ export const useTeacher = () => {
       try {
         const response = await teacherApiClient.update(id, teacherData);
 
-        if (response.status === 200) {
+        if (response && response.status === 200) {
           setState((prev) => ({
             ...prev,
-            teachers: prev.teachers.map((teacher) =>
+            teachers: (prev.teachers || []).map((teacher) =>
               teacher.id === id ? response.data : teacher
             ),
             currentTeacher:
@@ -163,9 +200,12 @@ export const useTeacher = () => {
 
         setState((prev) => ({
           ...prev,
-          teachers: prev.teachers.filter((teacher) => teacher.id !== id),
+          teachers: (prev.teachers || []).filter(
+            (teacher) => teacher.id !== id
+          ),
           currentTeacher:
             prev.currentTeacher?.id === id ? null : prev.currentTeacher,
+          total: Math.max((prev.total || 0) - 1, 0),
           isLoading: false,
         }));
       } catch (error) {
@@ -189,6 +229,8 @@ export const useTeacher = () => {
 
   return {
     ...state,
+    // Ensure teachers is always an array
+    teachers: state.teachers || [],
     getAllTeachers,
     getTeacherById,
     createTeacher,
