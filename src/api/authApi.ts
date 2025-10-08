@@ -125,6 +125,7 @@ class AuthApiClient {
       localStorage.removeItem('refresh_token');
     }
   }
+  
 }
 
 export const authApiClient = new AuthApiClient(config);

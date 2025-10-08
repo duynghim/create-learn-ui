@@ -1,37 +1,21 @@
-// middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 const protectedRoutes = ['/management'];
-const publicRoutes = [
-  '/login',
-  '/',
-  '/classes',
-  '/camps',
-  '/subjects',
-  '/events',
-  '/programs',
-  '/about',
-  '/blog',
-];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Only redirect to login for management routes
+  // We'll handle the actual auth check on the client side
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
 
-  const hasAuthCookie =
-    request.cookies.has('auth_token') || request.headers.get('authorization');
-
-  if (isProtectedRoute && !hasAuthCookie) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  if (pathname === '/login' && hasAuthCookie) {
-    return NextResponse.redirect(new URL('/management', request.url));
+  // If trying to access management without being on login page,
+  // let the client-side ProtectedRoute component handle it
+  if (isProtectedRoute && pathname !== '/login') {
+    // Let it through, the ProtectedRoute component will handle the auth check
+    return NextResponse.next();
   }
 
   return NextResponse.next();

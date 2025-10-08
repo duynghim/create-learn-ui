@@ -18,7 +18,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts';
 import type { UserSectionProps, MobileDrawerProps } from '@/types';
 
 const NAVIGATION_LINKS = [
@@ -241,6 +241,9 @@ const MobileDrawer = ({
 const Header = () => {
   const { isLoggedIn, isLoading, logout } = useAuth();
   const [isDrawerOpen, { open, close }] = useDisclosure(false);
+
+  // Debug logging
+  console.log('Header - Auth state:', { isLoggedIn, isLoading });
 
   return (
     <>

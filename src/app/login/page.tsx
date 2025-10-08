@@ -1,4 +1,3 @@
-// src/app/login/page.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -18,7 +17,7 @@ import {
 } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -54,6 +53,14 @@ const LoginPage = () => {
     }
   }, [isLoggedIn, authLoading, router, searchParams]);
 
+    useEffect(() => {
+    console.log('Auth state changed:', { isLoggedIn, authLoading });
+  }, [isLoggedIn, authLoading]);
+
+    useEffect(() => {
+    console.log('Auth state changed:', { isLoggedIn, authLoading });
+  }, [isLoggedIn, authLoading]);
+
   // Bubble auth hook errors into a top-level alert
   useEffect(() => {
     if (authError) {
@@ -67,7 +74,9 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      await login({ username: values.username, password: values.password });
+      const result = await login({ username: values.username, password: values.password });
+      console.log('Login result:', result); // Add this for debugging
+      
       const redirect = searchParams.get('redirect') || '/management';
       router.replace(redirect);
     } catch (err) {

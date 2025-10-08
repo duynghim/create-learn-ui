@@ -1,3 +1,4 @@
+// src/app/layout.tsx
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 
@@ -11,6 +12,7 @@ import React from 'react';
 import { theme } from '@/app/theme/theme';
 import { Roboto } from 'next/font/google';
 import { Header } from '@/components';
+import { AuthProvider } from '@/contexts';
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -31,8 +33,10 @@ export default function RootLayout({
       </head>
       <body className={roboto.className}>
         <MantineProvider theme={theme}>
-          <Header />
-          {children}
+          <AuthProvider>
+            <Header />
+            {children}
+          </AuthProvider>
         </MantineProvider>
       </body>
     </html>

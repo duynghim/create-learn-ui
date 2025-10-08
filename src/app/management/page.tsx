@@ -1,25 +1,37 @@
-import { Card, Group, Stack, Text, Title } from '@mantine/core';
+// src/app/management/layout.tsx
+'use client';
 
-const ManagementDashboardPage = () => {
+import Link from 'next/link';
+import { Container, Group, Title } from '@mantine/core';
+import type { ReactNode } from 'react';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
+interface ManagementLayoutProps {
+  children: ReactNode;
+}
+
+const ManagementLayout = ({ children }: ManagementLayoutProps) => {
   return (
-    <Stack gap="md">
-      <Title order={3}>Admin Dashboard</Title>
-      <Group>
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
-          <Text fw={600}>Accounts</Text>
-          <Text c="dimmed" size="sm">Create and manage user accounts.</Text>
-        </Card>
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
-          <Text fw={600}>Classes</Text>
-          <Text c="dimmed" size="sm">Manage classes and schedules.</Text>
-        </Card>
-        <Card shadow="sm" padding="lg" radius="md" withBorder>
-          <Text fw={600}>Consultants</Text>
-          <Text c="dimmed" size="sm">Manage consultants and assignments.</Text>
-        </Card>
-      </Group>
-    </Stack>
+    <ProtectedRoute>
+      <div>
+        <Container fluid p={20}>
+          <Group justify="space-between" align="center">
+            <Title order={2} c="fresh-blue">
+              Management
+            </Title>
+            <Group>
+              <Link href="/management">Dashboard</Link>
+              <Link href="/management/accounts">Accounts</Link>
+              <Link href="/management/classes">Classes</Link>
+              <Link href="/management/teachers">Teachers</Link>
+              <Link href="/management/consultants">Consultants</Link>
+            </Group>
+          </Group>
+        </Container>
+        <Container p={20}>{children}</Container>
+      </div>
+    </ProtectedRoute>
   );
 };
 
-export default ManagementDashboardPage;
+export default ManagementLayout;
