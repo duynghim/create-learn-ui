@@ -12,6 +12,7 @@ import { theme } from '@/app/theme/theme';
 import { Roboto } from 'next/font/google';
 import { Header } from '@/components';
 import { AuthProvider } from '@/contexts';
+import { QueryProvider } from '@/providers/QueryProvider';
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -32,10 +33,9 @@ export default function RootLayout({
       </head>
       <body className={roboto.className}>
         <MantineProvider theme={theme}>
-          <AuthProvider>
-            <Header />
-            {children}
-          </AuthProvider>
+          <QueryProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </QueryProvider>
         </MantineProvider>
       </body>
     </html>

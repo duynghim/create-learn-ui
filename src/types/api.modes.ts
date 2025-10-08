@@ -37,9 +37,9 @@ export interface ApiFilters {
 }
 
 export interface ApiClient<T, CreateT, UpdateT> {
-  getAll(filters?: ApiFilters): Promise<ApiListResponse<T>>;
-  getById(id: string): Promise<ApiSingleResponse<T>>;
-  create(data: CreateT): Promise<ApiSingleResponse<T>>;
-  update(id: string, data: UpdateT): Promise<ApiSingleResponse<T>>;
+  getAll(filters?: ApiFilters): Promise<ApiListResponse<T> | undefined>;
+  getById(id: string): Promise<ApiSingleResponse<T> | undefined>;
+  create(data: CreateT): Promise<ApiSingleResponse<T> | undefined>;
+  update(id: string, data: UpdateT): Promise<ApiSingleResponse<T> | undefined>;
   delete(id: string): Promise<void>;
 }

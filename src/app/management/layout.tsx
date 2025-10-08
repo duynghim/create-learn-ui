@@ -7,6 +7,7 @@ import { useDisclosure } from '@mantine/hooks';
 import type { ReactNode } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Sidebar from './sidebar/SideBar';
+
 interface ManagementLayoutProps {
   children: ReactNode;
 }

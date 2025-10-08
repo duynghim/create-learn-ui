@@ -50,20 +50,23 @@ export abstract class BaseApiClient<
     });
   }
 
-  async getById(id: string): Promise<ApiSingleResponse<T>> {
+  async getById(id: string): Promise<ApiSingleResponse<T> | undefined> {
     return await this.request<ApiSingleResponse<T>>(`${this.endpoint}/${id}`, {
       method: 'GET',
     });
   }
 
-  async create(data: CreateT): Promise<ApiSingleResponse<T>> {
+  async create(data: CreateT): Promise<ApiSingleResponse<T> | undefined> {
     return await this.request<ApiSingleResponse<T>>(this.endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async update(id: string, data: UpdateT): Promise<ApiSingleResponse<T>> {
+  async update(
+    id: string,
+    data: UpdateT
+  ): Promise<ApiSingleResponse<T> | undefined> {
     return await this.request<ApiSingleResponse<T>>(`${this.endpoint}/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
