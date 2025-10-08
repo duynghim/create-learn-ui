@@ -1,3 +1,4 @@
+// src/components/header/Header.tsx
 'use client';
 
 import Image from 'next/image';
@@ -49,12 +50,13 @@ const NavigationLinks = () => {
 };
 
 const Logo = () => (
-  <Link href="/" className="flex items-center space-x-2 cursor-pointer">
+  <Link href="/">
     <Image
       src="/images/cl_logo.webp"
       alt="Website Logo"
       width={150}
       height={40}
+      priority
     />
   </Link>
 );
@@ -63,56 +65,81 @@ const UserSection = ({ isLoggedIn, onLogout, isLoading }: UserSectionProps) => {
   const router = useRouter();
 
   if (isLoading) {
-    return <div style={{ width: 32, height: 32 }} />;
+    return (
+      <div
+        style={{ width: 40, height: 40, display: 'flex', alignItems: 'center' }}
+      ></div>
+    );
   }
 
   if (isLoggedIn) {
     return (
-      <Menu shadow="md" width={200} position="bottom-end">
-        <Menu.Target>
-          <Avatar
-            color="cyan"
-            radius="xl"
-            style={{ cursor: 'pointer' }}
-            visibleFrom="md"
-          >
-            U
-          </Avatar>
-        </Menu.Target>
+      <Group gap="xs">
+        {/* Desktop Menu */}
+        <Menu shadow="md" width={200} position="bottom-end">
+          <Menu.Target>
+            <Avatar
+              color="cyan"
+              radius="xl"
+              style={{ cursor: 'pointer' }}
+              visibleFrom="md"
+              size="md"
+            >
+              U
+            </Avatar>
+          </Menu.Target>
 
-        <Menu.Dropdown>
-          <Menu.Label>
-            <Text size="sm" fw={500}>
-              User
-            </Text>
-            <Text size="xs" c="dimmed">
-              Logged In
-            </Text>
-          </Menu.Label>
-          <Menu.Divider />
+          <Menu.Dropdown>
+            <Menu.Label>
+              <Text size="sm" fw={500}>
+                User
+              </Text>
+              <Text size="xs" c="dimmed">
+                Logged In
+              </Text>
+            </Menu.Label>
+            <Menu.Divider />
 
-          <Menu.Item onClick={() => router.push('/management')}>
-            Management
-          </Menu.Item>
+            <Menu.Item onClick={() => router.push('/management')}>
+              Management
+            </Menu.Item>
 
-          <Menu.Divider />
+            <Menu.Divider />
 
-          <Menu.Item color="red" onClick={onLogout}>
-            Logout
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
+            <Menu.Item color="red" onClick={onLogout}>
+              Logout
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+
+        {/* Mobile Avatar - visible only on mobile */}
+        <Avatar color="cyan" radius="xl" hiddenFrom="md" size="md">
+          U
+        </Avatar>
+      </Group>
     );
   }
 
   return (
-    <Button
-      visibleFrom="md"
-      color="fresh-green"
-      onClick={() => router.push('/login')}
-    >
-      Login
-    </Button>
+    <Group gap="xs">
+      <Button
+        visibleFrom="md"
+        color="fresh-green"
+        onClick={() => router.push('/login')}
+      >
+        Login
+      </Button>
+
+      {/* Mobile Login Button */}
+      <Button
+        hiddenFrom="md"
+        color="fresh-green"
+        size="sm"
+        onClick={() => router.push('/login')}
+      >
+        Login
+      </Button>
+    </Group>
   );
 };
 
@@ -136,44 +163,72 @@ const MobileDrawer = ({
       withCloseButton={false}
       overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
       position="right"
-      size={200}
+      size={280}
       offset={8}
       radius="md"
     >
-      <Stack align="stretch" gap="xs">
-        <NavigationLinks />
+      <Stack align="stretch" gap="xs" p="md">
+        {/* Navigation Links */}
+        <Stack gap="xs">
+          {NAVIGATION_LINKS.map((link) => (
+            <Button
+              key={link.name}
+              variant="subtle"
+              justify="flex-start"
+              onClick={() => handleNavigation(link.href)}
+              fullWidth
+            >
+              {link.name}
+            </Button>
+          ))}
+        </Stack>
+
         <Divider my="md" />
 
+        {/* User Section */}
         {isLoggedIn ? (
-          <>
-            <Text size="sm" fw={500} px="sm">
-              User
-            </Text>
-            <Text size="xs" c="dimmed" px="sm" mb="xs">
-              Logged In
-            </Text>
+          <Stack gap="xs">
+            <Group gap="xs" px="sm">
+              <Avatar color="cyan" radius="xl" size="sm">
+                U
+              </Avatar>
+              <div>
+                <Text size="sm" fw={500}>
+                  User
+                </Text>
+                <Text size="xs" c="dimmed">
+                  Logged In
+                </Text>
+              </div>
+            </Group>
 
             <Button
               variant="light"
+              justify="flex-start"
               onClick={() => handleNavigation('/management')}
+              fullWidth
             >
               Management
             </Button>
 
             <Button
               color="red"
+              variant="light"
+              justify="flex-start"
               onClick={() => {
                 onLogout();
                 onClose();
               }}
+              fullWidth
             >
               Logout
             </Button>
-          </>
+          </Stack>
         ) : (
           <Button
             color="fresh-green"
             onClick={() => handleNavigation('/login')}
+            fullWidth
           >
             Login
           </Button>
@@ -189,30 +244,39 @@ const Header = () => {
 
   return (
     <>
-      <header className="w-full bg-white">
+      <header>
         <Container fluid>
           <Flex justify="space-between" align="center" px={20} py={10}>
             <Logo />
+
+            {/* Desktop Navigation */}
             <Group gap="xs" visibleFrom="md">
               <NavigationLinks />
             </Group>
-            <UserSection
-              isLoggedIn={isLoggedIn}
-              onLogout={logout}
-              isLoading={isLoading}
-            />
-            <Burger
-              lineSize={2}
-              size="md"
-              opened={isDrawerOpen}
-              onClick={open}
-              aria-label="Toggle navigation"
-              hiddenFrom="md"
-            />
+
+            {/* User Section */}
+            <Group gap="xs">
+              <UserSection
+                isLoggedIn={isLoggedIn}
+                onLogout={logout}
+                isLoading={isLoading}
+              />
+
+              {/* Mobile Menu Burger */}
+              <Burger
+                lineSize={2}
+                size="md"
+                opened={isDrawerOpen}
+                onClick={open}
+                aria-label="Toggle navigation"
+                hiddenFrom="md"
+              />
+            </Group>
           </Flex>
         </Container>
       </header>
 
+      {/* Mobile Drawer */}
       <MobileDrawer
         isOpen={isDrawerOpen}
         onClose={close}

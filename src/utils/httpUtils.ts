@@ -106,7 +106,7 @@ export async function fetchJSON<T = unknown>(
       throw err;
     }
 
-    // Last resort: wrap non-Error throwables
+    // Last resort: wrap non-Error throwable
     throw new Error('An unknown error occurred');
   } finally {
     if (timeoutId) clearTimeout(timeoutId);

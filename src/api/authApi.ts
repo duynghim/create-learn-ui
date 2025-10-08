@@ -28,6 +28,7 @@ class AuthApiClient {
         signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
+          ...this.getAuthHeaders(),
           ...options.headers,
         },
         credentials: 'include',
@@ -55,6 +56,11 @@ class AuthApiClient {
     }
   }
 
+  private getAuthHeaders(): Record<string, string> {
+    const token = this.getStoredToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }
+
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     return this.request<LoginResponse>('/api/auth/login', {
       method: 'POST',
@@ -67,6 +73,7 @@ class AuthApiClient {
       method: 'POST',
     });
   }
+
   async validateToken(): Promise<{ valid: boolean }> {
     try {
       return await this.request<{ valid: boolean }>('/api/auth/validate', {
@@ -83,6 +90,39 @@ class AuthApiClient {
       return response.user;
     } catch {
       return null;
+    }
+  }
+
+  getStoredToken(): string | null {
+    if (typeof globalThis !== 'undefined') {
+      return localStorage.getItem('auth_token');
+    }
+    return null;
+  }
+
+  setToken(token: string): void {
+    if (typeof globalThis !== 'undefined') {
+      localStorage.setItem('auth_token', token);
+    }
+  }
+
+  setRefreshToken(token: string): void {
+    if (typeof globalThis !== 'undefined') {
+      localStorage.setItem('refresh_token', token);
+    }
+  }
+
+  getRefreshToken(): string | null {
+    if (typeof globalThis !== 'undefined') {
+      return localStorage.getItem('refresh_token');
+    }
+    return null;
+  }
+
+  removeTokens(): void {
+    if (typeof globalThis !== 'undefined') {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
     }
   }
 }

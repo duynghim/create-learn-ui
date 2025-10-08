@@ -3,7 +3,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { AuthState, LoginRequest } from '@/types';
+import { authApiClient } from '@/api/authApi';
+import type { LoginRequest, AuthState } from '@/types';
 
 export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
@@ -27,7 +28,7 @@ export const useAuth = () => {
     setError(null);
 
     try {
-      const token = apiClient.getStoredToken();
+      const token = authApiClient.getStoredToken();
       if (!token) {
         setAuthState({
           isLoggedIn: false,
@@ -38,17 +39,17 @@ export const useAuth = () => {
         return;
       }
 
-      const { valid } = await apiClient.validateToken();
+      const { valid } = await authApiClient.validateToken();
 
       if (valid) {
         setAuthState({
           isLoggedIn: true,
-          user: { id: 'user' },
+          user: { id: 'user' }, // Simple user object since backend doesn't provide user details
           isLoading: false,
           error: null,
         });
       } else {
-        apiClient.removeTokens();
+        authApiClient.removeTokens();
         setAuthState({
           isLoggedIn: false,
           user: null,
@@ -58,7 +59,7 @@ export const useAuth = () => {
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      apiClient.removeTokens();
+      authApiClient.removeTokens();
       setAuthState({
         isLoggedIn: false,
         user: null,
@@ -74,11 +75,11 @@ export const useAuth = () => {
       setError(null);
 
       try {
-        const response = await apiClient.login(credentials);
+        const response = await authApiClient.login(credentials);
 
         if (response.status === 200 && response.data) {
-          apiClient.setToken(response.data.accessToken);
-          apiClient.setRefreshToken(response.data.refreshToken);
+          authApiClient.setToken(response.data.accessToken);
+          authApiClient.setRefreshToken(response.data.refreshToken);
 
           setAuthState({
             isLoggedIn: true,
@@ -109,12 +110,12 @@ export const useAuth = () => {
     setLoading(true);
 
     try {
-      await apiClient.logout();
+      await authApiClient.logout();
     } catch (error) {
       console.error('Logout API call failed:', error);
     }
 
-    apiClient.removeTokens();
+    authApiClient.removeTokens();
     setAuthState({
       isLoggedIn: false,
       user: null,

@@ -1,3 +1,4 @@
+// src/types/api.types.ts
 export interface ApiConfig {
   baseURL: string;
   timeout: number;

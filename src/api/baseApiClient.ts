@@ -39,39 +39,39 @@ export abstract class BaseApiClient<
   }
 
   // ============= CRUD =============
-  async getAll(filters?: ApiFilters): Promise<ApiListResponse<T>> {
+  async getAll(filters?: ApiFilters): Promise<ApiListResponse<T> | undefined> {
     const qs = buildQueryString(
       filters as
         | Record<string, string | number | boolean | object | Date>
         | undefined
     );
-    return this.request<ApiListResponse<T>>(`${this.endpoint}${qs}`, {
+    return await this.request<ApiListResponse<T>>(`${this.endpoint}${qs}`, {
       method: 'GET',
     });
   }
 
   async getById(id: string): Promise<ApiSingleResponse<T>> {
-    return this.request<ApiSingleResponse<T>>(`${this.endpoint}/${id}`, {
+    return await this.request<ApiSingleResponse<T>>(`${this.endpoint}/${id}`, {
       method: 'GET',
     });
   }
 
   async create(data: CreateT): Promise<ApiSingleResponse<T>> {
-    return this.request<ApiSingleResponse<T>>(this.endpoint, {
+    return await this.request<ApiSingleResponse<T>>(this.endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async update(id: string, data: UpdateT): Promise<ApiSingleResponse<T>> {
-    return this.request<ApiSingleResponse<T>>(`${this.endpoint}/${id}`, {
+    return await this.request<ApiSingleResponse<T>>(`${this.endpoint}/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   }
 
   async delete(id: string): Promise<void> {
-    return this.request<void>(`${this.endpoint}/${id}`, {
+    return await this.request<void>(`${this.endpoint}/${id}`, {
       method: 'DELETE',
     });
   }

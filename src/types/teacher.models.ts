@@ -1,4 +1,4 @@
-import type { BaseEntity } from './api.types';
+import type { BaseEntity } from './api.modes';
 
 export interface Teacher extends BaseEntity {
   firstName: string;
