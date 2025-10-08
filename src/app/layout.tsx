@@ -10,7 +10,7 @@ import {
 import React from 'react';
 import { theme } from '@/app/theme/theme';
 import { Roboto } from 'next/font/google';
-import Header from '@/components/header/Header';
+import { Header } from '@/components';
 
 const roboto = Roboto({
   subsets: ['latin'],

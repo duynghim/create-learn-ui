@@ -2,7 +2,7 @@
 
 import { Flex, Stack, Text } from '@mantine/core';
 import ClassCard from '../../class-card/ClassCard';
-import { ClassCardTypeProps } from '@/types/ClassCardProps.types';
+import { ClassCardTypeProps } from '@/types/classCardType.types';
 
 const POPULAR_CLASSES_BUTTON_TEXT = 'Learn More';
 const popularClassesList: ClassCardTypeProps[] = [

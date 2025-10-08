@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
@@ -13,9 +12,13 @@ import {
   Flex,
   Group,
   Stack,
+  Menu,
+  Text,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
+import type { UserSectionProps, MobileDrawerProps } from '@/types';
 
 const NAVIGATION_LINKS = [
   { name: 'Classes', href: '/classes' },
@@ -28,7 +31,6 @@ const NAVIGATION_LINKS = [
 ] as const;
 
 const NavigationLinks = () => {
-  useRouter();
   return (
     <>
       {NAVIGATION_LINKS.map((link) => (
@@ -57,18 +59,49 @@ const Logo = () => (
   </Link>
 );
 
-interface UserSectionProps {
-  isLoggedIn: boolean;
-}
-
-const UserSection = ({ isLoggedIn }: UserSectionProps) => {
+const UserSection = ({ isLoggedIn, onLogout, isLoading }: UserSectionProps) => {
   const router = useRouter();
+
+  if (isLoading) {
+    return <div style={{ width: 32, height: 32 }} />;
+  }
 
   if (isLoggedIn) {
     return (
-      <Avatar color="cyan" radius="xl" visibleFrom="md">
-        MK
-      </Avatar>
+      <Menu shadow="md" width={200} position="bottom-end">
+        <Menu.Target>
+          <Avatar
+            color="cyan"
+            radius="xl"
+            style={{ cursor: 'pointer' }}
+            visibleFrom="md"
+          >
+            U
+          </Avatar>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Label>
+            <Text size="sm" fw={500}>
+              User
+            </Text>
+            <Text size="xs" c="dimmed">
+              Logged In
+            </Text>
+          </Menu.Label>
+          <Menu.Divider />
+
+          <Menu.Item onClick={() => router.push('/management')}>
+            Management
+          </Menu.Item>
+
+          <Menu.Divider />
+
+          <Menu.Item color="red" onClick={onLogout}>
+            Logout
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     );
   }
 
@@ -83,13 +116,18 @@ const UserSection = ({ isLoggedIn }: UserSectionProps) => {
   );
 };
 
-interface MobileDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
+const MobileDrawer = ({
+  isOpen,
+  onClose,
+  isLoggedIn,
+  onLogout,
+}: MobileDrawerProps) => {
   const router = useRouter();
+
+  const handleNavigation = (path: string) => {
+    router.push(path);
+    onClose();
+  };
 
   return (
     <Drawer
@@ -105,39 +143,49 @@ const MobileDrawer = ({ isOpen, onClose }: MobileDrawerProps) => {
       <Stack align="stretch" gap="xs">
         <NavigationLinks />
         <Divider my="md" />
-        <Button
-          color="fresh-green"
-          onClick={() => {
-            router.push('/login');
-            onClose();
-          }}
-        >
-          Login
-        </Button>
+
+        {isLoggedIn ? (
+          <>
+            <Text size="sm" fw={500} px="sm">
+              User
+            </Text>
+            <Text size="xs" c="dimmed" px="sm" mb="xs">
+              Logged In
+            </Text>
+
+            <Button
+              variant="light"
+              onClick={() => handleNavigation('/management')}
+            >
+              Management
+            </Button>
+
+            <Button
+              color="red"
+              onClick={() => {
+                onLogout();
+                onClose();
+              }}
+            >
+              Logout
+            </Button>
+          </>
+        ) : (
+          <Button
+            color="fresh-green"
+            onClick={() => handleNavigation('/login')}
+          >
+            Login
+          </Button>
+        )}
       </Stack>
     </Drawer>
   );
 };
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, isLoading, logout } = useAuth();
   const [isDrawerOpen, { open, close }] = useDisclosure(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/auth/me', { cache: 'no-store' });
-        if (!cancelled) setIsLoggedIn(res.ok);
-      } catch {
-        if (!cancelled) setIsLoggedIn(false);
-      }
-    };
-    checkAuth();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   return (
     <>
@@ -145,13 +193,14 @@ const Header = () => {
         <Container fluid>
           <Flex justify="space-between" align="center" px={20} py={10}>
             <Logo />
-            {/* Desktop Navigation */}
             <Group gap="xs" visibleFrom="md">
               <NavigationLinks />
             </Group>
-            {/* Desktop User Section */}
-            <UserSection isLoggedIn={isLoggedIn} />
-            {/* Mobile Menu Button */}
+            <UserSection
+              isLoggedIn={isLoggedIn}
+              onLogout={logout}
+              isLoading={isLoading}
+            />
             <Burger
               lineSize={2}
               size="md"
@@ -164,7 +213,12 @@ const Header = () => {
         </Container>
       </header>
 
-      <MobileDrawer isOpen={isDrawerOpen} onClose={close} />
+      <MobileDrawer
+        isOpen={isDrawerOpen}
+        onClose={close}
+        isLoggedIn={isLoggedIn}
+        onLogout={logout}
+      />
     </>
   );
 };

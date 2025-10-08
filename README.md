@@ -98,7 +98,7 @@ create-learn-ui/
 │     │     └─ CustomerReviewSection.module.css
 │     ├─ theme/theme.ts
 │     └─ types/
-│        └─ ClassCardProps.types.ts
+│        └─ classCardType.types.ts
 ├─ public/                            # Static assets
 ├─ next.config.ts                     # Next.js config (minimal)
 ├─ eslint.config.mjs                  # ESLint flat config (Next + TS)

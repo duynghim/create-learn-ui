@@ -1,5 +1,5 @@
 'use client';
-import { ClassCardTypeProps } from '@/types/ClassCardProps.types';
+import { ClassCardTypeProps } from '@/types/classCardType.types';
 import { Flex, Stack, Text } from '@mantine/core';
 import GradientBox from '@/components/gradient-box/GradientBox';
 import ClassCard from '@/components/class-card/ClassCard';
