@@ -11,14 +11,15 @@ import {
   Tooltip,
 } from '@mantine/core';
 import {
-  IconDashboard,
+  IconMath,
   IconUsers,
   IconSchool,
-  IconUserCheck,
   IconChevronRight,
   IconChevronLeft,
+  IconChalkboardTeacher,
 } from '@tabler/icons-react';
 import classes from './Sidebar.module.css';
+import React from 'react';
 
 interface SidebarItem {
   id: string;
@@ -30,11 +31,11 @@ interface SidebarItem {
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
-    icon: IconDashboard,
+    id: 'subject',
+    label: 'Subject',
+    icon: IconMath,
     href: '/management',
-    description: 'Overview and analytics',
+    description: 'Manage Subjects',
   },
   {
     id: 'grades',
@@ -53,7 +54,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     id: 'teachers',
     label: 'Teachers',
-    icon: IconUserCheck,
+    icon: IconChalkboardTeacher,
     href: '/management/teacher',
     description: 'Manage teaching staff',
   },

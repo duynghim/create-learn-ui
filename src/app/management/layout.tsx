@@ -6,7 +6,7 @@ import { Flex, Box, Container, Burger } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import type { ReactNode } from 'react';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import Sidebar from './sidebar/SideBar';
+import { Sidebar } from '@/components';
 
 interface ManagementLayoutProps {
   children: ReactNode;
@@ -69,7 +69,7 @@ const ManagementLayout = ({ children }: ManagementLayoutProps) => {
         )}
 
         {/* Main Content */}
-        <Container w='100%' fluid p="xl">
+        <Container w="100%" fluid p="xl">
           {children}
         </Container>
       </Flex>

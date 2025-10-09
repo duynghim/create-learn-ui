@@ -104,8 +104,6 @@ export abstract class BaseApiClient<
     }
   }
 
-  // src/api/baseApiClient.ts (refactored helpers + reduced-complexity appendToFormData)
-
   private isFileLike(value: unknown): value is File | Blob {
     return value instanceof File || value instanceof Blob;
   }
@@ -143,7 +141,6 @@ export abstract class BaseApiClient<
     key: string,
     obj: object
   ): void {
-    // Dates handled via normalizeValue in main method; others stringified
     if (obj instanceof Date) {
       form.append(key, obj.toISOString());
     } else {
