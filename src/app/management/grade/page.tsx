@@ -154,7 +154,7 @@ const GradesPage = () => {
           close();
         }}
         title={selectedGrade ? 'Edit grade' : 'Add grade'}
-        size="md"
+        size="sm"
       >
         <GradeForm
           initialValues={selectedGrade}

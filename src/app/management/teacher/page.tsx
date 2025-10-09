@@ -142,7 +142,7 @@ const TeachersPage = () => {
           close();
         }}
         title={selectedTeacher ? 'Edit teacher' : 'Add teacher'}
-        size="auto"
+        size="sm"
       >
         <TeacherForm
           initialValues={selectedTeacher}

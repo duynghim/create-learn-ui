@@ -93,10 +93,12 @@ const ClassForm: React.FC<ClassFormProps> = ({
     value: String(s.id),
     label: s.name,
   }));
+
   const gradeOptions = grades.map((g) => ({
     value: String(g.id),
     label: g.name,
   }));
+
   const teacherOptions = teachers.map((t) => ({
     value: String(t.id),
     label: `${t.firstName} ${t.lastName}`,
@@ -106,18 +108,21 @@ const ClassForm: React.FC<ClassFormProps> = ({
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <Stack gap="md">
         <TextInput
+          radius="md"
           withAsterisk
           label="Name"
           placeholder="Enter class name"
           {...form.getInputProps('name')}
         />
         <TextInput
+          radius="md"
           withAsterisk
           label="Brief"
           placeholder="Enter brief description"
           {...form.getInputProps('brief')}
         />
         <Textarea
+          radius="md"
           withAsterisk
           label="Description"
           placeholder="Enter detailed description"
@@ -125,23 +130,27 @@ const ClassForm: React.FC<ClassFormProps> = ({
           {...form.getInputProps('description')}
         />
         <TextInput
+          radius="md"
           label="Image URL"
           placeholder="Enter image URL"
           {...form.getInputProps('image')}
         />
         <Textarea
+          radius="md"
           label="Requirements"
           placeholder="Enter class requirements"
           minRows={2}
           {...form.getInputProps('requirement')}
         />
         <Textarea
+          radius="md"
           label="Guarantee"
           placeholder="Enter class guarantee"
           minRows={2}
           {...form.getInputProps('guarantee')}
         />
         <NumberInput
+          radius="md"
           withAsterisk
           label="Price"
           placeholder="Enter price"
@@ -149,6 +158,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
           {...form.getInputProps('price')}
         />
         <MultiSelect
+          radius="md"
           label="Subjects"
           placeholder="Select subjects"
           data={subjectOptions}
@@ -156,6 +166,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
           {...form.getInputProps('subjectIds')}
         />
         <MultiSelect
+          radius="md"
           label="Grades"
           placeholder="Select grades"
           data={gradeOptions}
@@ -163,6 +174,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
           {...form.getInputProps('gradeIds')}
         />
         <Select
+          radius="md"
           withAsterisk
           label="Teacher"
           placeholder="Select teacher"
@@ -175,10 +187,16 @@ const ClassForm: React.FC<ClassFormProps> = ({
           {...form.getInputProps('isDisplayed', { type: 'checkbox' })}
         />
         <Group justify="flex-end" mt="md">
-          <Button variant="light" onClick={onCancel} disabled={isSubmitting}>
+          <Button
+            radius="md"
+            size="sm"
+            variant="subtle"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button type="submit" loading={isSubmitting}>
+          <Button radius="md" size="sm" type="submit" loading={isSubmitting}>
             {initialValues ? 'Update' : 'Create'}
           </Button>
         </Group>

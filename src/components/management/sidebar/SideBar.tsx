@@ -17,6 +17,7 @@ import {
   IconChevronRight,
   IconChevronLeft,
   IconChalkboardTeacher,
+  IconCalendar,
 } from '@tabler/icons-react';
 import classes from './Sidebar.module.css';
 import React from 'react';
@@ -45,13 +46,6 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     description: 'Manage user grades',
   },
   {
-    id: 'classes',
-    label: 'Classes',
-    icon: IconSchool,
-    href: '/management/classes',
-    description: 'Manage classes and courses',
-  },
-  {
     id: 'teachers',
     label: 'Teachers',
     icon: IconChalkboardTeacher,
@@ -61,9 +55,16 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     id: 'class',
     label: 'Classes',
-    icon: IconUsers,
+    icon: IconSchool,
     href: '/management/class',
     description: 'Manage Classes',
+  },
+  {
+    id: 'schedule',
+    label: 'Schedule',
+    icon: IconCalendar,
+    href: '/management/schedule',
+    description: 'Manage Schedule',
   },
 ];
 

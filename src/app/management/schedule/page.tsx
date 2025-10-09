@@ -162,7 +162,7 @@ const SchedulePage = () => {
           close();
         }}
         title={selectedSchedule ? 'Edit Schedule' : 'Add Schedule'}
-        size="md"
+        size="sm"
       >
         <ScheduleForm
           initialValues={selectedSchedule}

@@ -1,3 +1,4 @@
+// src/api/classApi.ts
 import { BaseApiClient } from './baseApiClient';
 import type {
   Class,
@@ -20,20 +21,35 @@ class ClassApiClient extends BaseApiClient<
 > {
   protected readonly endpoint = '/api/classes';
 
-  // Override getAll to use the public endpoint for fetching classes
-  async getAll(filters?: ClassApiFilters): Promise<ApiListResponse<Class> | undefined> {
+  async getAll(
+    filters?: ClassApiFilters
+  ): Promise<ApiListResponse<Class> | undefined> {
     const { buildQueryString } = await import('@/utils');
-    const qs = buildQueryString(filters as Record<string, string | number | boolean | object | Date> | undefined);
-    
-    // Use the public endpoint that returns the data structure you mentioned
+    const qs = buildQueryString(
+      filters as
+        | Record<string, string | number | boolean | object | Date>
+        | undefined
+    );
     return this.request<ApiListResponse<Class>>(`/api/classes/public${qs}`, {
       method: 'GET',
     });
   }
 
-  // Add method to get all classes for admin (if needed)
   async getAllForAdmin(): Promise<ApiListResponse<Class> | undefined> {
     return this.request<ApiListResponse<Class>>('/api/classes/admin', {
+      method: 'GET',
+    });
+  }
+
+  /**
+   * Fetch classes filtered by type (default 'FREE').
+   * Use getAll({ type: 'FREE' }) instead if you prefer a single entrypoint.
+   */
+  async getFreeClasses(
+    type: string = 'FREE'
+  ): Promise<ApiListResponse<Class> | undefined> {
+    const qs = `?type=${encodeURIComponent(type)}`;
+    return this.request<ApiListResponse<Class>>(`/api/classes/public${qs}`, {
       method: 'GET',
     });
   }

@@ -223,7 +223,7 @@ const ClassesPage = () => {
           close();
         }}
         title={selectedClass ? 'Edit Class' : 'Add Class'}
-        size="lg"
+        size="md"
       >
         <ClassForm
           initialValues={selectedClass}

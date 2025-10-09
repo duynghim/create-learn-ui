@@ -157,7 +157,7 @@ const SubjectPage = () => {
           close();
         }}
         title={selectedSubject ? 'Edit subject' : 'Add subject'}
-        size="md"
+        size="sm"
       >
         <SubjectForm
           initialValues={selectedSubject}

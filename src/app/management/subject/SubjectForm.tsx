@@ -76,6 +76,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({
         {...form.getInputProps('name')}
         required
         mb="md"
+        radius="md"
       />
 
       <Textarea
@@ -84,6 +85,7 @@ const SubjectForm: React.FC<SubjectFormProps> = ({
         {...form.getInputProps('description')}
         mb="md"
         minRows={3}
+        radius="md"
       />
 
       <FileInput
@@ -95,21 +97,20 @@ const SubjectForm: React.FC<SubjectFormProps> = ({
         leftSection={<IconUpload size={16} />}
         mb="md"
         clearable
+        radius="md"
       />
 
-      {selectedFile && (
-        <Box mb="md">
-          <Text size="sm" mb="xs">
-            Selected file: {selectedFile.name}
-          </Text>
-        </Box>
-      )}
-
       <Group justify="flex-end" mt="lg">
-        <Button variant="default" onClick={onCancel} disabled={isSubmitting}>
+        <Button
+          radius="md"
+          variant="subtle"
+          size="sm"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
-        <Button type="submit" loading={isSubmitting}>
+        <Button type="submit" loading={isSubmitting} variant="filled" size="sm">
           {initialValues ? 'Update' : 'Create'} Subject
         </Button>
       </Group>

@@ -63,6 +63,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         {...form.getInputProps('time')}
         required
         mb="md"
+        radius="md"
       />
 
       <Select
@@ -75,13 +76,20 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         disabled={isLoadingClassOptions}
         searchable
         clearable
+        radius="md"
       />
 
       <Group justify="flex-end" mt="lg">
-        <Button variant="default" onClick={onCancel} disabled={isSubmitting}>
+        <Button
+          size="sm"
+          radius="md"
+          variant="subtle"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
-        <Button type="submit" loading={isSubmitting}>
+        <Button size="sm" radius="md" type="submit" loading={isSubmitting}>
           {initialValues ? 'Update' : 'Create'} Schedule
         </Button>
       </Group>
