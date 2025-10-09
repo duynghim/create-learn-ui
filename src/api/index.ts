@@ -5,3 +5,4 @@ export { gradeApiClient } from './gradeApi';
 export { subjectApiClient } from './subjectApi';
 export { scheduleApiClient } from './scheduleApi';
 export { classApiClient } from './classApi';
+export { consultationApiClient } from './consultationApi';

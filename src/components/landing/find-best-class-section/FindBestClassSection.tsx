@@ -4,17 +4,19 @@ import {
   Paper,
   Text,
   Stack,
-  Select,
-  MultiSelect,
+  TextInput,
+  Textarea,
   Button,
   Badge,
   Grid,
   Divider,
   Container,
+  Alert,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import GradientBox from '@/components/gradient-box/GradientBox';
+import { useConsultationQuery } from '@/hooks';
 import classes from './FindBestClassSection.module.css';
 
 interface ClassCardTypeProps {
@@ -25,32 +27,32 @@ interface ClassCardTypeProps {
   titleButton: string;
 }
 
-interface FormValues {
-  gradeLevel: string;
-  fiftyPlusHours: string;
-  twentyToFiftyHours: string;
-  fiveToTwentyHours: string;
-  areasOfInterest: string[];
+interface ConsultationFormValues {
+  customerName: string;
+  phoneNumber: string;
+  email: string;
+  content: string;
 }
 
-// Extracted constants
-const GRADE_LEVEL_OPTIONS = ['React', 'Angular', 'Vue', 'Svelte'];
-const EXPERIENCE_OPTIONS = ['React', 'Angular', 'Vue', 'Svelte'];
-const INTEREST_OPTIONS = ['React', 'Angular', 'Vue', 'Svelte'];
-
-const FORM_INITIAL_VALUES: FormValues = {
-  gradeLevel: '',
-  fiftyPlusHours: '',
-  twentyToFiftyHours: '',
-  fiveToTwentyHours: '',
-  areasOfInterest: [],
+const FORM_INITIAL_VALUES: ConsultationFormValues = {
+  customerName: '',
+  phoneNumber: '',
+  email: '',
+  content: '',
 };
 
 const FORM_VALIDATION = {
-  gradeLevel: (value: string) => (value ? null : 'Grade level is required'),
+  customerName: (value: string) => (value ? null : 'Customer name is required'),
+  phoneNumber: (value: string) => (value ? null : 'Phone number is required'),
+  email: (value: string) => {
+    if (!value) return 'Email is required';
+    if (!/^\S+@\S+\.\S+$/.test(value)) return 'Invalid email format';
+    return null;
+  },
+  content: (value: string) => (value ? null : 'Content is required'),
 };
 
-// Extracted mock data function
+// Mock data function for recommended classes (unchanged)
 const getMockRecommendedClasses = async (): Promise<ClassCardTypeProps[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1500));
   return [
@@ -91,8 +93,7 @@ const RecommendedClassesList = ({
   return (
     <Container fluid mt={24}>
       <Text fz="1.25rem" fw={500}>
-        Here are the classes recommended based on your selection of interests
-        and experiences
+        Here are the classes recommended based on your consultation request
       </Text>
       <Stack gap={24} mt={16}>
         {classes.map((classItem) => (
@@ -132,30 +133,50 @@ const FindBestClassSection = () => {
     ClassCardTypeProps[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const { createConsultation } = useConsultationQuery();
 
   const form = useForm({
     initialValues: FORM_INITIAL_VALUES,
     validate: FORM_VALIDATION,
   });
 
-  const handleSubmit = async (values: FormValues) => {
-    console.log('Form submitted:', values);
+  const handleSubmit = async (values: ConsultationFormValues) => {
+    console.log('Consultation form submitted:', values);
     setIsLoading(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+
     try {
+      // Create consultation
+      await createConsultation({
+        customerName: values.customerName,
+        phoneNumber: values.phoneNumber,
+        email: values.email,
+        content: values.content,
+      });
+
+      setSuccessMessage('Consultation request submitted successfully! We will contact you soon.');
+      
+      // Show recommended classes after successful submission
       const classes = await getMockRecommendedClasses();
       setRecommendedClasses(classes);
+      
+      // Reset form
+      form.reset();
     } catch (error) {
-      console.error('Error fetching recommended classes:', error);
+      console.error('Error submitting consultation:', error);
+      setErrorMessage('Failed to submit consultation request. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const selectProps = {
+  const inputProps = {
+    radius: 'md' as const,
     classNames: { input: classes.input },
-    comboboxProps: {
-      transitionProps: { transition: 'pop' as const, duration: 200 },
-    },
   };
 
   return (
@@ -165,11 +186,10 @@ const FindBestClassSection = () => {
         ta="center"
         fw={500}
       >
-        Find the Best Classes for Your Child
+        Request a Free Consultation
       </Text>
       <Text ta="center" fw={400} fz="1rem">
-        Tell us about your child&#39;s learning experience and interests to
-        receive personalized class recommendations
+        Tell us about your learning needs and we'll help you find the perfect classes for your child
       </Text>
       <Paper
         maw={1152}
@@ -177,6 +197,18 @@ const FindBestClassSection = () => {
         p={32}
         mt={40}
       >
+        {successMessage && (
+          <Alert variant="light" color="green" mb="md">
+            {successMessage}
+          </Alert>
+        )}
+        
+        {errorMessage && (
+          <Alert variant="light" color="red" mb="md">
+            {errorMessage}
+          </Alert>
+        )}
+
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Flex
             align="center"
@@ -185,71 +217,58 @@ const FindBestClassSection = () => {
           >
             <Image
               src="https://cdn.create-learn.us/next-image/create-learn-prod/strapi-studio/Class_Recommendation_Widge_3321183a76.png?width=640"
-              alt="Form Image"
+              alt="Consultation Form Image"
               w={254}
             />
-            <Stack gap={16}>
-              <Select
-                {...selectProps}
+            <Stack gap={16} flex={1}>
+              <TextInput
+                {...inputProps}
                 withAsterisk
-                label="Student's Grade Level"
-                data={GRADE_LEVEL_OPTIONS}
-                {...form.getInputProps('gradeLevel')}
+                label="Full Name"
+                placeholder="Enter your full name"
+                {...form.getInputProps('customerName')}
               />
-              <Stack gap={0}>
-                <Text fz="1rem" fw={700}>
-                  Experiences
-                </Text>
-                <Text fz="0.875rem" fw={500} c="rgba(0, 0, 0, 0.6)">
-                  Select topics your child has learned based on the time spent
-                  on them
-                </Text>
-              </Stack>
-              <Select
-                {...selectProps}
+
+              <TextInput
+                {...inputProps}
                 withAsterisk
-                label="50+ Hours of Learning"
-                data={EXPERIENCE_OPTIONS}
-                {...form.getInputProps('fiftyPlusHours')}
+                label="Phone Number"
+                placeholder="Enter your phone number"
+                {...form.getInputProps('phoneNumber')}
               />
-              <Select
-                {...selectProps}
-                label="20-50 Hours of Learning"
-                data={EXPERIENCE_OPTIONS}
-                {...form.getInputProps('twentyToFiftyHours')}
+
+              <TextInput
+                {...inputProps}
+                withAsterisk
+                label="Email Address"
+                placeholder="Enter your email address"
+                type="email"
+                {...form.getInputProps('email')}
               />
-              <Select
-                {...selectProps}
-                label="5-20 Hours of Learning"
-                data={EXPERIENCE_OPTIONS}
-                {...form.getInputProps('fiveToTwentyHours')}
+
+              <Textarea
+                {...inputProps}
+                withAsterisk
+                label="Tell us about your learning needs"
+                placeholder="Describe what type of classes you're looking for, your child's age, interests, experience level, or any specific questions you have..."
+                minRows={4}
+                {...form.getInputProps('content')}
               />
-              <Text fz="1rem" fw={700}>
-                Areas of Interest
-              </Text>
-              <Stack gap={0}>
-                <MultiSelect
-                  {...selectProps}
-                  clearable
-                  data={INTEREST_OPTIONS}
-                  {...form.getInputProps('areasOfInterest')}
-                />
-                <Text fz="0.75rem" fw={400} c="rgba(0, 0, 0, 0.6)">
-                  Select up to 3 subjects your child is interested in learning
-                </Text>
-              </Stack>
+
               <Button
                 w={232}
                 type="submit"
-                disabled={!form.values.gradeLevel || isLoading}
+                disabled={isLoading}
                 loading={isLoading}
+                radius="md"
               >
-                Find Recommended Classes
+                Request Free Consultation
               </Button>
             </Stack>
           </Flex>
         </form>
-        {!isLoading && <RecommendedClassesList classes={recommendedClasses} />}
+        
+        {/* {!isLoading && <RecommendedClassesList classes={recommendedClasses} />} */}
       </Paper>
     </GradientBox>
   );

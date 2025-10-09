@@ -66,6 +66,13 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     href: '/management/schedule',
     description: 'Manage Schedule',
   },
+   {
+    id: 'consultation',
+    label: 'Consultation',
+    icon: IconCalendar,
+    href: '/management/consultation',
+    description: 'Manage Consultation',
+  },
 ];
 
 interface SidebarProps {

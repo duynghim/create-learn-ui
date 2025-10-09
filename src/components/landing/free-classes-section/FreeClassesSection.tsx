@@ -28,13 +28,8 @@ const FreeClassesSection = () => {
     let cancelled = false;
     (async () => {
       try {
-        const resp = await classApiClient.getFreeClasses(); // default FREE
-        const list =
-          (resp as any)?.items ??
-          (resp as any)?.data ??
-          (resp as any)?.content ??
-          [];
-        if (!cancelled && Array.isArray(list)) setFreeClasses(list as Class[]);
+        const resp = await classApiClient.getFreeClasses();
+        setFreeClasses(resp.data.data);
       } catch {
         if (!cancelled) setFreeClasses([]);
       }
