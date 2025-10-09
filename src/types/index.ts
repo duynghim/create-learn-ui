@@ -28,3 +28,4 @@ export * from './subbject.models';
 export * from './schedule.models';
 export * from './class.models';
 export * from './consultation.models';
+export * from './news.model';

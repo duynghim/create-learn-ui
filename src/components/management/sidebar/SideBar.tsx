@@ -18,6 +18,7 @@ import {
   IconChevronLeft,
   IconChalkboardTeacher,
   IconCalendar,
+  IconNews
 } from '@tabler/icons-react';
 import classes from './Sidebar.module.css';
 import React from 'react';
@@ -72,6 +73,13 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     icon: IconCalendar,
     href: '/management/consultation',
     description: 'Manage Consultation',
+  },
+    {
+    id: 'news',
+    label: 'News',
+    icon: IconNews, 
+    href: '/management/news',
+    description: 'Manage News Articles',
   },
 ];
 
