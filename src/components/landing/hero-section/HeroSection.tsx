@@ -39,7 +39,7 @@ const RESPONSIVE_STYLES = {
 } as const;
 
 const ExpertIcons = ({ isMobile = false }: { isMobile?: boolean }) => (
-  <Flex align="center" gap="xs">
+  <Flex align="center" gap="lg">
     <GoogleIcon
       height={isMobile ? undefined : '36px'}
       className={isMobile ? styles.iconResponsive : undefined}
