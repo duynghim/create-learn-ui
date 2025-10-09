@@ -5,6 +5,7 @@ export interface Consultation extends BaseEntity {
   phoneNumber: string;
   email: string;
   content: string;
+  status: string;
 }
 
 export interface CreateConsultationRequest {

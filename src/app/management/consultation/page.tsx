@@ -83,6 +83,15 @@ const ConsultationsPage = () => {
           </Text>
         ),
       },
+      {
+        header: 'Status',
+        key: 'status',
+        render: (consultation) => (
+          <Text size="sm" lineClamp={2} maw={300}>
+            {consultation.status}
+          </Text>
+        ),
+      },
     ],
     []
   );
