@@ -55,17 +55,11 @@ const GradeForm: React.FC<GradeFormProps> = ({
     try {
       setIsSubmitting(true);
 
-      console.log('Form values:', values);
-      console.log('Selected file:', selectedFile);
-      console.log('File from form:', values.icon);
-
       const submitData = {
         name: values.name,
         description: values.description || undefined,
         icon: selectedFile || values.icon || undefined,
       };
-
-      console.log('Submit data:', submitData);
 
       await onSubmit(submitData);
     } catch (error) {

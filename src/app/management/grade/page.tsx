@@ -51,8 +51,8 @@ const GradesPage = () => {
             <Image
               src={`data:image/png;base64,${grade.iconBase64}`}
               alt={`${grade.name} icon`}
-              width={32}
-              height={32}
+              maw={30}
+              mah={30}
               fit="contain"
             />
           ) : (

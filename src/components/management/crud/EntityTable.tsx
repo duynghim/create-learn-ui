@@ -66,7 +66,7 @@ export function EntityTable<T>({
                 aria-label="Edit row"
                 onClick={() => onEdit?.(row)}
               >
-                <IconEdit size={18} />
+                <IconEdit size={22} />
               </ActionIcon>
             )}
             {onDelete && (
@@ -76,7 +76,7 @@ export function EntityTable<T>({
                 aria-label="Delete row"
                 onClick={() => onDelete?.(row)}
               >
-                <IconTrash size={18} />
+                <IconTrash size={22} />
               </ActionIcon>
             )}
           </Group>

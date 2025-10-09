@@ -47,8 +47,8 @@ function extractMessage(data: unknown): string | undefined {
 /**
  * fetchJSON wraps fetch with:
  * - timeout via AbortController
- * - default headers (Content-Type: application/json)
  * - unified error handling returning JSON when possible
+ * - NO default Content-Type (let browser set appropriate headers)
  */
 export async function fetchJSON<T = unknown>(
   url: string,
@@ -65,7 +65,7 @@ export async function fetchJSON<T = unknown>(
       ...init,
       signal: controller.signal,
       headers: {
-        'Content-Type': 'application/json',
+        // Remove default Content-Type - let browser set it automatically
         ...headers,
       },
       credentials: init.credentials ?? 'include',
