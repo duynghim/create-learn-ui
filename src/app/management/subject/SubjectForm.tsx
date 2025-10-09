@@ -12,11 +12,11 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUpload } from '@tabler/icons-react';
-import type { Grade } from '@/types';
+import type { Subject } from '@/types';
 
-interface GradeFormProps {
-  initialValues?: Grade | null;
-  onSubmit: (data: Partial<Grade> & { icon?: File }) => Promise<void>;
+interface SubjectFormProps {
+  initialValues?: Subject | null;
+  onSubmit: (data: Partial<Subject> & { icon?: File }) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -26,7 +26,7 @@ interface FormValues {
   icon?: File | null;
 }
 
-const GradeForm: React.FC<GradeFormProps> = ({
+const SubjectForm: React.FC<SubjectFormProps> = ({
   initialValues,
   onSubmit,
   onCancel,
@@ -72,7 +72,7 @@ const GradeForm: React.FC<GradeFormProps> = ({
     <Box component="form" onSubmit={form.onSubmit(handleSubmit)}>
       <TextInput
         label="Name"
-        placeholder="Enter grade name"
+        placeholder="Enter subject name"
         {...form.getInputProps('name')}
         required
         mb="md"
@@ -80,7 +80,7 @@ const GradeForm: React.FC<GradeFormProps> = ({
 
       <Textarea
         label="Description"
-        placeholder="Enter grade description"
+        placeholder="Enter subject description"
         {...form.getInputProps('description')}
         mb="md"
         minRows={3}
@@ -88,7 +88,7 @@ const GradeForm: React.FC<GradeFormProps> = ({
 
       <FileInput
         label="Icon"
-        placeholder="Upload grade icon"
+        placeholder="Upload subject icon"
         accept="image/*"
         value={selectedFile}
         onChange={handleFileChange}
@@ -110,11 +110,11 @@ const GradeForm: React.FC<GradeFormProps> = ({
           Cancel
         </Button>
         <Button type="submit" loading={isSubmitting}>
-          {initialValues ? 'Update' : 'Create'} Grade
+          {initialValues ? 'Update' : 'Create'} Subject
         </Button>
       </Group>
     </Box>
   );
 };
 
-export default GradeForm;
+export default SubjectForm;

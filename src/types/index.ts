@@ -23,4 +23,6 @@ export type {
 
 export type { UserSectionProps, MobileDrawerProps } from './components.models';
 
-export * from './grade.models'
+export * from './grade.models';
+
+export * from './subbject.models';

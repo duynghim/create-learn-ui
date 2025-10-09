@@ -93,7 +93,7 @@ export default function TeacherForm({
           {...form.getInputProps('introduction')}
         />
 
-        <Group justify="flex-end" mt="sm">
+        <Group justify="flex-end" mt="lg">
           <Button
             variant="default"
             onClick={onCancel}
