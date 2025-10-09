@@ -28,16 +28,13 @@ const ClassCard: React.FC<ClassCardProps> = ({
       withBorder
     >
       <Card.Section p={5}>
-        <Image src={imageUrl} alt={title} height={165} radius="md" />
+        <Image src={imageUrl} alt={title} mah={165} height={165} radius="md" />
       </Card.Section>
 
       <Flex justify="space-between" direction="column" h="100%">
         <Stack gap={2}>
           <Text fz="1.25rem" fw={500}>
             {title}
-          </Text>
-          <Text fz="1rem" c="rgba(0,0,0,0.6)" fw={500}>
-            {grade}
           </Text>
           <Text lineClamp={3} mt={5}>
             {description}
