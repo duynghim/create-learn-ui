@@ -25,7 +25,7 @@ const PopularClassSection = () => {
             key={classItem.id}
             imageUrl={classItem.image}
             title={classItem.brief}
-            grade={classItem.grades?.map((g) => g.name).join(', ') || ''}
+            grade={''}
             description={classItem.description}
             titleButton={POPULAR_CLASSES_BUTTON_TEXT}
           />

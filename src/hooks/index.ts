@@ -4,3 +4,4 @@ export * from './useSubjectQuery';
 export * from './useScheduleQuery';
 export * from './useClassQuery';
 export * from './useConsultationQuery';
+export * from './useNewsQuery';
