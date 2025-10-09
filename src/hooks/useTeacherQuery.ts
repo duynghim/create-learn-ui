@@ -5,12 +5,12 @@ import type {
   CreateTeacherRequest,
   UpdateTeacherRequest,
   TeacherFilters,
-  PaginationParams,
+  ApiFilters
 } from '@/types';
 
 const TEACHER_QUERY_KEY = ['teachers'] as const;
 
-export const useTeacherQuery = (params: PaginationParams = {}) => {
+export const useTeacherQuery = (params: ApiFilters = {}) => {
   const queryClient = useQueryClient();
   const { page = 0, size = 10, search } = params;
 

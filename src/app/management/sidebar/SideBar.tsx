@@ -37,11 +37,11 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     description: 'Overview and analytics',
   },
   {
-    id: 'accounts',
-    label: 'Accounts',
+    id: 'grades',
+    label: 'Grades',
     icon: IconUsers,
-    href: '/management/accounts',
-    description: 'Manage user accounts',
+    href: '/management/grade',
+    description: 'Manage user grades',
   },
   {
     id: 'classes',

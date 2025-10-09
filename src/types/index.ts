@@ -5,7 +5,6 @@ export type {
   ApiSingleResponse,
   ApiFilters,
   ApiClient,
-  PaginationParams,
 } from './api.modes';
 
 export type {
@@ -23,3 +22,5 @@ export type {
 } from './auth.model';
 
 export type { UserSectionProps, MobileDrawerProps } from './components.models';
+
+export * from './grade.models'
