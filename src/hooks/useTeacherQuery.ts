@@ -2,29 +2,38 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { teacherApiClient } from '@/api';
 import type {
-  Teacher,
   CreateTeacherRequest,
   UpdateTeacherRequest,
+  TeacherFilters,
+  PaginationParams,
 } from '@/types';
 
 const TEACHER_QUERY_KEY = ['teachers'] as const;
 
-export const useTeacherQuery = () => {
+export const useTeacherQuery = (params: PaginationParams = {}) => {
   const queryClient = useQueryClient();
+  const { page = 0, size = 10, search } = params;
 
-  // 🧠 Always returns { data: Teacher[] }
   const {
-    data: teachers = [],
+    data: response,
     isLoading,
     error,
   } = useQuery({
-    queryKey: TEACHER_QUERY_KEY,
-    queryFn: async (): Promise<Teacher[]> => {
-      const res = await teacherApiClient.getAll();
-      return res.data ?? [];
+    queryKey: [...TEACHER_QUERY_KEY, { page, size, search }],
+    queryFn: async () => {
+      const filters: TeacherFilters = {
+        page,
+        size,
+        ...(search && { search }),
+      };
+      return await teacherApiClient.getAll(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  const teachers = response?.data?.data ?? [];
+  const totalElements = response?.data?.totalElements ?? 0;
+  const totalPages = response?.data?.totalPages ?? 0;
 
   const createMutation = useMutation({
     mutationFn: (data: CreateTeacherRequest) => teacherApiClient.create(data),
@@ -50,8 +59,10 @@ export const useTeacherQuery = () => {
 
   return {
     teachers,
+    totalElements,
+    totalPages,
     isLoading,
-    error: error ? (error as Error).message : null,
+    error: error ? (error).message : null,
     createTeacher: createMutation.mutateAsync,
     updateTeacher: (id: string, data: UpdateTeacherRequest) =>
       updateMutation.mutateAsync({ id, data }),

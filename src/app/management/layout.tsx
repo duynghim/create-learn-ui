@@ -22,7 +22,7 @@ const ManagementLayout = ({ children }: ManagementLayoutProps) => {
 
   return (
     <ProtectedRoute>
-      <Flex>
+      <Flex w="100%">
         {/* Desktop Sidebar */}
         <Box visibleFrom="md">
           <Sidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
@@ -59,7 +59,7 @@ const ManagementLayout = ({ children }: ManagementLayoutProps) => {
               pos="fixed"
               top={0}
               left={0}
-              h="100vh"
+              h="100%"
               style={{ zIndex: 1001 }}
               hiddenFrom="md"
             >
@@ -69,11 +69,9 @@ const ManagementLayout = ({ children }: ManagementLayoutProps) => {
         )}
 
         {/* Main Content */}
-        <Box style={{ flex: 1, minHeight: '100vh' }}>
-          <Container fluid p="xl">
-            {children}
-          </Container>
-        </Box>
+        <Container w='100%' fluid p="xl">
+          {children}
+        </Container>
       </Flex>
     </ProtectedRoute>
   );

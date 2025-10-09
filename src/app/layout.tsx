@@ -34,7 +34,10 @@ export default function RootLayout({
       <body className={roboto.className}>
         <MantineProvider theme={theme}>
           <QueryProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <Header />
+              {children}
+            </AuthProvider>
           </QueryProvider>
         </MantineProvider>
       </body>

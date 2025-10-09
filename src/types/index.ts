@@ -5,6 +5,7 @@ export type {
   ApiSingleResponse,
   ApiFilters,
   ApiClient,
+  PaginationParams,
 } from './api.modes';
 
 export type {

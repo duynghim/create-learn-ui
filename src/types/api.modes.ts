@@ -15,10 +15,12 @@ export interface ApiListResponse<T> {
   message: string;
   timestamp: string;
   data: {
-    items: T[];
-    total: number;
-    page: number;
-    limit: number;
+    data: T[];
+    pageNumber: number;
+    pageSize: number;
+    totalElements: number;
+    totalPages: number;
+    last: boolean;
   };
 }
 
@@ -31,7 +33,7 @@ export interface ApiSingleResponse<T> {
 
 export interface ApiFilters {
   page?: number;
-  limit?: number;
+  size?: number;
   search?: string;
   [key: string]: string | number | undefined;
 }

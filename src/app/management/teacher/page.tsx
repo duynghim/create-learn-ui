@@ -1,41 +1,68 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import {
-  Center,
-  Table,
-  TableData,
-  Alert,
-  Loader,
-  ActionIcon,
-  Group,
-  Modal,
-} from '@mantine/core';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { Center, Alert, Loader, Container } from '@mantine/core';
 import { useTeacherQuery } from '@/hooks';
 import type {
   Teacher,
   CreateTeacherRequest,
   UpdateTeacherRequest,
 } from '@/types';
+import { capitalizeFirstLetter } from '@/utils';
 import TeacherForm from './TeacherForm';
 
+import {
+  PaginationBar,
+  FormModal,
+  DeleteConfirmModal,
+  ColumnDef,
+  EntityTable,
+  AddNewButton,
+} from '@/components';
+
+const PAGE_SIZE = 10;
+
 const TeachersPage = () => {
+  const [page, setPage] = useState(0);
   const {
     teachers,
+    totalElements,
+    totalPages,
     isLoading,
     error,
     createTeacher,
     updateTeacher,
     deleteTeacher,
-  } = useTeacherQuery();
+  } = useTeacherQuery({ page, size: PAGE_SIZE });
 
   const [opened, { open, close }] = useDisclosure(false);
+  const [
+    deleteModalOpened,
+    { open: openDeleteModal, close: closeDeleteModal },
+  ] = useDisclosure(false);
+
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [teacherToDelete, setTeacherToDelete] = useState<Teacher | null>(null);
+
+  const columns: ColumnDef<Teacher>[] = useMemo(
+    () => [
+      { header: 'First Name', key: 'firstName' },
+      { header: 'Last Name', key: 'lastName' },
+      { header: 'Introduction', key: 'introduction' },
+      {
+        header: 'Gender',
+        key: 'gender',
+        render: (t) => capitalizeFirstLetter(t.gender),
+      },
+    ],
+    []
+  );
+
+  const caption = `Showing ${teachers.length} of total ${totalElements} items.`;
 
   const handleEdit = useCallback(
-    (teacherId: string) => {
+    (teacherId: string | number) => {
       const t =
         teachers.find((x) => String(x.id) === String(teacherId)) ?? null;
       setSelectedTeacher(t);
@@ -44,16 +71,31 @@ const TeachersPage = () => {
     [teachers, open]
   );
 
-  const handleDelete = useCallback(
-    async (teacherId: string) => {
-      try {
-        await deleteTeacher(teacherId);
-      } catch (err) {
-        console.error('Failed to delete teacher:', err);
-      }
+  const handleDeleteClick = useCallback(
+    (teacherId: string | number) => {
+      const t =
+        teachers.find((x) => String(x.id) === String(teacherId)) ?? null;
+      setTeacherToDelete(t);
+      openDeleteModal();
     },
-    [deleteTeacher]
+    [teachers, openDeleteModal]
   );
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!teacherToDelete) return;
+    try {
+      await deleteTeacher(String(teacherToDelete.id));
+      closeDeleteModal();
+      setTeacherToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete teacher:', err);
+    }
+  }, [deleteTeacher, teacherToDelete, closeDeleteModal]);
+
+  const handleAddNew = useCallback(() => {
+    setSelectedTeacher(null);
+    open();
+  }, [open]);
 
   const handleFormSubmit = useCallback(
     async (data: Partial<Teacher>) => {
@@ -62,51 +104,20 @@ const TeachersPage = () => {
           ...selectedTeacher,
           ...data,
         } as UpdateTeacherRequest;
-
         await updateTeacher(String(selectedTeacher.id), payload);
       } else {
         const payload: CreateTeacherRequest = data as CreateTeacherRequest;
         await createTeacher(payload);
       }
-
       setSelectedTeacher(null);
       close();
     },
     [selectedTeacher, updateTeacher, createTeacher, close]
   );
 
-  const tableData: TableData = {
-    caption: `${teachers.length} teachers`,
-    head: ['First Name', 'Last Name', 'Introduction', 'Gender', 'Actions'],
-    body: teachers.map((teacher) => [
-      teacher.firstName,
-      teacher.lastName,
-      teacher.introduction,
-      teacher.gender,
-      <Group gap="xs" key={teacher.id}>
-        <ActionIcon
-          variant="subtle"
-          color="blue"
-          onClick={() => handleEdit(teacher.id)}
-          aria-label={`Edit ${teacher.firstName} ${teacher.lastName}`}
-        >
-          <IconEdit size={16} />
-        </ActionIcon>
-        <ActionIcon
-          variant="subtle"
-          color="red"
-          onClick={() => handleDelete(teacher.id)}
-          aria-label={`Delete ${teacher.firstName} ${teacher.lastName}`}
-        >
-          <IconTrash size={16} />
-        </ActionIcon>
-      </Group>,
-    ]),
-  };
-
   if (isLoading) {
     return (
-      <Center>
+      <Center h="100%">
         <Loader size="lg" />
       </Center>
     );
@@ -121,15 +132,16 @@ const TeachersPage = () => {
   }
 
   return (
-    <>
-      <Modal
+    <Container fluid p={0} maw="100%">
+      <AddNewButton label="Add New Teacher" onClick={handleAddNew} />
+
+      <FormModal
         opened={opened}
-        onClose={() => {
+        onCloseAction={() => {
           setSelectedTeacher(null);
           close();
         }}
         title={selectedTeacher ? 'Edit teacher' : 'Add teacher'}
-        centered
         size="auto"
       >
         <TeacherForm
@@ -140,12 +152,39 @@ const TeachersPage = () => {
           }}
           onSubmit={handleFormSubmit}
         />
-      </Modal>
+      </FormModal>
 
-      <Table.ScrollContainer minWidth={500}>
-        <Table stickyHeader data={tableData} />
-      </Table.ScrollContainer>
-    </>
+      <DeleteConfirmModal
+        opened={deleteModalOpened}
+        onCancel={() => {
+          setTeacherToDelete(null);
+          closeDeleteModal();
+        }}
+        onConfirm={handleConfirmDelete}
+        entityLabel={
+          teacherToDelete
+            ? `${teacherToDelete.firstName} ${teacherToDelete.lastName}`
+            : undefined
+        }
+      />
+
+      <EntityTable<Teacher>
+        data={teachers}
+        columns={columns}
+        caption={caption}
+        getRowId={(t) => String(t.id)}
+        onEdit={(row) => handleEdit(row.id)}
+        onDelete={(row) => handleDeleteClick(row.id)}
+        stickyHeader
+        minWidth={500}
+      />
+
+      <PaginationBar
+        totalPages={totalPages}
+        pageZeroBased={page}
+        onChangeZeroBased={setPage}
+      />
+    </Container>
   );
 };
 

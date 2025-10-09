@@ -17,12 +17,12 @@ import type {
 } from '@/types';
 
 interface TeacherFormProps {
-  initialValues?: Teacher | null;
-  loading?: boolean;
-  onSubmit: (
+  readonly initialValues?: Teacher | null;
+  readonly loading?: boolean;
+  readonly onSubmit: (
     data: CreateTeacherRequest | UpdateTeacherRequest
   ) => Promise<void>;
-  onCancel: () => void;
+  readonly onCancel: () => void;
 }
 
 const GENDER_OPTIONS = [
@@ -60,18 +60,20 @@ export default function TeacherForm({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Stack spacing="sm">
+      <Stack gap="sm">
         <Group grow>
           <TextInput
             label="First name"
             placeholder="First name"
             required
+            radius="md"
             {...form.getInputProps('firstName')}
           />
           <TextInput
             label="Last name"
             placeholder="Last name"
             required
+            radius="md"
             {...form.getInputProps('lastName')}
           />
         </Group>
@@ -79,6 +81,7 @@ export default function TeacherForm({
         <Select
           label="Gender"
           data={GENDER_OPTIONS}
+          radius="md"
           {...form.getInputProps('gender')}
         />
 
@@ -86,14 +89,25 @@ export default function TeacherForm({
           label="Introduction"
           placeholder="Short intro about the teacher"
           minRows={3}
+          radius="md"
           {...form.getInputProps('introduction')}
         />
 
-        <Group position="right" mt="sm">
-          <Button variant="default" onClick={onCancel} disabled={loading}>
+        <Group justify="flex-end" mt="sm">
+          <Button
+            variant="default"
+            onClick={onCancel}
+            disabled={loading}
+            radius="md"
+          >
             Cancel
           </Button>
-          <Button type="submit" color="fresh-blue" loading={loading}>
+          <Button
+            type="submit"
+            color="fresh-blue"
+            loading={loading}
+            radius="md"
+          >
             Save
           </Button>
         </Group>

@@ -1,4 +1,4 @@
-import type { BaseEntity } from './api.modes';
+import type { ApiFilters, BaseEntity } from './api.modes';
 
 export interface Teacher extends BaseEntity {
   firstName: string;
@@ -20,9 +20,6 @@ export interface UpdateTeacherRequest extends Partial<CreateTeacherRequest> {
   id?: string;
 }
 
-export interface TeacherFilters {
-  page?: number;
-  limit?: number;
-  search?: string;
+export interface TeacherFilters extends ApiFilters {
   gender?: 'MALE' | 'FEMALE';
 }
