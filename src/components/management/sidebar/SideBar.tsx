@@ -59,11 +59,11 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     description: 'Manage teaching staff',
   },
   {
-    id: 'consultants',
-    label: 'Consultants',
+    id: 'class',
+    label: 'Classes',
     icon: IconUsers,
-    href: '/management/consultants',
-    description: 'Manage consultants',
+    href: '/management/class',
+    description: 'Manage Classes',
   },
 ];
 
