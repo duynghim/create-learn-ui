@@ -8,7 +8,6 @@ import {
   Group,
   FileInput,
   Box,
-  Text,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUpload } from '@tabler/icons-react';
