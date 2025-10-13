@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { Center, Alert, Loader, Container, Badge, Text } from '@mantine/core';
-import { useNewsQuery } from '@/hooks';
+import { useNewsQuery, useNotification } from '@/hooks';
 import type { News, CreateNewsRequest, UpdateNewsRequest } from '@/types';
 import NewsForm from './NewsForm';
 
@@ -20,6 +20,7 @@ const PAGE_SIZE = 10;
 
 const NewsManagementPage = () => {
   const [page, setPage] = useState(0);
+  const { showSuccess, showError } = useNotification();
 
   const {
     news,
@@ -111,12 +112,16 @@ const NewsManagementPage = () => {
     if (!newsToDelete) return;
     try {
       await deleteNews(String(newsToDelete.id));
+      showSuccess(
+        `News article "${newsToDelete.title}" was deleted successfully`
+      );
       closeDeleteModal();
       setNewsToDelete(null);
     } catch (err) {
       console.error('Failed to delete news:', err);
+      showError('Failed to delete news article. Please try again.');
     }
-  }, [deleteNews, newsToDelete, closeDeleteModal]);
+  }, [deleteNews, newsToDelete, closeDeleteModal, showSuccess, showError]);
 
   const handleAddNew = useCallback(() => {
     setSelectedNews(null);
@@ -125,30 +130,37 @@ const NewsManagementPage = () => {
 
   const handleFormSubmit = useCallback(
     async (data: Partial<News>) => {
-      if (selectedNews) {
-        const payload: UpdateNewsRequest = {
-          id: selectedNews.id,
-          title: data.title!,
-          brief: data.brief!,
-          content: data.content!,
-          isDisplay: data.isDisplay!,
-          image: data.image!,
-        };
-        await updateNews(String(selectedNews.id), payload);
-      } else {
-        const payload: CreateNewsRequest = {
-          title: data.title!,
-          brief: data.brief!,
-          content: data.content!,
-          isDisplay: data.isDisplay!,
-          image: data.image!,
-        };
-        await createNews(payload);
+      try {
+        if (selectedNews) {
+          const payload: UpdateNewsRequest = {
+            id: selectedNews.id,
+            title: data.title!,
+            brief: data.brief!,
+            content: data.content!,
+            isDisplay: data.isDisplay!,
+            image: data.image!,
+          };
+          await updateNews(String(selectedNews.id), payload);
+          showSuccess(`News article "${data.title}" was updated successfully`);
+        } else {
+          const payload: CreateNewsRequest = {
+            title: data.title!,
+            brief: data.brief!,
+            content: data.content!,
+            isDisplay: data.isDisplay!,
+            image: data.image!,
+          };
+          await createNews(payload);
+          showSuccess(`News article "${data.title}" was created successfully`);
+        }
+        setSelectedNews(null);
+        close();
+      } catch (err) {
+        console.error('Failed to save news:', err);
+        showError('Failed to save news article. Please try again.');
       }
-      setSelectedNews(null);
-      close();
     },
-    [selectedNews, updateNews, createNews, close]
+    [selectedNews, updateNews, createNews, close, showSuccess, showError]
   );
 
   if (isLoading) {

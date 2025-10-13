@@ -9,3 +9,5 @@ export { default as PaginationBar } from './management/crud/PaginationBar';
 export { default as AddNewButton } from './management/crud/AddNewButton';
 export type { ColumnDef } from './management/crud/EntityTable';
 export { default as Sidebar } from './management/sidebar/SideBar';
+export { default as AutoNotification } from './auto-notification/AutoNotification'
+export { default as RichContentEditor} from './rich-text-editor/RichTextEditor'

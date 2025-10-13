@@ -4,7 +4,6 @@ import type {
   CreateNewsRequest,
   UpdateNewsRequest,
   ApiConfig,
-  ApiFilters,
   ApiListResponse,
 } from '@/types';
 
@@ -20,15 +19,7 @@ class NewsApiClient extends BaseApiClient<
 > {
   protected readonly endpoint = '/api/news';
 
- async getAll(
-    filters?: ClassApiFilters
-  ): Promise<ApiListResponse<Class> | undefined> {
-    const { buildQueryString } = await import('@/utils');
-    const qs = buildQueryString(
-      filters as
-        | Record<string, string | number | boolean | object | Date>
-        | undefined
-    );
+  async getAll(): Promise<ApiListResponse<Class> | undefined> {
     return this.request<ApiListResponse<Class>>(`/api/news/admin`, {
       method: 'GET',
     });

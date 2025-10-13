@@ -7,3 +7,4 @@ export { scheduleApiClient } from './scheduleApi';
 export { classApiClient } from './classApi';
 export { consultationApiClient } from './consultationApi';
 export { newsApiClient } from './newsApi';
+export { fileUploadApiClient } from './uploadImageApi';

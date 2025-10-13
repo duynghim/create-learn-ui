@@ -13,6 +13,8 @@ import { Roboto } from 'next/font/google';
 import { Header } from '@/components';
 import { AuthProvider } from '@/contexts';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { NotificationProvider } from '@/providers';
+import '@mantine/tiptap/styles.css';
 
 const roboto = Roboto({
   subsets: ['latin'],
@@ -35,8 +37,10 @@ export default function RootLayout({
         <MantineProvider theme={theme}>
           <QueryProvider>
             <AuthProvider>
-              <Header />
-              {children}
+              <NotificationProvider>
+                <Header />
+                {children}
+              </NotificationProvider>
             </AuthProvider>
           </QueryProvider>
         </MantineProvider>

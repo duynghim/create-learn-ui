@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   TextInput,
@@ -8,9 +8,16 @@ import {
   Group,
   Stack,
   Switch,
+  FileInput,
+  Image,
+  Alert,
+  Text,
 } from '@mantine/core';
+import { IconUpload } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
 import type { News } from '@/types';
+import { RichContentEditor } from '@/components';
+import { fileUploadApiClient } from '@/api';
 
 interface NewsFormProps {
   initialValues?: News | null;
@@ -23,7 +30,7 @@ interface FormValues {
   brief: string;
   content: string;
   isDisplay: boolean;
-  image: string;
+  image: string; // final URL
 }
 
 const NewsForm: React.FC<NewsFormProps> = ({
@@ -32,6 +39,10 @@ const NewsForm: React.FC<NewsFormProps> = ({
   onCancel,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -48,10 +59,50 @@ const NewsForm: React.FC<NewsFormProps> = ({
     },
   });
 
-  const handleSubmit = async (values: FormValues) => {
+  useEffect(() => {
+    if (selectedFile) {
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(form.values.image || '');
+    }
+  }, [selectedFile, form.values.image]);
+
+  const uploadImage = async (file: File): Promise<string> => {
+    setUploading(true);
+    setUploadError(null);
     try {
-      setIsSubmitting(true);
-      await onSubmit(values);
+      const res = await fileUploadApiClient.upload(file);
+      if (!res || res.status !== 200 || !res.data) {
+        throw new Error(res?.message || 'Upload failed');
+      }
+      return res.data;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Image upload failed';
+      setUploadError(msg);
+      throw e;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSubmit = async (values: FormValues) => {
+    setIsSubmitting(true);
+    try {
+      let imageUrl = values.image;
+
+      if (selectedFile) {
+        try {
+          imageUrl = await uploadImage(selectedFile);
+          form.setFieldValue('image', imageUrl);
+        } catch {
+          // uploadError already set
+          return;
+        }
+      }
+
+      await onSubmit({ ...values, image: imageUrl });
     } catch (error) {
       console.error('Form submission error:', error);
     } finally {
@@ -79,22 +130,41 @@ const NewsForm: React.FC<NewsFormProps> = ({
           {...form.getInputProps('brief')}
         />
 
-        <Textarea
-          radius="md"
-          withAsterisk
+        <RichContentEditor
           label="Content"
-          placeholder="Enter full content (HTML supported)"
-          minRows={8}
-          maxRows={15}
-          {...form.getInputProps('content')}
+          withAsterisk
+          value={form.values.content}
+          onChange={(html) => form.setFieldValue('content', html)}
+          minHeight={300}
+          placeholder="Write the full content here…"
         />
 
-        <TextInput
+        <FileInput
+          label="Image"
+          placeholder="Select image (optional)"
+          accept="image/*"
+          value={selectedFile}
+          onChange={(file) => {
+            setSelectedFile(file);
+            setUploadError(null);
+          }}
+          leftSection={<IconUpload size={16} />}
           radius="md"
-          label="Image URL"
-          placeholder="Enter image URL"
-          {...form.getInputProps('image')}
+          clearable
+          disabled={isSubmitting || uploading}
         />
+
+        {previewUrl ? (
+          <Image src={previewUrl} alt="Preview" maw={200} radius="md" />
+        ) : (
+          <Text>No Image</Text>
+        )}
+
+        {uploadError && (
+          <Alert color="red" variant="light" radius="md">
+            {uploadError}
+          </Alert>
+        )}
 
         <Switch
           label="Display this news"
@@ -108,11 +178,17 @@ const NewsForm: React.FC<NewsFormProps> = ({
             size="sm"
             variant="subtle"
             onClick={onCancel}
-            disabled={isSubmitting}
+            disabled={isSubmitting || uploading}
           >
             Cancel
           </Button>
-          <Button radius="md" size="sm" type="submit" loading={isSubmitting}>
+          <Button
+            radius="md"
+            size="sm"
+            type="submit"
+            loading={isSubmitting || uploading}
+            disabled={uploading}
+          >
             {initialValues ? 'Update' : 'Create'} News
           </Button>
         </Group>
