@@ -9,21 +9,26 @@ import type {
 
 const CONSULTATION_QUERY_KEY = ['consultations'] as const;
 
-export const useConsultationQuery = (params: ApiFilters = {}) => {
+interface ConsultationQueryParams extends ApiFilters {
+  sort?: string;
+}
+
+export const useConsultationQuery = (params: ConsultationQueryParams = {}) => {
   const queryClient = useQueryClient();
-  const { page = 0, size = 10, search } = params;
+  const { page = 0, size = 10, search, sort } = params;
 
   const {
     data: response,
     isLoading,
     error,
   } = useQuery({
-    queryKey: [...CONSULTATION_QUERY_KEY, { page, size, search }],
+    queryKey: [...CONSULTATION_QUERY_KEY, { page, size, search, sort }],
     queryFn: async () => {
       const filters: ConsultationApiFilters = {
         page,
         size,
         ...(search && { search }),
+        ...(sort && { sort }),
       };
       return await consultationApiClient.getAll(filters);
     },

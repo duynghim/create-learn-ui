@@ -10,6 +10,7 @@ import type {
   UpdateConsultationRequest,
 } from '@/types';
 import ConsultationForm from './ConsultationForm';
+import { format } from 'date-fns';
 
 import {
   FormModal,
@@ -24,6 +25,8 @@ const PAGE_SIZE = 10;
 
 const ConsultationsPage = () => {
   const [page, setPage] = useState(0);
+  const [sortKey, setSortKey] = useState<string | undefined>(undefined);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
 
   const {
     consultations,
@@ -34,7 +37,11 @@ const ConsultationsPage = () => {
     createConsultation,
     updateConsultation,
     deleteConsultation,
-  } = useConsultationQuery({ page, pageSize: PAGE_SIZE });
+  } = useConsultationQuery({ 
+    page, 
+    size: PAGE_SIZE,
+    sort: sortKey && sortDirection ? `${sortKey},${sortDirection.toUpperCase()}` : undefined
+  });
 
   const [opened, { open, close }] = useDisclosure(false);
   const [
@@ -87,8 +94,19 @@ const ConsultationsPage = () => {
         header: 'Status',
         key: 'status',
         render: (consultation) => (
-          <Text size="sm" lineClamp={2} maw={300}>
+          <Text size="sm" maw={140}>
             {consultation.status}
+          </Text>
+        ),
+      },
+      {
+        header: 'Created',
+        key: 'createdAt',
+        render: (consultation) => (
+          <Text size="sm" c="dimmed">
+            {consultation.createdAt
+              ? format(new Date(consultation.createdAt), 'yyyy-MM-dd HH:mm')
+              : '—'}
           </Text>
         ),
       },
@@ -100,6 +118,15 @@ const ConsultationsPage = () => {
     if (totalElements === 0) return 'No consultations found.';
     return `Showing ${consultations.length} of ${totalElements} consultations.`;
   }, [consultations.length, totalElements]);
+
+  const handleSort = useCallback(
+    (key: string, direction: 'asc' | 'desc' | null) => {
+      setSortKey(direction ? key : undefined);
+      setSortDirection(direction);
+      setPage(0); // Reset to first page when sorting changes
+    },
+    []
+  );
 
   const handleEdit = useCallback(
     (consultationId: string | number) => {
@@ -222,7 +249,11 @@ const ConsultationsPage = () => {
         onEdit={(row) => handleEdit(row.id)}
         onDelete={(row) => handleDeleteClick(row.id)}
         stickyHeader
-        minWidth={700}
+        minWidth={800}
+        sortableColumns={['status', 'createdAt']}
+        sortKey={sortKey}
+        sortDirection={sortDirection}
+        onSort={handleSort}
       />
 
       <PaginationBar

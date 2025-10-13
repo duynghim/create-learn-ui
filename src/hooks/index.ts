@@ -6,3 +6,4 @@ export * from './useClassQuery';
 export * from './useConsultationQuery';
 export * from './useNewsQuery';
 export * from './useNotification';
+export * from './useTableSort';

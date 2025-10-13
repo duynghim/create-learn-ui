@@ -1,4 +1,3 @@
-// src/types/api.types.ts
 export interface ApiConfig {
   baseURL: string;
   timeout: number;
@@ -35,6 +34,7 @@ export interface ApiFilters {
   page?: number;
   size?: number;
   search?: string;
+  sort?: string; // Added sort parameter
   [key: string]: string | number | undefined;
 }
 

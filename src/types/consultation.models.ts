@@ -23,10 +23,17 @@ export interface ConsultationApiResponse {
   status: number;
   message: string;
   timestamp: string;
-  data: Consultation[];
+  data: {
+    data: Consultation[];
+    pageNumber: number;
+    pageSize: number;
+    totalElements: number;
+    totalPages: number;
+    last: boolean;
+  };
 }
 
 export interface ConsultationApiFilters extends ApiFilters {
   customerName?: string;
-  email?: string;
+  status?: string;
 }

@@ -18,7 +18,7 @@ export default function PaginationBar({
 }: Readonly<PaginationBarProps>) {
   if (hidden || totalPages <= 1) return null;
 
-  // Mantine Pagination is 1-based; convert both ways
+  // Man tine Pagination is 1-based; convert both ways
   const value = pageZeroBased + 1;
 
   return (
