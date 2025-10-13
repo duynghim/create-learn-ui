@@ -56,11 +56,9 @@ const PopularSubjectSection: React.FC = () => {
         </Text>
       </Container>
       <Center mt={48}>
-        {isLoading ? (
-          <Loader />
-        ) : error ? (
-          <Text c="red">Failed to load subjects.</Text>
-        ) : (
+        {isLoading && <Loader />}
+        {!isLoading && error && <Text c="red">Failed to load subjects.</Text>}
+        {!isLoading && !error && (
           <Flex wrap="wrap" gap={30} maw={1352} justify="center">
             {cards.map((card) => (
               <PopularSubjectCard key={card.id} {...card} />
