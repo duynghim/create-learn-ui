@@ -7,3 +7,5 @@ export * from './useConsultationQuery';
 export * from './useNewsQuery';
 export * from './useNotification';
 export * from './useTableSort';
+export * from './useEntityCrud';
+export * from './useImageUpload';

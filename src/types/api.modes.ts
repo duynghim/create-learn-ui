@@ -35,7 +35,7 @@ export interface ApiFilters {
   size?: number;
   search?: string;
   sort?: string; // Added sort parameter
-  [key: string]: string | number | undefined;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface ApiClient<T, CreateT, UpdateT> {

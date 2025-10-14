@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { Center, Alert, Loader, Container, Image } from '@mantine/core';
-import { useGradeQuery } from '@/hooks';
+import { useGradeQuery, useEntityCrud } from '@/hooks';
 import type { Grade, CreateGradeRequest, UpdateGradeRequest } from '@/types';
 import GradeForm from './GradeForm';
 
@@ -41,6 +41,49 @@ const GradesPage = () => {
   const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
   const [gradeToDelete, setGradeToDelete] = useState<Grade | null>(null);
 
+  const {
+    handleEdit,
+    handleDeleteClick,
+    handleConfirmDelete,
+    handleAddNew,
+    handleFormSubmit,
+  } = useEntityCrud({
+    entities: grades,
+    onEdit: setSelectedGrade,
+    onDelete: (entity) => {
+      setGradeToDelete(entity);
+      if (entity) {
+        openDeleteModal();
+      } else {
+        closeDeleteModal();
+      }
+    },
+    onAdd: open,
+    onClose: close,
+    createMutation: createGrade,
+    updateMutation: updateGrade,
+    deleteMutation: deleteGrade,
+    entityName: 'Grade',
+    getEntityId: (s) => s.id,
+    getEntityLabel: (s) => s.name,
+    createPayload: (data, isUpdate = false) => {
+      if (isUpdate) {
+        return {
+          id: selectedGrade!.id,
+          name: data.name!,
+          description: data.description!,
+          icon: data.icon ? (data.icon as unknown as File) : undefined,
+        } as UpdateGradeRequest;
+      } else {
+        return {
+          name: data.name!,
+          description: data.description!,
+          icon: data.icon ? (data.icon as unknown as File) : undefined,
+        } as CreateGradeRequest;
+      }
+    },
+  });
+
   const columns: ColumnDef<Grade>[] = useMemo(
     () => [
       {
@@ -66,66 +109,6 @@ const GradesPage = () => {
   );
 
   const caption = `Showing ${grades.length} of total ${totalElements} items.`;
-
-  const handleEdit = useCallback(
-    (gradeId: string | number) => {
-      const grade =
-        grades.find((x) => String(x.id) === String(gradeId)) ?? null;
-      setSelectedGrade(grade);
-      open();
-    },
-    [grades, open]
-  );
-
-  const handleDeleteClick = useCallback(
-    (gradeId: string | number) => {
-      const grade =
-        grades.find((x) => String(x.id) === String(gradeId)) ?? null;
-      setGradeToDelete(grade);
-      openDeleteModal();
-    },
-    [grades, openDeleteModal]
-  );
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!gradeToDelete) return;
-    try {
-      await deleteGrade(String(gradeToDelete.id));
-      closeDeleteModal();
-      setGradeToDelete(null);
-    } catch (err) {
-      console.error('Failed to delete grade:', err);
-    }
-  }, [deleteGrade, gradeToDelete, closeDeleteModal]);
-
-  const handleAddNew = useCallback(() => {
-    setSelectedGrade(null);
-    open();
-  }, [open]);
-
-  const handleFormSubmit = useCallback(
-    async (data: Partial<Grade> & { icon?: File }) => {
-      if (selectedGrade) {
-        const payload: UpdateGradeRequest = {
-          id: selectedGrade.id,
-          name: data.name!,
-          description: data.description,
-          icon: data.icon,
-        };
-        await updateGrade(String(selectedGrade.id), payload);
-      } else {
-        const payload: CreateGradeRequest = {
-          name: data.name!,
-          description: data.description,
-          icon: data.icon,
-        };
-        await createGrade(payload);
-      }
-      setSelectedGrade(null);
-      close();
-    },
-    [selectedGrade, updateGrade, createGrade, close]
-  );
 
   if (isLoading) {
     return (
@@ -162,7 +145,7 @@ const GradesPage = () => {
             setSelectedGrade(null);
             close();
           }}
-          onSubmit={handleFormSubmit}
+          onSubmit={(data) => handleFormSubmit(data, selectedGrade)}
         />
       </FormModal>
 
@@ -172,7 +155,7 @@ const GradesPage = () => {
           setGradeToDelete(null);
           closeDeleteModal();
         }}
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => handleConfirmDelete(gradeToDelete)}
         entityLabel={gradeToDelete?.name}
       />
 

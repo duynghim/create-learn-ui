@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   TextInput,
@@ -15,22 +15,15 @@ import {
 } from '@mantine/core';
 import { IconUpload } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
-import type { News } from '@/types';
+import type { News, CreateNewsRequest } from '@/types';
 import { RichContentEditor } from '@/components';
 import { fileUploadApiClient } from '@/api';
+import { useImageUpload } from '@/hooks/useImageUpload';
 
 interface NewsFormProps {
   initialValues?: News | null;
-  onSubmit: (data: Partial<News>) => Promise<void>;
+  onSubmit: (data: CreateNewsRequest) => Promise<void>;
   onCancel: () => void;
-}
-
-interface FormValues {
-  title: string;
-  brief: string;
-  content: string;
-  isDisplay: boolean;
-  image: string; // final URL
 }
 
 const NewsForm: React.FC<NewsFormProps> = ({
@@ -38,19 +31,15 @@ const NewsForm: React.FC<NewsFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const form = useForm<FormValues>({
+  const form = useForm<CreateNewsRequest>({
     initialValues: {
-      title: initialValues?.title || '',
-      brief: initialValues?.brief || '',
-      content: initialValues?.content || '',
+      title: initialValues?.title ?? '',
+      brief: initialValues?.brief ?? '',
+      content: initialValues?.content ?? '',
       isDisplay: initialValues?.isDisplay ?? true,
-      image: initialValues?.image || '',
+      image: initialValues?.image ?? '',
     },
     validate: {
       title: (value) => (value ? null : 'Title is required'),
@@ -59,59 +48,49 @@ const NewsForm: React.FC<NewsFormProps> = ({
     },
   });
 
-  useEffect(() => {
-    if (selectedFile) {
-      const url = URL.createObjectURL(selectedFile);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    } else {
-      setPreviewUrl(form.values.image || '');
+  // uploader function for useImageUpload
+  const uploader = async (file: File): Promise<string> => {
+    const res = await fileUploadApiClient.upload(file);
+    if (!res || res.status !== 200 || !res.data) {
+      throw new Error(res?.message || 'Upload failed');
     }
-  }, [selectedFile, form.values.image]);
-
-  const uploadImage = async (file: File): Promise<string> => {
-    setUploading(true);
-    setUploadError(null);
-    try {
-      const res = await fileUploadApiClient.upload(file);
-      if (!res || res.status !== 200 || !res.data) {
-        throw new Error(res?.message || 'Upload failed');
-      }
-      return res.data;
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Image upload failed';
-      setUploadError(msg);
-      throw e;
-    } finally {
-      setUploading(false);
-    }
+    return res.data;
   };
 
-  const handleSubmit = async (values: FormValues) => {
+  // reusable upload hook
+  const {
+    selectedFile,
+    onFileChange,
+    previewUrl,
+    uploadError,
+    uploading,
+    wrapSubmit,
+  } = useImageUpload({
+    initialUrl: form.values.image,
+    uploader,
+  });
+
+  const handleSubmit = wrapSubmit<CreateNewsRequest>(
+    async (payload) => {
+      await onSubmit(payload);
+    },
+    {
+      imageField: 'image',
+      setImage: (url) => form.setFieldValue('image', url),
+    }
+  );
+
+  const onSubmitWrapper = async (values: CreateNewsRequest) => {
     setIsSubmitting(true);
     try {
-      let imageUrl = values.image;
-
-      if (selectedFile) {
-        try {
-          imageUrl = await uploadImage(selectedFile);
-          form.setFieldValue('image', imageUrl);
-        } catch {
-          // uploadError already set
-          return;
-        }
-      }
-
-      await onSubmit({ ...values, image: imageUrl });
-    } catch (error) {
-      console.error('Form submission error:', error);
+      await handleSubmit(values);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit(onSubmitWrapper)}>
       <Stack gap="md">
         <TextInput
           radius="md"
@@ -144,10 +123,7 @@ const NewsForm: React.FC<NewsFormProps> = ({
           placeholder="Select image (optional)"
           accept="image/*"
           value={selectedFile}
-          onChange={(file) => {
-            setSelectedFile(file);
-            setUploadError(null);
-          }}
+          onChange={onFileChange}
           leftSection={<IconUpload size={16} />}
           radius="md"
           clearable

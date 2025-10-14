@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Center, Alert, Loader, Container } from '@mantine/core';
-import { useTeacherQuery } from '@/hooks';
+import { Center, Alert, Loader, Container, Image } from '@mantine/core';
+import { useTeacherQuery, useEntityCrud } from '@/hooks';
 import type {
   Teacher,
   CreateTeacherRequest,
@@ -25,6 +25,7 @@ const PAGE_SIZE = 10;
 
 const TeachersPage = () => {
   const [page, setPage] = useState(0);
+
   const {
     teachers,
     totalElements,
@@ -55,65 +56,61 @@ const TeachersPage = () => {
         key: 'gender',
         render: (t) => capitalizeFirstLetter(t.gender),
       },
+      {
+        header: 'Image',
+        key: 'image',
+        render: (newsItem) => (
+          <Image
+            src={newsItem.profileImageUrl}
+            alt={newsItem.firstName}
+            maw={50}
+            mah={50}
+            fit="contain"
+          />
+        ),
+      },
     ],
     []
   );
 
   const caption = `Showing ${teachers.length} of total ${totalElements} items.`;
 
-  const handleEdit = useCallback(
-    (teacherId: string | number) => {
-      const t =
-        teachers.find((x) => String(x.id) === String(teacherId)) ?? null;
-      setSelectedTeacher(t);
-      open();
+  const {
+    handleEdit,
+    handleDeleteClick,
+    handleConfirmDelete,
+    handleAddNew,
+    handleFormSubmit,
+  } = useEntityCrud<Teacher, CreateTeacherRequest, UpdateTeacherRequest>({
+    entities: teachers,
+    onEdit: setSelectedTeacher,
+    onDelete: (entity) => {
+      setTeacherToDelete(entity);
+      if (entity) {
+        openDeleteModal();
+      } else {
+        closeDeleteModal();
+      }
     },
-    [teachers, open]
-  );
-
-  const handleDeleteClick = useCallback(
-    (teacherId: string | number) => {
-      const t =
-        teachers.find((x) => String(x.id) === String(teacherId)) ?? null;
-      setTeacherToDelete(t);
-      openDeleteModal();
-    },
-    [teachers, openDeleteModal]
-  );
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!teacherToDelete) return;
-    try {
-      await deleteTeacher(String(teacherToDelete.id));
-      closeDeleteModal();
-      setTeacherToDelete(null);
-    } catch (err) {
-      console.error('Failed to delete teacher:', err);
-    }
-  }, [deleteTeacher, teacherToDelete, closeDeleteModal]);
-
-  const handleAddNew = useCallback(() => {
-    setSelectedTeacher(null);
-    open();
-  }, [open]);
-
-  const handleFormSubmit = useCallback(
-    async (data: Partial<Teacher>) => {
-      if (selectedTeacher) {
-        const payload: UpdateTeacherRequest = {
+    onAdd: open,
+    onClose: close,
+    createMutation: createTeacher,
+    updateMutation: updateTeacher,
+    deleteMutation: deleteTeacher,
+    entityName: 'Teacher',
+    getEntityId: (t) => t.id,
+    getEntityLabel: (t) => `${t.firstName} ${t.lastName}`,
+    createPayload: (data, isUpdate = false) => {
+      if (isUpdate) {
+        return {
+          id: selectedTeacher!.id,
           ...selectedTeacher,
           ...data,
         } as UpdateTeacherRequest;
-        await updateTeacher(String(selectedTeacher.id), payload);
-      } else {
-        const payload: CreateTeacherRequest = data as CreateTeacherRequest;
-        await createTeacher(payload);
       }
-      setSelectedTeacher(null);
-      close();
+      return data as CreateTeacherRequest;
     },
-    [selectedTeacher, updateTeacher, createTeacher, close]
-  );
+  });
 
   if (isLoading) {
     return (
@@ -150,7 +147,7 @@ const TeachersPage = () => {
             setSelectedTeacher(null);
             close();
           }}
-          onSubmit={handleFormSubmit}
+          onSubmit={(data) => handleFormSubmit(data, selectedTeacher)}
         />
       </FormModal>
 
@@ -160,7 +157,7 @@ const TeachersPage = () => {
           setTeacherToDelete(null);
           closeDeleteModal();
         }}
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => handleConfirmDelete(teacherToDelete)}
         entityLabel={
           teacherToDelete
             ? `${teacherToDelete.firstName} ${teacherToDelete.lastName}`

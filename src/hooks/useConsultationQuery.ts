@@ -43,7 +43,9 @@ export const useConsultationQuery = (params: ConsultationQueryParams = {}) => {
     mutationFn: (data: CreateConsultationRequest) =>
       consultationApiClient.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY });
+      queryClient
+        .invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY })
+        .then((r) => console.log(r));
     },
   });
 
@@ -56,14 +58,18 @@ export const useConsultationQuery = (params: ConsultationQueryParams = {}) => {
       data: UpdateConsultationRequest;
     }) => consultationApiClient.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY });
+      queryClient
+        .invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY })
+        .then((r) => console.log(r));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => consultationApiClient.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY });
+      queryClient
+        .invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY })
+        .then((r) => console.log(r));
     },
   });
 

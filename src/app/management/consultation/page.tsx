@@ -21,12 +21,17 @@ import {
   PaginationBar,
 } from '@/components';
 
+import { useTableSort } from '@/hooks/useTableSort';
+
 const PAGE_SIZE = 10;
 
 const ConsultationsPage = () => {
   const [page, setPage] = useState(0);
-  const [sortKey, setSortKey] = useState<string | undefined>(undefined);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
+
+  const { sortKey, sortDirection, sortParam, handleSort } = useTableSort({
+    baseKey: ['consultations'],
+    onPageResetAction: () => setPage(0),
+  });
 
   const {
     consultations,
@@ -37,10 +42,10 @@ const ConsultationsPage = () => {
     createConsultation,
     updateConsultation,
     deleteConsultation,
-  } = useConsultationQuery({ 
-    page, 
+  } = useConsultationQuery({
+    page,
     size: PAGE_SIZE,
-    sort: sortKey && sortDirection ? `${sortKey},${sortDirection.toUpperCase()}` : undefined
+    sort: sortParam,
   });
 
   const [opened, { open, close }] = useDisclosure(false);
@@ -118,15 +123,6 @@ const ConsultationsPage = () => {
     if (totalElements === 0) return 'No consultations found.';
     return `Showing ${consultations.length} of ${totalElements} consultations.`;
   }, [consultations.length, totalElements]);
-
-  const handleSort = useCallback(
-    (key: string, direction: 'asc' | 'desc' | null) => {
-      setSortKey(direction ? key : undefined);
-      setSortDirection(direction);
-      setPage(0); // Reset to first page when sorting changes
-    },
-    []
-  );
 
   const handleEdit = useCallback(
     (consultationId: string | number) => {

@@ -19,8 +19,8 @@ class NewsApiClient extends BaseApiClient<
 > {
   protected readonly endpoint = '/api/news';
 
-  async getAll(): Promise<ApiListResponse<Class> | undefined> {
-    return this.request<ApiListResponse<Class>>(`/api/news/admin`, {
+  async getAll(): Promise<ApiListResponse<News> | undefined> {
+    return this.request<ApiListResponse<News>>(`/api/news/admin`, {
       method: 'GET',
     });
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Group,
@@ -8,13 +8,20 @@ import {
   Textarea,
   Select,
   Stack,
+  FileInput,
+  Image,
+  Alert,
+  Text,
 } from '@mantine/core';
+import { IconUpload } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
 import type {
   Teacher,
   CreateTeacherRequest,
   UpdateTeacherRequest,
 } from '@/types';
+import { fileUploadApiClient } from '@/api';
+import { useImageUpload } from '@/hooks/useImageUpload';
 
 interface TeacherFormProps {
   readonly initialValues?: Teacher | null;
@@ -36,13 +43,15 @@ export default function TeacherForm({
   onSubmit,
   onCancel,
 }: TeacherFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<CreateTeacherRequest>({
     initialValues: {
       firstName: initialValues?.firstName ?? '',
       lastName: initialValues?.lastName ?? '',
       introduction: initialValues?.introduction ?? '',
       gender: (initialValues?.gender as 'MALE' | 'FEMALE') ?? 'MALE',
-      profileImageUrl: '', // intentionally unused for this form
+      profileImageUrl: initialValues?.profileImageUrl ?? '',
     },
     validate: {
       firstName: (v) =>
@@ -53,13 +62,48 @@ export default function TeacherForm({
     },
   });
 
-  const handleSubmit = form.onSubmit(async (values) => {
-    // Keep id out of the payload here; caller can merge id if needed
-    await onSubmit(values);
+  // uploader function for useImageUpload
+  const uploader = async (file: File): Promise<string> => {
+    const res = await fileUploadApiClient.upload(file);
+    if (!res || res.status !== 200 || !res.data) {
+      throw new Error(res?.message || 'Upload failed');
+    }
+    return res.data;
+  };
+
+  const {
+    selectedFile,
+    onFileChange,
+    previewUrl,
+    uploadError,
+    uploading,
+    wrapSubmit,
+  } = useImageUpload({
+    initialUrl: form.values.profileImageUrl,
+    uploader,
+  });
+
+  const handleSubmit = wrapSubmit<CreateTeacherRequest>(
+    async (payload) => {
+      await onSubmit(payload);
+    },
+    {
+      imageField: 'profileImageUrl',
+      setImage: (url: string) => form.setFieldValue('profileImageUrl', url),
+    }
+  );
+
+  const onSubmitHandler = form.onSubmit(async (values) => {
+    setIsSubmitting(true);
+    try {
+      await handleSubmit(values);
+    } finally {
+      setIsSubmitting(false);
+    }
   });
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={onSubmitHandler}>
       <Stack gap="sm">
         <Group grow>
           <TextInput
@@ -93,11 +137,35 @@ export default function TeacherForm({
           {...form.getInputProps('introduction')}
         />
 
+        <FileInput
+          label="Profile image"
+          placeholder="Select profile image (optional)"
+          accept="image/*"
+          value={selectedFile}
+          onChange={onFileChange}
+          leftSection={<IconUpload size={16} />}
+          radius="md"
+          clearable
+          disabled={isSubmitting || uploading}
+        />
+
+        {previewUrl ? (
+          <Image src={previewUrl} alt="Preview" maw={200} radius="md" />
+        ) : (
+          <Text>No Image</Text>
+        )}
+
+        {uploadError && (
+          <Alert color="red" variant="light" radius="md">
+            {uploadError}
+          </Alert>
+        )}
+
         <Group justify="flex-end" mt="lg">
           <Button
             variant="default"
             onClick={onCancel}
-            disabled={loading}
+            disabled={loading || isSubmitting || uploading}
             radius="md"
           >
             Cancel
@@ -105,7 +173,7 @@ export default function TeacherForm({
           <Button
             type="submit"
             color="fresh-blue"
-            loading={loading}
+            loading={loading || isSubmitting || uploading}
             radius="md"
           >
             Save
