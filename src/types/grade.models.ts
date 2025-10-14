@@ -4,7 +4,7 @@ export interface Grade extends BaseEntity {
   name: string;
   description?: string;
   iconBase64?: string;
-  icon?: string;
+  icon?: string | File;
 }
 
 export interface CreateGradeRequest {

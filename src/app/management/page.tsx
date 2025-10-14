@@ -77,6 +77,7 @@ const SubjectPage = () => {
           name: data.name!,
           description: data.description!,
           icon: data.icon ? (data.icon as unknown as File) : undefined,
+          iconBase64: data.iconBase64,
         } as UpdateSubjectRequest;
       } else {
         return {

@@ -7,9 +7,9 @@ interface UseEntityCrudOptions<T, CreateT, UpdateT> {
   onDelete: (entity: T | null) => void;
   onAdd: () => void;
   onClose: () => void;
-  createMutation: (data: CreateT) => Promise<never>;
-  updateMutation: (id: string, data: UpdateT) => Promise<never>;
-  deleteMutation: (id: string) => Promise<never>;
+  createMutation: (data: CreateT) => Promise<any>;
+  updateMutation: (id: string, data: UpdateT) => Promise<any>;
+  deleteMutation: (id: string) => Promise<any>;
   entityName: string;
   getEntityId: (entity: T) => string | number;
   getEntityLabel: (entity: T) => string;
