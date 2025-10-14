@@ -5,7 +5,6 @@ import {
   Button,
   Group,
   TextInput,
-  Textarea,
   Select,
   Stack,
   FileInput,
@@ -22,6 +21,7 @@ import type {
 } from '@/types';
 import { fileUploadApiClient } from '@/api';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import { RichContentEditor } from '@/components';
 
 interface TeacherFormProps {
   readonly initialValues?: Teacher | null;
@@ -129,12 +129,13 @@ export default function TeacherForm({
           {...form.getInputProps('gender')}
         />
 
-        <Textarea
+        <RichContentEditor
           label="Introduction"
-          placeholder="Short intro about the teacher"
-          minRows={3}
-          radius="md"
-          {...form.getInputProps('introduction')}
+          withAsterisk
+          value={form.values.introduction}
+          onChange={(html) => form.setFieldValue('introduction', html)}
+          minHeight={300}
+          placeholder="Write the full content here…"
         />
 
         <FileInput
