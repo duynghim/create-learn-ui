@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { Center, Alert, Loader, Container, Badge, Text } from '@mantine/core';
 import {
@@ -8,6 +8,7 @@ import {
   useSubjectQuery,
   useGradeQuery,
   useTeacherQuery,
+  useEntityCrud,
 } from '@/hooks';
 import type { Class, CreateClassRequest, UpdateClassRequest } from '@/types';
 import ClassForm from './ClassForm';
@@ -50,6 +51,69 @@ const ClassesPage = () => {
 
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
   const [classToDelete, setClassToDelete] = useState<Class | null>(null);
+
+  const {
+    handleEdit,
+    handleDeleteClick,
+    handleConfirmDelete,
+    handleAddNew,
+    handleFormSubmit,
+  } = useEntityCrud({
+    entities: classes,
+    onEdit: setSelectedClass,
+    onDelete: (entity) => {
+      setClassToDelete(entity);
+      if (entity) {
+        openDeleteModal();
+      } else {
+        closeDeleteModal();
+      }
+    },
+    onAdd: open,
+    onClose: close,
+    createMutation: createClass,
+    updateMutation: updateClass,
+    deleteMutation: deleteClass,
+    entityName: 'News article',
+    getEntityId: (news) => news.id,
+    getEntityLabel: (news) => news.name,
+    createPayload: (data, isUpdate = false) => {
+      if (isUpdate) {
+        const payload: UpdateClassRequest = {
+          id: selectedClass.id,
+          name: data.name!,
+          brief: data.brief!,
+          description: data.description!,
+          image: data.image!,
+          requirement: data.requirement!,
+          guarantee: data.guarantee!,
+          isDisplayed: data.isDisplayed!,
+          subjectIds: data.subjectIds!,
+          gradeIds: data.gradeIds!,
+          teacherId: data.teacherId!,
+          price: data.price!,
+          // Note: schedules are handled separately in the form
+        };
+        return payload;
+      } else {
+        const payload: CreateClassRequest = {
+          name: data.name!,
+          brief: data.brief!,
+          description: data.description!,
+          image: data.image!,
+          requirement: data.requirement!,
+          guarantee: data.guarantee!,
+          isDisplayed: data.isDisplayed!,
+          subjectIds: data.subjectIds!,
+          gradeIds: data.gradeIds!,
+          teacherId: data.teacherId!,
+          price: data.price!,
+          // Note: schedules are handled separately in the form
+        };
+        return payload;
+      }
+    },
+  });
 
   const columns = useMemo<ColumnDef<Class>[]>(
     () => [
@@ -105,10 +169,31 @@ const ClassesPage = () => {
         ),
       },
       {
+        header: 'Grades',
+        key: 'grades',
+        render: (classItem) => (
+          <Text size="sm">
+            {classItem.grades && classItem.grades.length > 0
+              ? classItem.grades
+                  .map((s) => s.name)
+                  .filter(Boolean)
+                  .join(', ')
+              : null}
+          </Text>
+        ),
+      },
+      {
         header: 'Subjects',
         key: 'subjects',
         render: (classItem) => (
-          <Text size="sm">{classItem.subjects?.length || 0} subject(s)</Text>
+          <Text size="sm">
+            {classItem.subjects && classItem.subjects.length > 0
+              ? classItem.subjects
+                  .map((s) => s.name)
+                  .filter(Boolean)
+                  .join(', ')
+              : null}
+          </Text>
         ),
       },
     ],
@@ -119,82 +204,6 @@ const ClassesPage = () => {
     if (totalElements === 0) return 'No classes found.';
     return `Showing ${classes.length} of ${totalElements} classes.`;
   }, [classes.length, totalElements]);
-
-  const handleEdit = useCallback(
-    (classId: string | number) => {
-      const classItem =
-        classes.find((x) => String(x.id) === String(classId)) ?? null;
-      setSelectedClass(classItem);
-      open();
-    },
-    [classes, open]
-  );
-
-  const handleDeleteClick = useCallback(
-    (classId: string | number) => {
-      const classItem =
-        classes.find((x) => String(x.id) === String(classId)) ?? null;
-      setClassToDelete(classItem);
-      openDeleteModal();
-    },
-    [classes, openDeleteModal]
-  );
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!classToDelete) return;
-    try {
-      await deleteClass(String(classToDelete.id));
-      closeDeleteModal();
-      setClassToDelete(null);
-    } catch (err) {
-      console.error('Failed to delete class:', err);
-    }
-  }, [deleteClass, classToDelete, closeDeleteModal]);
-
-  const handleAddNew = useCallback(() => {
-    setSelectedClass(null);
-    open();
-  }, [open]);
-
-  const handleFormSubmit = useCallback(
-    async (data: Partial<Class>) => {
-      if (selectedClass) {
-        const payload: UpdateClassRequest = {
-          id: selectedClass.id,
-          name: data.name!,
-          brief: data.brief!,
-          description: data.description!,
-          image: data.image!,
-          requirement: data.requirement!,
-          guarantee: data.guarantee!,
-          isDisplayed: data.isDisplayed!,
-          subjectIds: data.subjectIds!,
-          gradeIds: data.gradeIds!,
-          teacherId: data.teacherId!,
-          price: data.price!,
-        };
-        await updateClass(String(selectedClass.id), payload);
-      } else {
-        const payload: CreateClassRequest = {
-          name: data.name!,
-          brief: data.brief!,
-          description: data.description!,
-          image: data.image!,
-          requirement: data.requirement!,
-          guarantee: data.guarantee!,
-          isDisplayed: data.isDisplayed!,
-          subjectIds: data.subjectIds!,
-          gradeIds: data.gradeIds!,
-          teacherId: data.teacherId!,
-          price: data.price!,
-        };
-        await createClass(payload);
-      }
-      setSelectedClass(null);
-      close();
-    },
-    [selectedClass, updateClass, createClass, close]
-  );
 
   if (isLoading) {
     return (
@@ -231,7 +240,7 @@ const ClassesPage = () => {
             setSelectedClass(null);
             close();
           }}
-          onSubmit={handleFormSubmit}
+          onSubmit={(data) => handleFormSubmit(data, selectedClass)}
           subjects={subjects}
           grades={grades}
           teachers={teachers}
@@ -244,7 +253,7 @@ const ClassesPage = () => {
           setClassToDelete(null);
           closeDeleteModal();
         }}
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => handleConfirmDelete(classToDelete)}
         entityLabel={classToDelete?.name}
       />
 

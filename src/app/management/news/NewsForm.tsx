@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   TextInput,
@@ -12,6 +12,7 @@ import {
   Image,
   Alert,
   Text,
+  Box,
 } from '@mantine/core';
 import { IconUpload } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
@@ -32,6 +33,7 @@ const NewsForm: React.FC<NewsFormProps> = ({
   onCancel,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [hasExistingImage, setHasExistingImage] = useState(false);
 
   const form = useForm<CreateNewsRequest>({
     initialValues: {
@@ -48,6 +50,13 @@ const NewsForm: React.FC<NewsFormProps> = ({
     },
   });
 
+  useEffect(() => {
+    // Set hasExistingImage when component mounts with initial values
+    if (initialValues?.image) {
+      setHasExistingImage(true);
+    }
+  }, [initialValues?.image]);
+
   // uploader function for useImageUpload
   const uploader = async (file: File): Promise<string> => {
     const res = await fileUploadApiClient.upload(file);
@@ -55,6 +64,26 @@ const NewsForm: React.FC<NewsFormProps> = ({
       throw new Error(res?.message || 'Upload failed');
     }
     return res.data;
+  };
+
+  // Function to extract path from full URL
+  const extractImagePath = (imageUrl: string): string => {
+    if (!imageUrl) return '';
+
+    // If it's already a path (starts with /), return as is
+    if (imageUrl.startsWith('/')) {
+      return imageUrl;
+    }
+
+    // If it's a full URL, extract the path part
+    try {
+      const url = new URL(imageUrl);
+      return url.pathname;
+    } catch {
+      // If URL parsing fails, try to extract manually
+      const pathMatch = imageUrl.match(/\/create-learn-storage\/.*$/);
+      return pathMatch ? pathMatch[0] : imageUrl;
+    }
   };
 
   // reusable upload hook
@@ -70,9 +99,25 @@ const NewsForm: React.FC<NewsFormProps> = ({
     uploader,
   });
 
+  const handleFileChange = (file: File | null) => {
+    // Clear existing image flag when user selects a new file
+    if (file) {
+      setHasExistingImage(false);
+    }
+    onFileChange(file);
+  };
+
   const handleSubmit = wrapSubmit<CreateNewsRequest>(
     async (payload) => {
-      await onSubmit(payload);
+      const submitData: CreateNewsRequest = { ...payload };
+
+      // Only include image if a new file was selected
+      // For updates without new file, keep existing image but use path format
+      if (!selectedFile && hasExistingImage && initialValues?.image) {
+        submitData.image = extractImagePath(initialValues.image);
+      }
+
+      await onSubmit(submitData);
     },
     {
       imageField: 'image',
@@ -88,6 +133,19 @@ const NewsForm: React.FC<NewsFormProps> = ({
       setIsSubmitting(false);
     }
   };
+
+  // Determine what image to show
+  const getImageSrc = () => {
+    if (previewUrl) {
+      return previewUrl;
+    }
+    if (form.values.image) {
+      return form.values.image;
+    }
+    return null;
+  };
+
+  const imageSrc = getImageSrc();
 
   return (
     <form onSubmit={form.onSubmit(onSubmitWrapper)}>
@@ -120,20 +178,31 @@ const NewsForm: React.FC<NewsFormProps> = ({
 
         <FileInput
           label="Image"
-          placeholder="Select image (optional)"
+          placeholder={
+            hasExistingImage && !selectedFile
+              ? 'Current image will be kept'
+              : 'Select image (optional)'
+          }
           accept="image/*"
           value={selectedFile}
-          onChange={onFileChange}
+          onChange={handleFileChange}
           leftSection={<IconUpload size={16} />}
           radius="md"
           clearable
           disabled={isSubmitting || uploading}
         />
 
-        {previewUrl ? (
-          <Image src={previewUrl} alt="Preview" maw={200} radius="md" />
+        {imageSrc ? (
+          <Box>
+            <Text size="sm" mb="xs" c="dimmed">
+              {selectedFile ? 'New image preview:' : 'Current image:'}
+            </Text>
+            <Image src={imageSrc} alt="Preview" maw={200} radius="md" />
+          </Box>
         ) : (
-          <Text>No Image</Text>
+          <Text size="sm" c="dimmed">
+            No Image
+          </Text>
         )}
 
         {uploadError && (
