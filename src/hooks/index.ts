@@ -9,3 +9,5 @@ export * from './useNotification';
 export * from './useTableSort';
 export * from './useEntityCrud';
 export * from './useImageUpload';
+export * from './useAccountQuery';
+export * from './useRegistrationQuery';

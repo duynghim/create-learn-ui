@@ -34,7 +34,7 @@ export interface ApiFilters {
   page?: number;
   size?: number;
   search?: string;
-  sort?: string; // Added sort parameter
+  sort?: string;
   [key: string]: string | number | boolean | undefined;
 }
 

@@ -9,11 +9,7 @@ import type {
 
 const CONSULTATION_QUERY_KEY = ['consultations'] as const;
 
-interface ConsultationQueryParams extends ApiFilters {
-  sort?: string;
-}
-
-export const useConsultationQuery = (params: ConsultationQueryParams = {}) => {
+export const useConsultationQuery = (params: ApiFilters = {}) => {
   const queryClient = useQueryClient();
   const { page = 0, size = 10, search, sort } = params;
 
@@ -43,9 +39,7 @@ export const useConsultationQuery = (params: ConsultationQueryParams = {}) => {
     mutationFn: (data: CreateConsultationRequest) =>
       consultationApiClient.create(data),
     onSuccess: () => {
-      queryClient
-        .invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY })
-        .then((r) => console.log(r));
+      queryClient.invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY });
     },
   });
 
@@ -58,18 +52,14 @@ export const useConsultationQuery = (params: ConsultationQueryParams = {}) => {
       data: UpdateConsultationRequest;
     }) => consultationApiClient.update(id, data),
     onSuccess: () => {
-      queryClient
-        .invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY })
-        .then((r) => console.log(r));
+      queryClient.invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => consultationApiClient.delete(id),
     onSuccess: () => {
-      queryClient
-        .invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY })
-        .then((r) => console.log(r));
+      queryClient.invalidateQueries({ queryKey: CONSULTATION_QUERY_KEY });
     },
   });
 

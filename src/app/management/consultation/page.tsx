@@ -1,16 +1,12 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Center, Alert, Loader, Container, Text, Anchor } from '@mantine/core';
-import { useConsultationQuery } from '@/hooks';
-import type {
-  Consultation,
-  CreateConsultationRequest,
-  UpdateConsultationRequest,
-} from '@/types';
+import { Center, Alert, Loader, Container, Text, Badge, Group, Select, Button } from '@mantine/core';
+import { IconArrowUp, IconArrowDown, IconX } from '@tabler/icons-react';
+import { useConsultationQuery, useEntityCrud } from '@/hooks';
+import type { Consultation, CreateConsultationRequest, UpdateConsultationRequest } from '@/types';
 import ConsultationForm from './ConsultationForm';
-import { format } from 'date-fns';
 
 import {
   FormModal,
@@ -21,17 +17,15 @@ import {
   PaginationBar,
 } from '@/components';
 
-import { useTableSort } from '@/hooks/useTableSort';
-
 const PAGE_SIZE = 10;
 
 const ConsultationsPage = () => {
   const [page, setPage] = useState(0);
+  const [sortField, setSortField] = useState<string>('');
+  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('ASC');
 
-  const { sortKey, sortDirection, sortParam, handleSort } = useTableSort({
-    baseKey: ['consultations'],
-    onPageResetAction: () => setPage(0),
-  });
+  // Construct sort parameter in the format "field,direction"
+  const sortParam = sortField ? `${sortField},${sortDirection}` : undefined;
 
   const {
     consultations,
@@ -42,10 +36,10 @@ const ConsultationsPage = () => {
     createConsultation,
     updateConsultation,
     deleteConsultation,
-  } = useConsultationQuery({
-    page,
-    size: PAGE_SIZE,
-    sort: sortParam,
+  } = useConsultationQuery({ 
+    page, 
+    size: PAGE_SIZE, 
+    sort: sortParam 
   });
 
   const [opened, { open, close }] = useDisclosure(false);
@@ -54,64 +48,133 @@ const ConsultationsPage = () => {
     { open: openDeleteModal, close: closeDeleteModal },
   ] = useDisclosure(false);
 
-  const [selectedConsultation, setSelectedConsultation] =
-    useState<Consultation | null>(null);
-  const [consultationToDelete, setConsultationToDelete] =
-    useState<Consultation | null>(null);
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
+  const [consultationToDelete, setConsultationToDelete] = useState<Consultation | null>(null);
 
-  const columns = useMemo<ColumnDef<Consultation>[]>(
+  const {
+    handleEdit,
+    handleDeleteClick,
+    handleConfirmDelete,
+    handleAddNew,
+    handleFormSubmit,
+  } = useEntityCrud({
+    entities: consultations,
+    onEdit: setSelectedConsultation,
+    onDelete: (entity) => {
+      setConsultationToDelete(entity);
+      if (entity) {
+        openDeleteModal();
+      } else {
+        closeDeleteModal();
+      }
+    },
+    onAdd: open,
+    onClose: close,
+    createMutation: createConsultation,
+    updateMutation: updateConsultation,
+    deleteMutation: deleteConsultation,
+    entityName: 'Consultation',
+    getEntityId: (c) => c.id,
+    getEntityLabel: (c) => c.customerName || c.email,
+    createPayload: (data, isUpdate = false) => {
+      if (isUpdate) {
+        return {
+          id: selectedConsultation!.id,
+          customerName: data.customerName!,
+          phoneNumber: data.phoneNumber!,
+          email: data.email!,
+          content: data.content!,
+          status: data.status!,
+        } as UpdateConsultationRequest;
+      } else {
+        return {
+          customerName: data.customerName!,
+          phoneNumber: data.phoneNumber!,
+          email: data.email!,
+          content: data.content!,
+          status: data.status || 'PROCESSING',
+        } as CreateConsultationRequest;
+      }
+    },
+  });
+
+  const sortOptions = [
+    { value: 'status', label: 'Status' },
+    { value: 'createdDate', label: 'Created Date' }, // Changed from createdAt to createdDate
+  ];
+
+  const handleSortChange = (field: string | null) => {
+    if (!field) {
+      setSortField('');
+      setSortDirection('ASC');
+      setPage(0); // Reset to first page when clearing sort
+      return;
+    }
+
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC');
+    } else {
+      // New field, start with ASC
+      setSortField(field);
+      setSortDirection('ASC');
+    }
+    setPage(0); // Reset to first page when changing sort
+  };
+
+  const clearSort = () => {
+    setSortField('');
+    setSortDirection('ASC');
+    setPage(0);
+  };
+
+  const columns: ColumnDef<Consultation>[] = useMemo(
     () => [
-      {
-        header: 'Customer Name',
+      { 
+        header: 'Customer Name', 
         key: 'customerName',
         render: (consultation) => (
-          <Text fw={500} size="sm">
-            {consultation.customerName}
-          </Text>
-        ),
+          <Text fw={500}>{consultation.customerName}</Text>
+        )
       },
-      {
-        header: 'Phone Number',
-        key: 'phoneNumber',
-        render: (consultation) => (
-          <Text size="sm">{consultation.phoneNumber}</Text>
-        ),
-      },
-      {
-        header: 'Email',
+      { 
+        header: 'Email', 
         key: 'email',
         render: (consultation) => (
-          <Anchor href={`mailto:${consultation.email}`} size="sm">
-            {consultation.email}
-          </Anchor>
+          <Text c="blue">{consultation.email}</Text>
+        )
+      },
+      { 
+        header: 'Phone', 
+        key: 'phoneNumber' 
+      },
+      {
+        header: 'Status',
+        key: 'status',
+        render: (consultation) => (
+          <Badge 
+            color={consultation.status === 'PROCESSED' ? 'green' : 'orange'} 
+            variant="light"
+          >
+            {consultation.status === 'PROCESSED' ? 'Processed' : 'Processing'}
+          </Badge>
         ),
       },
       {
         header: 'Content',
         key: 'content',
         render: (consultation) => (
-          <Text size="sm" lineClamp={2} maw={300}>
+          <Text truncate maw={200}>
             {consultation.content}
           </Text>
         ),
       },
       {
-        header: 'Status',
-        key: 'status',
+        header: 'Created Date',
+        key: 'createdDate',
         render: (consultation) => (
-          <Text size="sm" maw={140}>
-            {consultation.status}
-          </Text>
-        ),
-      },
-      {
-        header: 'Created',
-        key: 'createdAt',
-        render: (consultation) => (
-          <Text size="sm" c="dimmed">
-            {consultation.createdAt
-              ? format(new Date(consultation.createdAt), 'yyyy-MM-dd HH:mm')
-              : '—'}
+          <Text size="sm">
+            {consultation.createdAt ? new Date(consultation.createdAt).toLocaleDateString() : '-'}
           </Text>
         ),
       },
@@ -119,74 +182,7 @@ const ConsultationsPage = () => {
     []
   );
 
-  const caption = useMemo(() => {
-    if (totalElements === 0) return 'No consultations found.';
-    return `Showing ${consultations.length} of ${totalElements} consultations.`;
-  }, [consultations.length, totalElements]);
-
-  const handleEdit = useCallback(
-    (consultationId: string | number) => {
-      const consultation =
-        consultations.find((x) => String(x.id) === String(consultationId)) ??
-        null;
-      setSelectedConsultation(consultation);
-      open();
-    },
-    [consultations, open]
-  );
-
-  const handleDeleteClick = useCallback(
-    (consultationId: string | number) => {
-      const consultation =
-        consultations.find((x) => String(x.id) === String(consultationId)) ??
-        null;
-      setConsultationToDelete(consultation);
-      openDeleteModal();
-    },
-    [consultations, openDeleteModal]
-  );
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!consultationToDelete) return;
-    try {
-      await deleteConsultation(String(consultationToDelete.id));
-      closeDeleteModal();
-      setConsultationToDelete(null);
-    } catch (err) {
-      console.error('Failed to delete consultation:', err);
-    }
-  }, [deleteConsultation, consultationToDelete, closeDeleteModal]);
-
-  const handleAddNew = useCallback(() => {
-    setSelectedConsultation(null);
-    open();
-  }, [open]);
-
-  const handleFormSubmit = useCallback(
-    async (data: Partial<Consultation>) => {
-      if (selectedConsultation) {
-        const payload: UpdateConsultationRequest = {
-          id: selectedConsultation.id,
-          customerName: data.customerName!,
-          phoneNumber: data.phoneNumber!,
-          email: data.email!,
-          content: data.content!,
-        };
-        await updateConsultation(String(selectedConsultation.id), payload);
-      } else {
-        const payload: CreateConsultationRequest = {
-          customerName: data.customerName!,
-          phoneNumber: data.phoneNumber!,
-          email: data.email!,
-          content: data.content!,
-        };
-        await createConsultation(payload);
-      }
-      setSelectedConsultation(null);
-      close();
-    },
-    [selectedConsultation, updateConsultation, createConsultation, close]
-  );
+  const caption = `Showing ${consultations.length} of total ${totalElements} items.`;
 
   if (isLoading) {
     return (
@@ -206,7 +202,44 @@ const ConsultationsPage = () => {
 
   return (
     <Container fluid p={0} maw="100%">
-      <AddNewButton label="Add New Consultation" onClick={handleAddNew} />
+      <Group justify="space-between" mb="md">
+        <AddNewButton label="Add New Consultation" onClick={handleAddNew} />
+        
+        <Group gap="sm">
+          <Select
+            placeholder="Sort by field"
+            data={sortOptions}
+            value={sortField || null}
+            onChange={handleSortChange}
+            clearable
+            size="sm"
+            w={150}
+          />
+          
+          {sortField && (
+            <Button
+              variant="light"
+              size="sm"
+              leftSection={sortDirection === 'ASC' ? <IconArrowUp size={16} /> : <IconArrowDown size={16} />}
+              onClick={() => setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC')}
+            >
+              {sortDirection === 'ASC' ? 'Ascending' : 'Descending'}
+            </Button>
+          )}
+          
+          {sortField && (
+            <Button
+              variant="subtle"
+              size="sm"
+              leftSection={<IconX size={16} />}
+              onClick={clearSort}
+              color="red"
+            >
+              Clear
+            </Button>
+          )}
+        </Group>
+      </Group>
 
       <FormModal
         opened={opened}
@@ -223,7 +256,7 @@ const ConsultationsPage = () => {
             setSelectedConsultation(null);
             close();
           }}
-          onSubmit={handleFormSubmit}
+          onSubmit={(data) => handleFormSubmit(data, selectedConsultation, !!selectedConsultation)}
         />
       </FormModal>
 
@@ -233,8 +266,8 @@ const ConsultationsPage = () => {
           setConsultationToDelete(null);
           closeDeleteModal();
         }}
-        onConfirm={handleConfirmDelete}
-        entityLabel={consultationToDelete?.customerName}
+        onConfirm={() => handleConfirmDelete(consultationToDelete)}
+        entityLabel={consultationToDelete?.customerName || consultationToDelete?.email}
       />
 
       <EntityTable<Consultation>
@@ -246,10 +279,6 @@ const ConsultationsPage = () => {
         onDelete={(row) => handleDeleteClick(row.id)}
         stickyHeader
         minWidth={800}
-        sortableColumns={['status', 'createdAt']}
-        sortKey={sortKey}
-        sortDirection={sortDirection}
-        onSort={handleSort}
       />
 
       <PaginationBar

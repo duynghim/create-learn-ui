@@ -29,3 +29,5 @@ export * from './schedule.models';
 export * from './class.models';
 export * from './consultation.models';
 export * from './news.model';
+export * from './account.models';
+export * from './registration.models';
