@@ -8,6 +8,7 @@ import {
   Textarea,
   Button,
   Alert,
+  Box,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
@@ -90,17 +91,19 @@ const FindBestClassSection = () => {
 
   return (
     <GradientBox direction="column" py={48} intensity="light">
-      <Text
-        fz={{ base: '2.57rem', md: '2.7rem', lg: '2.99rem' }}
-        ta="center"
-        fw={500}
-      >
-        Request a Free Consultation
-      </Text>
-      <Text ta="center" fw={400} fz="1rem">
-        Tell us about your learning needs and we&#39;ll help you find the
-        perfect classes for your child
-      </Text>
+      <Box px={20}>
+        <Text
+          fz={{ base: '2.57rem', md: '2.7rem', lg: '2.99rem' }}
+          ta="center"
+          fw={500}
+        >
+          Request a Free Consultation
+        </Text>
+        <Text ta="center" fw={400} fz="1rem">
+          Tell us about your learning needs and we&#39;ll help you find the
+          perfect classes for your child
+        </Text>
+      </Box>
       <Paper
         maw={1152}
         w={{ base: '95%', xssm: '80%', lg: 1152 }}
@@ -130,13 +133,14 @@ const FindBestClassSection = () => {
               alt="Consultation Form Image"
               w={254}
             />
-            <Stack gap={16} flex={1}>
+            <Stack gap={16} flex={1} w="100%">
               <TextInput
                 {...inputProps}
                 withAsterisk
                 label="Full Name"
                 placeholder="Enter your full name"
                 {...form.getInputProps('customerName')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <TextInput
@@ -145,6 +149,7 @@ const FindBestClassSection = () => {
                 label="Phone Number"
                 placeholder="Enter your phone number"
                 {...form.getInputProps('phoneNumber')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <TextInput
@@ -154,15 +159,17 @@ const FindBestClassSection = () => {
                 placeholder="Enter your email address"
                 type="email"
                 {...form.getInputProps('email')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <Textarea
                 {...inputProps}
                 withAsterisk
                 label="Tell us about your learning needs"
-                placeholder="Describe what type of classes you're looking for, your child's age, interests, experience level, or any specific questions you have..."
+                placeholder="Describe what type of classes you're looking for"
                 minRows={4}
                 {...form.getInputProps('content')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <Button

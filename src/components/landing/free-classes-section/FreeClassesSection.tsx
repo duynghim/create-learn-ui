@@ -47,6 +47,7 @@ const FreeClassesSection = () => {
             flex={1}
             direction="column"
             justify="center"
+            px={20}
             pr={{ lg: TEXT_SECTION_PADDING_RIGHT }}
           >
             <Text c="white" fz={TITLE_FONT_SIZES}>
