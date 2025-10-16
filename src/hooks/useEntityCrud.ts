@@ -10,6 +10,7 @@ interface UseEntityCrudOptions<T, CreateT, UpdateT> {
   createMutation: (data: CreateT) => Promise<any>;
   updateMutation: (id: string, data: UpdateT) => Promise<any>;
   deleteMutation: (id: string) => Promise<any>;
+  getByIdMutation?: (id: string) => Promise<{ data: T }>; // New optional mutation
   entityName: string;
   getEntityId: (entity: T) => string | number;
   getEntityLabel: (entity: T) => string;
@@ -25,6 +26,7 @@ export const useEntityCrud = <T, CreateT, UpdateT>({
   createMutation,
   updateMutation,
   deleteMutation,
+  getByIdMutation,
   entityName,
   getEntityId,
   getEntityLabel,
@@ -32,15 +34,44 @@ export const useEntityCrud = <T, CreateT, UpdateT>({
 }: UseEntityCrudOptions<T, CreateT, UpdateT>) => {
   const { showSuccess, showError } = useNotification();
 
+  const getEntityById = useCallback(
+    async (entityId: string | number): Promise<T | null> => {
+      try {
+        // First try to find in the existing entities array (cached data)
+        const cachedEntity = entities.find(
+          (x) => String(getEntityId(x)) === String(entityId)
+        );
+        
+        if (cachedEntity) {
+          return cachedEntity;
+        }
+
+        // If not found in cache and we have a getByIdMutation, fetch from API
+        if (getByIdMutation) {
+          const response = await getByIdMutation(String(entityId));
+          return response.data;
+        }
+
+        // If no getByIdMutation provided, return null
+        return null;
+      } catch (err) {
+        console.error(`Failed to get ${entityName} by ID:`, err);
+        showError(`Failed to load ${entityName}. Please try again.`);
+        return null;
+      }
+    },
+    [entities, getEntityId, getByIdMutation, entityName, showError]
+  );
+
   const handleEdit = useCallback(
     (entityId: string | number) => {
-      console.log('handleEdit called with ID:', entityId); // Debug log
+      console.log('handleEdit called with ID:', entityId);
       const entity =
         entities.find((x) => String(getEntityId(x)) === String(entityId)) ??
         null;
-      console.log('Found entity:', entity); // Debug log
+      console.log('Found entity:', entity);
       onEdit(entity);
-      onAdd(); // This should open the modal
+      onAdd();
     },
     [entities, onEdit, getEntityId, onAdd]
   );
@@ -128,5 +159,6 @@ export const useEntityCrud = <T, CreateT, UpdateT>({
     handleConfirmDelete,
     handleAddNew,
     handleFormSubmit,
+    getEntityById, 
   };
 };

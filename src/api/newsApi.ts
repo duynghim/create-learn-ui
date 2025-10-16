@@ -24,6 +24,12 @@ class NewsApiClient extends BaseApiClient<
       method: 'GET',
     });
   }
+
+  async getById(id: string): Promise<ApiSingleResponse<News> | undefined> {
+    return this.request<ApiSingleResponse<News>>(`/api/news/public/${id}`, {
+      method: 'GET',
+    });
+  }
 }
 
 export const newsApiClient = new NewsApiClient(config);

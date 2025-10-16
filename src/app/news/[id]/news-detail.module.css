@@ -1,0 +1,46 @@
+.newsContent {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.newsContent p {
+  margin-bottom: 1rem;
+}
+
+.newsContent b,
+.newsContent strong {
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.newsContent ul,
+.newsContent ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.newsContent li {
+  margin-bottom: 0.5rem;
+}
+
+.newsContent h1,
+.newsContent h2,
+.newsContent h3,
+.newsContent h4,
+.newsContent h5,
+.newsContent h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--mantine-color-fresh-blue-6);
+}
+
+.newsContent a {
+  color: var(--mantine-color-fresh-blue-6);
+  text-decoration: none;
+}
+
+.newsContent a:hover {
+  text-decoration: underline;
+}

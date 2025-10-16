@@ -5,17 +5,17 @@ import React from 'react';
 export interface ClassCardProps {
   imageUrl: string;
   title: string;
-  grade: string;
   description: string;
   titleButton: string;
+  onButtonClick?: () => void;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({
   imageUrl,
   title,
-  grade,
   description,
   titleButton,
+  onButtonClick,
 }) => {
   return (
     <Card
@@ -40,7 +40,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
           </Text>
         </Stack>
 
-        <Button color="fresh-green" fullWidth radius="md">
+        <Button color="fresh-green" fullWidth radius="md" onClick={onButtonClick}>
           {titleButton}
         </Button>
       </Flex>

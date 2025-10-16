@@ -53,6 +53,12 @@ class ClassApiClient extends BaseApiClient<
       method: 'GET',
     });
   }
+
+  async getById(id: string): Promise<ApiSingleResponse<Class> | undefined> {
+    return this.request<ApiSingleResponse<Class>>(`/api/classes/public/${id}`, {
+      method: 'GET'
+    })
+  }
 }
 
 export const classApiClient = new ClassApiClient(config);
