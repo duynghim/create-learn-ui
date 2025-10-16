@@ -67,20 +67,36 @@ const ExpertIcons = ({ isMobile = false }: { isMobile?: boolean }) => (
   </Flex>
 );
 
-const HeroContent = () => (
-  <>
-    <Title fz={RESPONSIVE_STYLES.titleSize} c="fresh-blue">
-      {HERO_CONTENT.mainTitle}
-    </Title>
-    <Title size="2.02rem" fz={RESPONSIVE_STYLES.subtitleSize} c="fresh-blue">
-      {HERO_CONTENT.subtitle}
-    </Title>
-    <Text fw={500}>{HERO_CONTENT.description}</Text>
-    <Button w="fit-content" color="fresh-blue">
-      {HERO_CONTENT.ctaText}
-    </Button>
-  </>
-);
+const HeroContent = () => {
+  const handleScrollToFreeClasses = () => {
+    const element = document.getElementById('free-classes-section');
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  };
+
+  return (
+    <>
+      <Title fz={RESPONSIVE_STYLES.titleSize} c="fresh-blue">
+        {HERO_CONTENT.mainTitle}
+      </Title>
+      <Title size="2.02rem" fz={RESPONSIVE_STYLES.subtitleSize} c="fresh-blue">
+        {HERO_CONTENT.subtitle}
+      </Title>
+      <Text fw={500}>{HERO_CONTENT.description}</Text>
+      <Button
+        w="fit-content"
+        color="fresh-blue"
+        onClick={handleScrollToFreeClasses}
+      >
+        {HERO_CONTENT.ctaText}
+      </Button>
+    </>
+  );
+};
 
 const DesktopHero = () => (
   <Grid visibleFrom="smmd">
@@ -100,40 +116,54 @@ const DesktopHero = () => (
   </Grid>
 );
 
-const MobileHero = () => (
-  <BackgroundImage
-    src="/images/coding-kids-hero.png"
-    hiddenFrom="smmd"
-    h={540}
-    pos="relative"
-  >
-    <Box pos="absolute" inset={0} bg="rgba(0,0,0,0.5)" />
-    <Flex
-      pos="absolute"
-      top={0}
-      left={0}
-      right={0}
-      bottom={0}
-      bg="rgba(0, 0, 0, 0.4)"
-      align="center"
-      justify="center"
-      px={20}
+const MobileHero = () => {
+  const handleScrollToFreeClasses = () => {
+    const element = document.getElementById('free-classes-section');
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  };
+
+  return (
+    <BackgroundImage
+      src="/images/coding-kids-hero.png"
+      hiddenFrom="smmd"
+      h={540}
+      pos="relative"
     >
-      <Stack align="center" gap="sm">
-        <Title size="2.78rem" ta="center" c="fresh-blue">
-          {HERO_CONTENT.mainTitle}
-        </Title>
-        <Title size="2.02rem" ta="center" c="fresh-blue">
-          {HERO_CONTENT.subtitle}
-        </Title>
-        <Text c="white" ta="center" size="lg">
-          {HERO_CONTENT.description}
-        </Text>
-        <Button size="sm">{HERO_CONTENT.ctaText}</Button>
-      </Stack>
-    </Flex>
-  </BackgroundImage>
-);
+      <Box pos="absolute" inset={0} bg="rgba(0,0,0,0.5)" />
+      <Flex
+        pos="absolute"
+        top={0}
+        left={0}
+        right={0}
+        bottom={0}
+        bg="rgba(0, 0, 0, 0.4)"
+        align="center"
+        justify="center"
+        px={20}
+      >
+        <Stack align="center" gap="sm">
+          <Title size="2.78rem" ta="center" c="fresh-blue">
+            {HERO_CONTENT.mainTitle}
+          </Title>
+          <Title size="2.02rem" ta="center" c="fresh-blue">
+            {HERO_CONTENT.subtitle}
+          </Title>
+          <Text c="white" ta="center" size="lg">
+            {HERO_CONTENT.description}
+          </Text>
+          <Button size="sm" onClick={handleScrollToFreeClasses}>
+            {HERO_CONTENT.ctaText}
+          </Button>
+        </Stack>
+      </Flex>
+    </BackgroundImage>
+  );
+};
 
 const ExpertsSection = () => (
   <>

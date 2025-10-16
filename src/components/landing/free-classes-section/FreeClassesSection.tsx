@@ -29,7 +29,7 @@ const FreeClassesSection = () => {
     (async () => {
       try {
         const resp = await classApiClient.getFreeClasses();
-        setFreeClasses(resp.data.data);
+        setFreeClasses(resp?.data?.data);
       } catch {
         if (!cancelled) setFreeClasses([]);
       }
@@ -41,7 +41,12 @@ const FreeClassesSection = () => {
 
   return (
     <GradientBox py={SECTION_PADDING}>
-      <Stack maw={CONTAINER_MAX_WIDTH} w="100%" gap={CONTENT_GAP}>
+      <Stack
+        maw={CONTAINER_MAX_WIDTH}
+        w="100%"
+        gap={CONTENT_GAP}
+        id="free-classes-section"
+      >
         <Flex direction={{ base: 'column', lg: 'row' }} gap={CARDS_GAP}>
           <Flex
             flex={1}
