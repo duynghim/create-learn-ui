@@ -23,11 +23,7 @@ import type { UserSectionProps, MobileDrawerProps } from '@/types';
 
 const NAVIGATION_LINKS = [
   { name: 'Classes', href: '/classes' },
-  { name: 'Camps', href: '/camps' },
   { name: 'Subjects', href: '/subjects' },
-  { name: 'Events', href: '/events' },
-  { name: 'Programs', href: '/programs' },
-  { name: 'About', href: '/about' },
   { name: 'Blog', href: '/blog' },
 ] as const;
 
@@ -61,16 +57,8 @@ const Logo = () => (
   </Link>
 );
 
-const UserSection = ({ isLoggedIn, onLogout, isLoading }: UserSectionProps) => {
+const UserSection = ({ isLoggedIn, onLogout }: UserSectionProps) => {
   const router = useRouter();
-
-  if (isLoading) {
-    return (
-      <div
-        style={{ width: 40, height: 40, display: 'flex', alignItems: 'center' }}
-      ></div>
-    );
-  }
 
   if (isLoggedIn) {
     return (
@@ -241,9 +229,6 @@ const MobileDrawer = ({
 const Header = () => {
   const { isLoggedIn, isLoading, logout } = useAuth();
   const [isDrawerOpen, { open, close }] = useDisclosure(false);
-
-  // Debug logging
-  console.log('Header - Auth state:', { isLoggedIn, isLoading });
 
   return (
     <>

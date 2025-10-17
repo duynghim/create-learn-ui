@@ -9,16 +9,21 @@ import {
   Image,
   Flex,
   Text,
-  Box,
   Button,
   Group,
   Badge,
+  Stack,
 } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { classApiClient, registrationApiClient } from '@/api';
 import { Class } from '@/types';
 import { useDisclosure } from '@mantine/hooks';
-import { FormModal, PublicRegistrationForm, SafeHtml } from '@/components';
+import {
+  FormModal,
+  PublicRegistrationForm,
+  SafeHtml,
+  ExpertIcons,
+} from '@/components';
 import React from 'react';
 import { useNotification } from '@/hooks';
 
@@ -90,7 +95,7 @@ const ClassDetailPage = () => {
   return (
     <Container fluid p={0} h="100%">
       <Flex justify="center" direction={{ base: 'column', sm: 'row' }} gap={20}>
-        <Box>
+        <Stack>
           <Image
             src={classData.image}
             alt={classData.name}
@@ -98,7 +103,8 @@ const ClassDetailPage = () => {
             mah={350}
             fit="contain"
           />
-        </Box>
+          <ExpertIcons />
+        </Stack>
         <Flex
           maw={{ base: '100%', sm: 700 }}
           direction="column"

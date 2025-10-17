@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, TextInput, Group, Box, PasswordInput } from '@mantine/core';
+import {
+  Button,
+  TextInput,
+  Group,
+  Box,
+  PasswordInput,
+  Switch,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import type { Account } from '@/types';
 
@@ -16,6 +23,7 @@ interface FormValues {
   password: string;
   username: string;
   phone: string;
+  activated: boolean;
 }
 
 const AccountForm: React.FC<AccountFormProps> = ({
@@ -31,6 +39,7 @@ const AccountForm: React.FC<AccountFormProps> = ({
       password: '', // Always start with empty password
       username: initialValues?.username || '',
       phone: initialValues?.phone || '',
+      activated: initialValues?.activated || false,
     },
     validate: {
       email: (value) => {
@@ -42,7 +51,8 @@ const AccountForm: React.FC<AccountFormProps> = ({
         // For editing, password is optional (only validate if provided)
         if (initialValues) {
           // Editing mode - password is optional
-          if (value && value.length < 6) return 'Password must be at least 6 characters';
+          if (value && value.length < 6)
+            return 'Password must be at least 6 characters';
           return null;
         } else {
           // Creating mode - password is required
@@ -67,13 +77,14 @@ const AccountForm: React.FC<AccountFormProps> = ({
         email: values.email,
         username: values.username,
         phone: values.phone,
+        activated: values.activated,
       };
-      
+
       // Only include password if it's provided (for both create and update)
       if (values.password) {
         submitData.password = values.password;
       }
-      
+
       await onSubmit(submitData);
     } catch (error) {
       console.error('Form submission error:', error);
@@ -109,9 +120,13 @@ const AccountForm: React.FC<AccountFormProps> = ({
 
       <PasswordInput
         label="Password"
-        placeholder={initialValues ? "Leave empty to keep current password" : "Enter password"}
+        placeholder={
+          initialValues
+            ? 'Leave empty to keep current password'
+            : 'Enter password'
+        }
         {...form.getInputProps('password')}
-        required={!initialValues} 
+        required={!initialValues}
         mb="md"
         radius="md"
         autoComplete="new-password"
@@ -128,6 +143,12 @@ const AccountForm: React.FC<AccountFormProps> = ({
         type="tel"
         autoComplete="off"
         data-form-type="other"
+      />
+
+      <Switch
+        label="Activate this account"
+        description="Toggle to make this account active"
+        {...form.getInputProps('activated', { type: 'checkbox' })}
       />
 
       <Group justify="flex-end" mt="lg">

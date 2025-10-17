@@ -9,7 +9,10 @@ import {
   Button,
   Alert,
   Box,
+  Notification,
 } from '@mantine/core';
+import { IconX, IconCheck } from '@tabler/icons-react';
+
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import GradientBox from '@/components/gradient-box/GradientBox';
@@ -42,6 +45,8 @@ const FORM_VALIDATION = {
 };
 
 const FindBestClassSection = () => {
+  const xIcon = <IconX size={20} />;
+  const checkIcon = <IconCheck size={20} />;
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -111,15 +116,27 @@ const FindBestClassSection = () => {
         mt={40}
       >
         {successMessage && (
-          <Alert variant="light" color="green" mb="md">
+          <Notification
+            icon={checkIcon}
+            color="teal"
+            title="Registration Success"
+            withCloseButton={false}
+            mb="md"
+          >
             {successMessage}
-          </Alert>
+          </Notification>
         )}
 
         {errorMessage && (
-          <Alert variant="light" color="red" mb="md">
+          <Notification
+            icon={xIcon}
+            color="red"
+            title="Something Wrong, please try again!"
+            withCloseButton={false}
+            mb="md"
+          >
             {errorMessage}
-          </Alert>
+          </Notification>
         )}
 
         <form onSubmit={form.onSubmit(handleSubmit)}>

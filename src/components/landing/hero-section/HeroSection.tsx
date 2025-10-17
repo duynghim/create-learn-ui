@@ -12,14 +12,8 @@ import {
   Center,
   Container,
 } from '@mantine/core';
-import CodeIcon from '@/components/icons/CodeIcon';
-import MITIcon from '@/components/icons/MITIcon';
-import HarvardIcon from '@/components/icons/HarvardIcon';
-import StandfordIcon from '@/components/icons/StanfordIcon';
-import AppleIcon from '@/components/icons/AppleIcon';
-import GoogleIcon from '@/components/icons/GoogleIcon';
-import styles from './HeroSection.module.css';
 import GradientBox from '@/components/gradient-box/GradientBox';
+import { ExpertIcons } from '@/components';
 
 const HERO_CONTENT = {
   mainTitle: 'Join Fun Creative Adventures',
@@ -32,52 +26,23 @@ const HERO_CONTENT = {
   bannerCtaText: 'Learn More',
 } as const;
 
+const handleScrollToFreeClasses = () => {
+  const element = document.getElementById('free-classes-section');
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }
+};
+
 const RESPONSIVE_STYLES = {
   titleSize: { sm: '2.57rem', md: '2.78rem', xl: '2.99rem' },
   subtitleSize: { sm: '1.8rem', md: '2.02rem', xl: '2.02rem' },
   leftPadding: { base: '5rem', xxl: '20rem', xl: '25rem' },
 } as const;
 
-const ExpertIcons = ({ isMobile = false }: { isMobile?: boolean }) => (
-  <Flex align="center" gap="xs">
-    <GoogleIcon
-      height={isMobile ? undefined : '36px'}
-      className={isMobile ? styles.iconResponsive : undefined}
-    />
-    <AppleIcon
-      height={isMobile ? undefined : '46px'}
-      className={isMobile ? styles.iconApple : undefined}
-    />
-    <StandfordIcon
-      height={isMobile ? undefined : '36px'}
-      className={isMobile ? styles.iconResponsive : undefined}
-    />
-    <HarvardIcon
-      height={isMobile ? undefined : '36px'}
-      className={isMobile ? styles.iconResponsive : undefined}
-    />
-    <MITIcon
-      height={isMobile ? undefined : '36px'}
-      className={isMobile ? styles.iconResponsive : undefined}
-    />
-    <CodeIcon
-      height={isMobile ? undefined : '36px'}
-      className={isMobile ? styles.iconResponsive : undefined}
-    />
-  </Flex>
-);
-
 const HeroContent = () => {
-  const handleScrollToFreeClasses = () => {
-    const element = document.getElementById('free-classes-section');
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  };
-
   return (
     <>
       <Title fz={RESPONSIVE_STYLES.titleSize} c="fresh-blue">
@@ -117,16 +82,6 @@ const DesktopHero = () => (
 );
 
 const MobileHero = () => {
-  const handleScrollToFreeClasses = () => {
-    const element = document.getElementById('free-classes-section');
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  };
-
   return (
     <BackgroundImage
       src="/images/coding-kids-hero.png"
@@ -165,27 +120,6 @@ const MobileHero = () => {
   );
 };
 
-const ExpertsSection = () => (
-  <>
-    <Center py={20} visibleFrom="smmd">
-      <Box pb={6} px={20}>
-        <Text fw={400} c="rgba(0, 0, 0, 0.6)">
-          {HERO_CONTENT.expertsText}
-        </Text>
-      </Box>
-      <ExpertIcons />
-    </Center>
-    <Stack align="center" gap="xs" py={20} hiddenFrom="smmd">
-      <Center>
-        <Text fw={400} c="rgba(0, 0, 0, 0.6)">
-          {HERO_CONTENT.expertsText}
-        </Text>
-      </Center>
-      <ExpertIcons isMobile />
-    </Stack>
-  </>
-);
-
 const HeroSection = () => {
   return (
     <Container maw="100%" px={0}>
@@ -201,7 +135,7 @@ const HeroSection = () => {
         <DesktopHero />
         <MobileHero />
       </Box>
-      <ExpertsSection />
+      <ExpertIcons />
     </Container>
   );
 };

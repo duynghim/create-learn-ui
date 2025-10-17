@@ -78,6 +78,7 @@ const AccountsPage = () => {
           username: data.username!,
           password: data.password!,
           phone: data.phone!,
+          activated: data.activated!,
         } as UpdateAccountRequest;
       } else {
         return {
@@ -85,6 +86,7 @@ const AccountsPage = () => {
           username: data.username!,
           password: data.password!,
           phone: data.phone!,
+          activated: data.activated!,
         } as CreateAccountRequest;
       }
     },
