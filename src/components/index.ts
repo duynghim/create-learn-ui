@@ -13,3 +13,4 @@ export { default as AutoNotification } from './auto-notification/AutoNotificatio
 export { default as RichContentEditor } from './rich-text-editor/RichTextEditor';
 export { default as PublicRegistrationForm } from './public-registration/PublicRegistrationForm';
 export { default as NewsSection } from './landing/news-section/NewsSection'
+export { default as SafeHtml } from './html-santiner/HtmlSantiner';

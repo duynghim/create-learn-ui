@@ -75,7 +75,7 @@ const FreeClassesSection = () => {
                 <ClassCard
                   imageUrl={freeClass.image || 'https://picsum.photos/400/200'}
                   title={freeClass.brief || freeClass.name || 'Class'}
-                  description={freeClass.description || ''}
+                  description={freeClass.brief || ''}
                   titleButton={FREE_CLASSES_BUTTON_TEXT}
                   onButtonClick={() => handleClassClick(freeClass.id)}
                 />
@@ -109,7 +109,7 @@ const FreeClassesSection = () => {
               <ClassCard
                 imageUrl={freeClass.image || 'https://picsum.photos/400/200'}
                 title={freeClass.brief || freeClass.name || 'Class'}
-                description={freeClass.description || ''}
+                description={freeClass.brief || ''}
                 titleButton={FREE_CLASSES_BUTTON_TEXT}
                 onButtonClick={() => handleClassClick(freeClass.id)}
               />

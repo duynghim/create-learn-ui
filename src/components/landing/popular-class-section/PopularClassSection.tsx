@@ -49,7 +49,7 @@ const PopularClassSection = () => {
               key={classItem.id}
               imageUrl={classItem.image}
               title={classItem.brief}
-              description={classItem.description}
+              description={classItem.brief}
               titleButton={POPULAR_CLASSES_BUTTON_TEXT}
               onButtonClick={() => handleClassClick(classItem.id)}
             />

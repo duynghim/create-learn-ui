@@ -18,7 +18,7 @@ import { useQuery } from '@tanstack/react-query';
 import { classApiClient, registrationApiClient } from '@/api';
 import { Class } from '@/types';
 import { useDisclosure } from '@mantine/hooks';
-import { FormModal, PublicRegistrationForm } from '@/components';
+import { FormModal, PublicRegistrationForm, SafeHtml } from '@/components';
 import React from 'react';
 import { useNotification } from '@/hooks';
 
@@ -119,9 +119,9 @@ const ClassDetailPage = () => {
             {classData.name}
           </Text>
           <Text fw={500} fz="1.25rem">
-            {classData.description}
+            {classData.brief}
           </Text>
-          <Text fw={500} fz="1.25rem">
+          <Text fw={500} fz="1rem">
             Schedule:
           </Text>
           <Group>
@@ -131,6 +131,10 @@ const ClassDetailPage = () => {
               </Badge>
             ))}
           </Group>
+          <SafeHtml
+            html={classData.description}
+            className="class-description"
+          />
           <Button
             size="sm"
             radius="md"
