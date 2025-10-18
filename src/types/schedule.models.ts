@@ -24,8 +24,3 @@ export interface ScheduleApiResponse {
 export interface ScheduleApiFilters extends ApiFilters {
   clazzId?: number;
 }
-
-export interface ClassOption {
-  value: string;
-  label: string;
-}

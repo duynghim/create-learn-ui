@@ -17,6 +17,9 @@ export interface Class extends BaseEntity {
   teacher: Teacher;
   price: number;
   scheduleResponses: Schedule[];
+  subjectIds: number[];
+  gradeIds: number[];
+  teacherId: number;
 }
 
 export interface CreateClassRequest {

@@ -1,11 +1,10 @@
-// src/types/api.types.ts
 export interface ApiConfig {
   baseURL: string;
   timeout: number;
 }
 
 export interface BaseEntity {
-  id: string;
+  id: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -35,7 +34,8 @@ export interface ApiFilters {
   page?: number;
   size?: number;
   search?: string;
-  [key: string]: string | number | undefined;
+  sort?: string;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface ApiClient<T, CreateT, UpdateT> {

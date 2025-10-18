@@ -1,12 +1,20 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Center, Alert, Loader, Container, Badge, Text } from '@mantine/core';
-import { useNewsQuery } from '@/hooks';
+import {
+  Center,
+  Alert,
+  Loader,
+  Container,
+  Badge,
+  Text,
+  Image,
+} from '@mantine/core';
+import { useNewsQuery, useEntityCrud } from '@/hooks';
 import type { News, CreateNewsRequest, UpdateNewsRequest } from '@/types';
 import NewsForm from './NewsForm';
-
+import { truncate } from '@/utils';
 import {
   FormModal,
   DeleteConfirmModal,
@@ -41,6 +49,53 @@ const NewsManagementPage = () => {
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const [newsToDelete, setNewsToDelete] = useState<News | null>(null);
 
+  const {
+    handleEdit,
+    handleDeleteClick,
+    handleConfirmDelete,
+    handleAddNew,
+    handleFormSubmit,
+  } = useEntityCrud({
+    entities: news,
+    onEdit: setSelectedNews,
+    onDelete: (entity) => {
+      setNewsToDelete(entity);
+      if (entity) {
+        openDeleteModal();
+      } else {
+        closeDeleteModal();
+      }
+    },
+    onAdd: open,
+    onClose: close,
+    createMutation: createNews,
+    updateMutation: updateNews,
+    deleteMutation: deleteNews,
+    entityName: 'News article',
+    getEntityId: (news) => news.id,
+    getEntityLabel: (news) => news.title,
+    createPayload: (data, isUpdate = false) => {
+      if (isUpdate) {
+        return {
+          id: selectedNews!.id,
+          title: data.title!,
+          brief: data.brief!,
+          content: data.content!,
+          isDisplay: data.isDisplay!,
+          image: data.image!,
+        } as UpdateNewsRequest;
+      } else {
+        return {
+          title: data.title!,
+          brief: data.brief!,
+          content: data.content!,
+          isDisplay: data.isDisplay!,
+          image: data.image!,
+        } as CreateNewsRequest;
+      }
+    },
+  });
+
   const columns: ColumnDef<News>[] = useMemo(
     () => [
       {
@@ -74,11 +129,25 @@ const NewsManagementPage = () => {
           </Badge>
         ),
       },
+
       {
-        header: 'Has Image',
+        header: 'Content',
+        key: 'content',
+        render: (newsItem) => (
+          <Text size="sm">{truncate(newsItem.content ?? '', 50)}</Text>
+        ),
+      },
+      {
+        header: 'Image',
         key: 'image',
         render: (newsItem) => (
-          <Text size="sm">{newsItem.image ? 'Yes' : 'No'}</Text>
+          <Image
+            src={newsItem.image}
+            alt={newsItem.title}
+            maw={50}
+            mah={50}
+            fit="contain"
+          />
         ),
       },
     ],
@@ -86,70 +155,6 @@ const NewsManagementPage = () => {
   );
 
   const caption = `Showing ${news.length} of total ${totalElements} items.`;
-
-  const handleEdit = useCallback(
-    (newsId: string | number) => {
-      const newsItem =
-        news.find((x) => String(x.id) === String(newsId)) ?? null;
-      setSelectedNews(newsItem);
-      open();
-    },
-    [news, open]
-  );
-
-  const handleDeleteClick = useCallback(
-    (newsId: string | number) => {
-      const newsItem =
-        news.find((x) => String(x.id) === String(newsId)) ?? null;
-      setNewsToDelete(newsItem);
-      openDeleteModal();
-    },
-    [news, openDeleteModal]
-  );
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!newsToDelete) return;
-    try {
-      await deleteNews(String(newsToDelete.id));
-      closeDeleteModal();
-      setNewsToDelete(null);
-    } catch (err) {
-      console.error('Failed to delete news:', err);
-    }
-  }, [deleteNews, newsToDelete, closeDeleteModal]);
-
-  const handleAddNew = useCallback(() => {
-    setSelectedNews(null);
-    open();
-  }, [open]);
-
-  const handleFormSubmit = useCallback(
-    async (data: Partial<News>) => {
-      if (selectedNews) {
-        const payload: UpdateNewsRequest = {
-          id: selectedNews.id,
-          title: data.title!,
-          brief: data.brief!,
-          content: data.content!,
-          isDisplay: data.isDisplay!,
-          image: data.image!,
-        };
-        await updateNews(String(selectedNews.id), payload);
-      } else {
-        const payload: CreateNewsRequest = {
-          title: data.title!,
-          brief: data.brief!,
-          content: data.content!,
-          isDisplay: data.isDisplay!,
-          image: data.image!,
-        };
-        await createNews(payload);
-      }
-      setSelectedNews(null);
-      close();
-    },
-    [selectedNews, updateNews, createNews, close]
-  );
 
   if (isLoading) {
     return (
@@ -186,7 +191,7 @@ const NewsManagementPage = () => {
             setSelectedNews(null);
             close();
           }}
-          onSubmit={handleFormSubmit}
+          onSubmit={(data) => handleFormSubmit(data, selectedNews)}
         />
       </FormModal>
 
@@ -196,7 +201,7 @@ const NewsManagementPage = () => {
           setNewsToDelete(null);
           closeDeleteModal();
         }}
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => handleConfirmDelete(newsToDelete)}
         entityLabel={newsToDelete?.title}
       />
 

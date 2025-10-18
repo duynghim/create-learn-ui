@@ -11,7 +11,8 @@ import React, {
 } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApiClient } from '@/api/authApi';
-import type { LoginRequest, AuthState } from '@/types';
+import { decodeAccessTokenUser, isExpired } from '@/utils';
+import type { LoginRequest, AuthState, UserLogin } from '@/types';
 
 interface AuthContextType extends AuthState {
   login: (
@@ -27,16 +28,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
-}
-
-/** Type guard for errors that carry an HTTP status code */
-function hasStatus(e: unknown): e is { status: number } {
-  return (
-    typeof e === 'object' &&
-    e !== null &&
-    'status' in e &&
-    typeof (e as { status: unknown }).status === 'number'
-  );
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -94,21 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuthStatus = useCallback(async () => {
     const token = authApiClient.getStoredToken();
 
-    if (token) {
-      // Token exists, assume valid until we get 401 from API calls
-      const nextState: AuthState = {
-        isLoggedIn: true,
-        user: { id: 'user' },
-        isLoading: false,
-        error: null,
-      };
-      setAuthState(nextState);
-      writeSnapshot({
-        isLoggedIn: nextState.isLoggedIn,
-        user: nextState.user,
-      });
-    } else {
-      // No token, user is logged out
+    if (!token) {
       const nextState: AuthState = {
         isLoggedIn: false,
         user: null,
@@ -117,6 +94,39 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       };
       setAuthState(nextState);
       writeSnapshot({ isLoggedIn: nextState.isLoggedIn, user: nextState.user });
+      return;
+    }
+
+    // Try decode user from token quickly to avoid flicker
+    const decoded = decodeAccessTokenUser(token);
+
+    // If expired, optionally try refresh; otherwise logout-ish state
+    if (decoded && isExpired(decoded.exp)) {
+      try {
+        const refreshed = await authApiClient.refresh();
+        authApiClient.setToken(refreshed.accessToken);
+        const freshUser = decodeAccessTokenUser(refreshed.accessToken);
+        const nextState: AuthState = {
+          isLoggedIn: !!freshUser,
+          user: freshUser,
+          isLoading: false,
+          error: null,
+        };
+        setAuthState(nextState);
+        writeSnapshot({
+          isLoggedIn: nextState.isLoggedIn,
+          user: nextState.user,
+        });
+      } catch {
+        authApiClient.removeTokens();
+        setAuthState({
+          isLoggedIn: false,
+          user: null,
+          isLoading: false,
+          error: null,
+        });
+        writeSnapshot({ isLoggedIn: false, user: null });
+      }
     }
   }, [writeSnapshot]);
 
@@ -129,14 +139,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const response = await authApiClient.login(credentials);
 
         if (response.status === 200 && response.data) {
-          // Store tokens
           authApiClient.setToken(response.data.accessToken);
           authApiClient.setRefreshToken(response.data.refreshToken);
 
-          // Update auth state
+          // Prefer server-provided user; fallback to decode from token
+          const serverUser = response.data.userLogin as UserLogin | undefined;
+          const decodedUser = decodeAccessTokenUser(response.data.accessToken);
+          const user = serverUser ?? decodedUser ?? null;
+
           const nextState: AuthState = {
-            isLoggedIn: true,
-            user: { id: 'user' },
+            isLoggedIn: !!user,
+            user,
             isLoading: false,
             error: null,
           };
@@ -213,19 +226,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         ...prev,
         isLoggedIn: snap.isLoggedIn,
         user: snap.user,
-        isLoading: true, // we’ll still verify with backend
+        isLoading: true, 
         error: null,
       }));
     }
 
-    // Fire and forget; checkAuthStatus will set final state
     void checkAuthStatus();
   }, [checkAuthStatus, readSnapshot]);
-
-  // Optional: debug state changes
-  // useEffect(() => {
-  //   console.log('Auth state changed:', authState);
-  // }, [authState]);
 
   const contextValue: AuthContextType = React.useMemo(
     () => ({

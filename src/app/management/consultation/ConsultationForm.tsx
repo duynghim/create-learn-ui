@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, TextInput, Textarea, Group, Stack } from '@mantine/core';
+import { Button, TextInput, Textarea, Group, Stack, Select } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import type { Consultation } from '@/types';
 
@@ -16,6 +16,7 @@ interface FormValues {
   phoneNumber: string;
   email: string;
   content: string;
+  status: string;
 }
 
 const ConsultationForm: React.FC<ConsultationFormProps> = ({
@@ -31,6 +32,7 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
       phoneNumber: initialValues?.phoneNumber || '',
       email: initialValues?.email || '',
       content: initialValues?.content || '',
+      status: initialValues?.status || 'PROCESSING',
     },
     validate: {
       customerName: (value) => (value ? null : 'Customer name is required'),
@@ -41,8 +43,14 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
         return null;
       },
       content: (value) => (value ? null : 'Content is required'),
+      status: (value) => (value ? null : 'Status is required'),
     },
   });
+
+  const statusOptions = [
+    { value: 'PROCESSING', label: 'Processing' },
+    { value: 'PROCESSED', label: 'Processed' },
+  ];
 
   const handleSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
@@ -90,6 +98,15 @@ const ConsultationForm: React.FC<ConsultationFormProps> = ({
           placeholder="Enter consultation content"
           minRows={4}
           {...form.getInputProps('content')}
+        />
+
+        <Select
+          radius="md"
+          withAsterisk
+          label="Status"
+          placeholder="Select consultation status"
+          data={statusOptions}
+          {...form.getInputProps('status')}
         />
 
         <Group justify="flex-end" mt="md">

@@ -1,16 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, TextInput, Select, Group, Box } from '@mantine/core';
+import { Button, TextInput, Group, Box } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import type { Schedule, ClassOption } from '@/types';
+import type { Schedule } from '@/types';
 
 interface ScheduleFormProps {
   initialValues?: Schedule | null;
   onSubmit: (data: Partial<Schedule>) => Promise<void>;
   onCancel: () => void;
-  classOptions: ClassOption[];
-  isLoadingClassOptions?: boolean;
 }
 
 interface FormValues {
@@ -22,8 +20,6 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   initialValues,
   onSubmit,
   onCancel,
-  classOptions,
-  isLoadingClassOptions = false,
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -66,19 +62,6 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         radius="md"
       />
 
-      <Select
-        label="Class"
-        placeholder="Select a class"
-        data={classOptions}
-        {...form.getInputProps('clazzId')}
-        required
-        mb="md"
-        disabled={isLoadingClassOptions}
-        searchable
-        clearable
-        radius="md"
-      />
-
       <Group justify="flex-end" mt="lg">
         <Button
           size="sm"
@@ -89,7 +72,13 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
         >
           Cancel
         </Button>
-        <Button size="sm" radius="md" type="submit" loading={isSubmitting}>
+        <Button
+          size="sm"
+          radius="md"
+          type="submit"
+          loading={isSubmitting}
+          disabled
+        >
           {initialValues ? 'Update' : 'Create'} Schedule
         </Button>
       </Group>

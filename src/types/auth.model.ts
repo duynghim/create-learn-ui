@@ -1,3 +1,4 @@
+import { UserLogin } from '@/types';
 export interface LoginRequest {
   username: string;
   password: string;
@@ -10,6 +11,7 @@ export interface LoginResponse {
   data: {
     refreshToken: string;
     accessToken: string;
+    userLogin: UserLogin;
   };
 }
 
@@ -22,7 +24,7 @@ export interface User {
 
 export interface AuthState {
   isLoggedIn: boolean;
-  user: User | null;
+  user: UserLogin | null;
   isLoading: boolean;
   error: string | null;
 }

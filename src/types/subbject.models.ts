@@ -4,6 +4,7 @@ export interface Subject extends BaseEntity {
   name: string;
   description?: string;
   iconBase64?: string;
+  icon?: string | File;
 }
 
 export interface CreateSubjectRequest {
@@ -25,4 +26,10 @@ export interface SubjectApiResponse {
 
 export interface SubjectApiFilters extends ApiFilters {
   name?: string;
+}
+
+export interface PopularSubjectCardProps {
+  id: number;
+  name: string;
+  imageSrc: string;
 }

@@ -31,8 +31,6 @@ const SchedulePage = () => {
     totalPages,
     isLoading,
     error,
-    classOptions,
-    isLoadingClassOptions,
     createSchedule,
     updateSchedule,
     deleteSchedule,
@@ -62,11 +60,6 @@ const SchedulePage = () => {
         header: 'Time',
         key: 'time',
         render: (schedule) => schedule.time || '—',
-      },
-      {
-        header: 'Class ID',
-        key: 'clazzId',
-        render: (schedule) => schedule.clazzId || '—',
       },
     ],
     []
@@ -162,7 +155,7 @@ const SchedulePage = () => {
           close();
         }}
         title={selectedSchedule ? 'Edit Schedule' : 'Add Schedule'}
-        size="sm"
+        size="md"
       >
         <ScheduleForm
           initialValues={selectedSchedule}
@@ -171,8 +164,6 @@ const SchedulePage = () => {
             close();
           }}
           onSubmit={handleFormSubmit}
-          classOptions={classOptions}
-          isLoadingClassOptions={isLoadingClassOptions}
         />
       </FormModal>
 

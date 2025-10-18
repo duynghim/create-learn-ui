@@ -18,7 +18,9 @@ import {
   IconChevronLeft,
   IconChalkboardTeacher,
   IconCalendar,
-  IconNews
+  IconNews,
+  IconUserPlus,
+  IconCalendarUser,
 } from '@tabler/icons-react';
 import classes from './Sidebar.module.css';
 import React from 'react';
@@ -67,19 +69,33 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     href: '/management/schedule',
     description: 'Manage Schedule',
   },
-   {
+  {
     id: 'consultation',
     label: 'Consultation',
     icon: IconCalendar,
     href: '/management/consultation',
     description: 'Manage Consultation',
   },
-    {
+  {
     id: 'news',
     label: 'News',
-    icon: IconNews, 
+    icon: IconNews,
     href: '/management/news',
     description: 'Manage News Articles',
+  },
+  {
+    id: 'account',
+    label: 'Account',
+    icon: IconUserPlus,
+    href: '/management/account',
+    description: 'Manage Account',
+  },
+  {
+    id: 'registration',
+    label: 'Registration',
+    icon: IconCalendarUser,
+    href: '/management/registration',
+    description: 'Manage Registration',
   },
 ];
 

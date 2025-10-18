@@ -7,25 +7,17 @@ import {
   TextInput,
   Textarea,
   Button,
-  Badge,
-  Grid,
-  Divider,
-  Container,
   Alert,
+  Box,
+  Notification,
 } from '@mantine/core';
+import { IconX, IconCheck } from '@tabler/icons-react';
+
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import GradientBox from '@/components/gradient-box/GradientBox';
 import { useConsultationQuery } from '@/hooks';
 import classes from './FindBestClassSection.module.css';
-
-interface ClassCardTypeProps {
-  imageUrl: string;
-  title: string;
-  grade: string;
-  description: string;
-  titleButton: string;
-}
 
 interface ConsultationFormValues {
   customerName: string;
@@ -52,86 +44,9 @@ const FORM_VALIDATION = {
   content: (value: string) => (value ? null : 'Content is required'),
 };
 
-// Mock data function for recommended classes (unchanged)
-const getMockRecommendedClasses = async (): Promise<ClassCardTypeProps[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  return [
-    {
-      imageUrl: 'https://via.placeholder.com/300x200',
-      title: 'Introduction to React for Beginners',
-      grade: 'Grades 6-8',
-      description:
-        'Learn the fundamentals of React.js and build your first interactive web application. Perfect for students new to programming.',
-      titleButton: 'Enroll Now',
-    },
-    {
-      imageUrl: 'https://via.placeholder.com/300x200',
-      title: 'Advanced JavaScript Programming',
-      grade: 'Grades 9-12',
-      description:
-        'Master advanced JavaScript concepts including async/await, closures, and modern ES6+ features for web development.',
-      titleButton: 'Start Learning',
-    },
-    {
-      imageUrl: 'https://via.placeholder.com/300x200',
-      title: 'Web Design with HTML & CSS',
-      grade: 'Grades 5-7',
-      description:
-        'Create beautiful and responsive websites using HTML and CSS. Learn design principles and modern web development practices.',
-      titleButton: 'Join Class',
-    },
-  ];
-};
-
-const RecommendedClassesList = ({
-  classes,
-}: {
-  classes: ClassCardTypeProps[];
-}) => {
-  if (classes.length === 0) return null;
-
-  return (
-    <Container fluid mt={24}>
-      <Text fz="1.25rem" fw={500}>
-        Here are the classes recommended based on your consultation request
-      </Text>
-      <Stack gap={24} mt={16}>
-        {classes.map((classItem) => (
-          <div key={classItem.title}>
-            <Grid>
-              <Grid.Col span={2}>
-                <Text
-                  fw={700}
-                  className="cursor-pointer"
-                  fz="0.875rem"
-                  c="#0288d1"
-                >
-                  {classItem.title}
-                </Text>
-              </Grid.Col>
-              <Grid.Col span={2}>
-                <Badge variant="light" fw={400}>
-                  {classItem.grade}
-                </Badge>
-              </Grid.Col>
-              <Grid.Col span={8}>
-                <Text fw={400} c="gray.6" fz="0.875rem" ta="left">
-                  {classItem.description}
-                </Text>
-              </Grid.Col>
-            </Grid>
-            <Divider />
-          </div>
-        ))}
-      </Stack>
-    </Container>
-  );
-};
-
 const FindBestClassSection = () => {
-  const [recommendedClasses, setRecommendedClasses] = useState<
-    ClassCardTypeProps[]
-  >([]);
+  const xIcon = <IconX size={20} />;
+  const checkIcon = <IconCheck size={20} />;
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -158,17 +73,17 @@ const FindBestClassSection = () => {
         content: values.content,
       });
 
-      setSuccessMessage('Consultation request submitted successfully! We will contact you soon.');
-      
-      // Show recommended classes after successful submission
-      const classes = await getMockRecommendedClasses();
-      setRecommendedClasses(classes);
-      
+      setSuccessMessage(
+        'Consultation request submitted successfully! We will contact you soon.'
+      );
+
       // Reset form
       form.reset();
     } catch (error) {
       console.error('Error submitting consultation:', error);
-      setErrorMessage('Failed to submit consultation request. Please try again.');
+      setErrorMessage(
+        'Failed to submit consultation request. Please try again.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -181,16 +96,19 @@ const FindBestClassSection = () => {
 
   return (
     <GradientBox direction="column" py={48} intensity="light">
-      <Text
-        fz={{ base: '2.57rem', md: '2.7rem', lg: '2.99rem' }}
-        ta="center"
-        fw={500}
-      >
-        Request a Free Consultation
-      </Text>
-      <Text ta="center" fw={400} fz="1rem">
-        Tell us about your learning needs and we'll help you find the perfect classes for your child
-      </Text>
+      <Box px={20}>
+        <Text
+          fz={{ base: '2.57rem', md: '2.7rem', lg: '2.99rem' }}
+          ta="center"
+          fw={500}
+        >
+          Request a Free Consultation
+        </Text>
+        <Text ta="center" fw={400} fz="1rem">
+          Tell us about your learning needs and we&#39;ll help you find the
+          perfect classes for your child
+        </Text>
+      </Box>
       <Paper
         maw={1152}
         w={{ base: '95%', xssm: '80%', lg: 1152 }}
@@ -198,15 +116,27 @@ const FindBestClassSection = () => {
         mt={40}
       >
         {successMessage && (
-          <Alert variant="light" color="green" mb="md">
+          <Notification
+            icon={checkIcon}
+            color="teal"
+            title="Registration Success"
+            withCloseButton={false}
+            mb="md"
+          >
             {successMessage}
-          </Alert>
+          </Notification>
         )}
-        
+
         {errorMessage && (
-          <Alert variant="light" color="red" mb="md">
+          <Notification
+            icon={xIcon}
+            color="red"
+            title="Something Wrong, please try again!"
+            withCloseButton={false}
+            mb="md"
+          >
             {errorMessage}
-          </Alert>
+          </Notification>
         )}
 
         <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -220,13 +150,14 @@ const FindBestClassSection = () => {
               alt="Consultation Form Image"
               w={254}
             />
-            <Stack gap={16} flex={1}>
+            <Stack gap={16} flex={1} w="100%">
               <TextInput
                 {...inputProps}
                 withAsterisk
                 label="Full Name"
                 placeholder="Enter your full name"
                 {...form.getInputProps('customerName')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <TextInput
@@ -235,6 +166,7 @@ const FindBestClassSection = () => {
                 label="Phone Number"
                 placeholder="Enter your phone number"
                 {...form.getInputProps('phoneNumber')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <TextInput
@@ -244,15 +176,17 @@ const FindBestClassSection = () => {
                 placeholder="Enter your email address"
                 type="email"
                 {...form.getInputProps('email')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <Textarea
                 {...inputProps}
                 withAsterisk
                 label="Tell us about your learning needs"
-                placeholder="Describe what type of classes you're looking for, your child's age, interests, experience level, or any specific questions you have..."
+                placeholder="Describe what type of classes you're looking for"
                 minRows={4}
                 {...form.getInputProps('content')}
+                w={{ base: '90%', md: 400 }}
               />
 
               <Button
@@ -267,8 +201,6 @@ const FindBestClassSection = () => {
             </Stack>
           </Flex>
         </form>
-        
-        {/* {!isLoading && <RecommendedClassesList classes={recommendedClasses} />} */}
       </Paper>
     </GradientBox>
   );

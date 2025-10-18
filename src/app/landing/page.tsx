@@ -7,6 +7,7 @@ import FeatureCardSection from '@/components/landing/feature-card-section/Featur
 import PopularClassSection from '@/components/landing/popular-class-section/PopularClassSection';
 import FreeClassesSection from '@/components/landing/free-classes-section/FreeClassesSection';
 import PopularSubjectSection from '@/components/landing/popular-subject-section/PopularSubjectSection';
+import { NewsSection } from '@/components';
 
 const LandingPage = () => {
   return (
@@ -18,6 +19,7 @@ const LandingPage = () => {
       <PopularSubjectSection />
       <FindBestClassSection />
       <CustomerReviewSection />
+      <NewsSection />
     </>
   );
 };

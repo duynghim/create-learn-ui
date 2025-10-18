@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Center, Alert, Loader, Container, Image } from '@mantine/core';
-import { useSubjectQuery } from '@/hooks';
+import { Center, Alert, Loader, Container, Text, Image } from '@mantine/core';
+import { useSubjectQuery, useEntityCrud } from '@/hooks';
 import type {
   Subject,
   CreateSubjectRequest,
@@ -24,6 +24,7 @@ const PAGE_SIZE = 10;
 
 const SubjectPage = () => {
   const [page, setPage] = useState(0);
+
   const {
     subjects,
     totalElements,
@@ -44,6 +45,50 @@ const SubjectPage = () => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [subjectToDelete, setSubjectToDelete] = useState<Subject | null>(null);
 
+  const {
+    handleEdit,
+    handleDeleteClick,
+    handleConfirmDelete,
+    handleAddNew,
+    handleFormSubmit,
+  } = useEntityCrud({
+    entities: subjects,
+    onEdit: setSelectedSubject,
+    onDelete: (entity) => {
+      setSubjectToDelete(entity);
+      if (entity) {
+        openDeleteModal();
+      } else {
+        closeDeleteModal();
+      }
+    },
+    onAdd: open,
+    onClose: close,
+    createMutation: createSubject,
+    updateMutation: updateSubject,
+    deleteMutation: deleteSubject,
+    entityName: 'Subject',
+    getEntityId: (s) => s.id,
+    getEntityLabel: (s) => s.name,
+    createPayload: (data, isUpdate = false) => {
+      if (isUpdate) {
+        return {
+          id: selectedSubject!.id,
+          name: data.name!,
+          description: data.description!,
+          icon: data.icon ? (data.icon as unknown as File) : undefined,
+          iconBase64: data.iconBase64,
+        } as UpdateSubjectRequest;
+      } else {
+        return {
+          name: data.name!,
+          description: data.description!,
+          icon: data.icon ? (data.icon as unknown as File) : undefined,
+        } as CreateSubjectRequest;
+      }
+    },
+  });
+
   const columns: ColumnDef<Subject>[] = useMemo(
     () => [
       {
@@ -53,82 +98,30 @@ const SubjectPage = () => {
           subject.iconBase64 ? (
             <Image
               src={`data:image/png;base64,${subject.iconBase64}`}
-              alt={`${subject.name} icon`}
+              alt={subject.name ?? 'icon'}
               maw={30}
               mah={30}
               fit="contain"
             />
           ) : (
-            'No icon'
+            <Text size="sm">No icon</Text>
           ),
       },
-      { header: 'Name', key: 'name' },
-      { header: 'Description', key: 'description' },
+      {
+        header: 'Name',
+        key: 'name',
+        render: (s) => <Text fw={500}>{s.name}</Text>,
+      },
+      {
+        header: 'Description',
+        key: 'description',
+        render: (s) => <Text size="sm">{s.description ?? ''}</Text>,
+      },
     ],
     []
   );
 
   const caption = `Showing ${subjects.length} of total ${totalElements} items.`;
-
-  const handleEdit = useCallback(
-    (subjectId: string | number) => {
-      const subject =
-        subjects.find((x) => String(x.id) === String(subjectId)) ?? null;
-      setSelectedSubject(subject);
-      open();
-    },
-    [subjects, open]
-  );
-
-  const handleDeleteClick = useCallback(
-    (subjectId: string | number) => {
-      const subject =
-        subjects.find((x) => String(x.id) === String(subjectId)) ?? null;
-      setSubjectToDelete(subject);
-      openDeleteModal();
-    },
-    [subjects, openDeleteModal]
-  );
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!subjectToDelete) return;
-    try {
-      await deleteSubject(String(subjectToDelete.id));
-      closeDeleteModal();
-      setSubjectToDelete(null);
-    } catch (err) {
-      console.error('Failed to delete subject:', err);
-    }
-  }, [deleteSubject, subjectToDelete, closeDeleteModal]);
-
-  const handleAddNew = useCallback(() => {
-    setSelectedSubject(null);
-    open();
-  }, [open]);
-
-  const handleFormSubmit = useCallback(
-    async (data: Partial<Subject> & { icon?: File }) => {
-      if (selectedSubject) {
-        const payload: UpdateSubjectRequest = {
-          id: selectedSubject.id,
-          name: data.name!,
-          description: data.description,
-          icon: data.icon,
-        };
-        await updateSubject(String(selectedSubject.id), payload);
-      } else {
-        const payload: CreateSubjectRequest = {
-          name: data.name!,
-          description: data.description,
-          icon: data.icon,
-        };
-        await createSubject(payload);
-      }
-      setSelectedSubject(null);
-      close();
-    },
-    [selectedSubject, updateSubject, createSubject, close]
-  );
 
   if (isLoading) {
     return (
@@ -156,8 +149,8 @@ const SubjectPage = () => {
           setSelectedSubject(null);
           close();
         }}
-        title={selectedSubject ? 'Edit subject' : 'Add subject'}
-        size="sm"
+        title={selectedSubject ? 'Edit Subject' : 'Add Subject'}
+        size="md"
       >
         <SubjectForm
           initialValues={selectedSubject}
@@ -165,7 +158,7 @@ const SubjectPage = () => {
             setSelectedSubject(null);
             close();
           }}
-          onSubmit={handleFormSubmit}
+          onSubmit={(data) => handleFormSubmit(data, selectedSubject)}
         />
       </FormModal>
 
@@ -175,19 +168,19 @@ const SubjectPage = () => {
           setSubjectToDelete(null);
           closeDeleteModal();
         }}
-        onConfirm={handleConfirmDelete}
-        entityLabel={subjectToDelete?.name}
+        onConfirm={() => handleConfirmDelete(subjectToDelete)}
+        entityLabel={subjectToDelete ? subjectToDelete.name : undefined}
       />
 
       <EntityTable<Subject>
         data={subjects}
         columns={columns}
         caption={caption}
-        getRowId={(subject) => String(subject.id)}
+        getRowId={(s) => String(s.id)}
         onEdit={(row) => handleEdit(row.id)}
         onDelete={(row) => handleDeleteClick(row.id)}
         stickyHeader
-        minWidth={500}
+        minWidth={700}
       />
 
       <PaginationBar

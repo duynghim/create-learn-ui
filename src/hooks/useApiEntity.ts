@@ -1,4 +1,3 @@
-// `src/hooks/useApiEntity.ts`
 import { useState, useCallback } from 'react';
 
 interface ApiEntityState<T> {

@@ -30,7 +30,7 @@ export const useScheduleQuery = (params: ApiFilters = {}) => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const schedules = response?.data ?? [];
+  const schedules = response?.data.data ?? [];
   const totalElements = response?.data?.totalElements ?? 0;
   const totalPages = response?.data?.totalPages ?? 0;
 

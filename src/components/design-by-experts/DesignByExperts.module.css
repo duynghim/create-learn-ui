@@ -1,0 +1,16 @@
+.iconResponsive {
+    height: 24px;
+}
+
+.iconApple {
+    height: 32px;
+}
+
+@media (min-width: 35rem) {
+    .iconResponsive {
+        height: 36px;
+    }
+    .iconApple {
+        height: 46px;
+    }
+}

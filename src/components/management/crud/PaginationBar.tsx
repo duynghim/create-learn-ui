@@ -7,18 +7,14 @@ type PaginationBarProps = {
   totalPages: number; // backend total pages (0-based logic friendly)
   pageZeroBased: number; // current page index (0-based)
   onChangeZeroBased: (page: number) => void;
-  hidden?: boolean;
 };
 
 export default function PaginationBar({
   totalPages,
   pageZeroBased,
   onChangeZeroBased,
-  hidden,
 }: Readonly<PaginationBarProps>) {
-  if (hidden || totalPages <= 1) return null;
-
-  // Mantine Pagination is 1-based; convert both ways
+  // Man tine Pagination is 1-based; convert both ways
   const value = pageZeroBased + 1;
 
   return (

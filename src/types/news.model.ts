@@ -20,13 +20,6 @@ export interface UpdateNewsRequest extends Partial<CreateNewsRequest> {
   id: string;
 }
 
-export interface NewsApiResponse {
-  status: number;
-  message: string;
-  timestamp: string;
-  data: News[];
-}
-
 export interface NewsApiFilters extends ApiFilters {
   title?: string;
   isDisplay?: boolean;

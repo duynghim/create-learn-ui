@@ -6,6 +6,8 @@ import ClassCard from '@/components/class-card/ClassCard';
 import { useEffect, useState } from 'react';
 import type { Class } from '@/types';
 import { classApiClient } from '@/api';
+import { useClassQuery } from '@/hooks';
+import { useRouter } from 'next/navigation';
 
 const FREE_CLASSES_BUTTON_TEXT = 'Earn Free';
 const CONTAINER_MAX_WIDTH = 1152;
@@ -22,31 +24,27 @@ const TITLE_FONT_SIZES = { base: '2.57rem', sm: '2.78rem', lg: '2.99rem' };
 const DESCRIPTION_FONT_SIZE = '1.25rem';
 
 const FreeClassesSection = () => {
-  const [freeClasses, setFreeClasses] = useState<Class[]>([]);
+  const { classes, isLoading } = useClassQuery({ page: 0, pageSize: 100 });
+  const router = useRouter();
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const resp = await classApiClient.getFreeClasses();
-        setFreeClasses(resp.data.data);
-      } catch {
-        if (!cancelled) setFreeClasses([]);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const handleClassClick = async (classId: string | number) => {
+    router.push(`/class/${classId}`);
+  };
 
   return (
     <GradientBox py={SECTION_PADDING}>
-      <Stack maw={CONTAINER_MAX_WIDTH} w="100%" gap={CONTENT_GAP}>
+      <Stack
+        maw={CONTAINER_MAX_WIDTH}
+        w="100%"
+        gap={CONTENT_GAP}
+        id="free-classes-section"
+      >
         <Flex direction={{ base: 'column', lg: 'row' }} gap={CARDS_GAP}>
           <Flex
             flex={1}
             direction="column"
             justify="center"
+            px={20}
             pr={{ lg: TEXT_SECTION_PADDING_RIGHT }}
           >
             <Text c="white" fz={TITLE_FONT_SIZES}>
@@ -68,7 +66,7 @@ const FreeClassesSection = () => {
             justify="center"
             display={{ base: 'none', lg: 'flex' }}
           >
-            {freeClasses.slice(0, 2).map((freeClass) => (
+            {classes.slice(0, 2).map((freeClass) => (
               <Flex
                 key={freeClass.id ?? freeClass.brief ?? freeClass.name}
                 w={`calc(50% - ${CARD_GAP_ADJUSTMENT}px)`}
@@ -77,9 +75,9 @@ const FreeClassesSection = () => {
                 <ClassCard
                   imageUrl={freeClass.image || 'https://picsum.photos/400/200'}
                   title={freeClass.brief || freeClass.name || 'Class'}
-                  grade={freeClass.grades?.map((g) => g.name).join(', ') || ''}
-                  description={freeClass.description || ''}
+                  description={freeClass.brief || ''}
                   titleButton={FREE_CLASSES_BUTTON_TEXT}
+                  onButtonClick={() => handleClassClick(freeClass.id)}
                 />
               </Flex>
             ))}
@@ -91,7 +89,7 @@ const FreeClassesSection = () => {
           rowGap={{ base: CARDS_GAP, lg: CARDS_GAP }}
           justify="center"
         >
-          {freeClasses.slice(0, 6).map((freeClass, index) => (
+          {classes.slice(0, 6).map((freeClass, index) => (
             <Flex
               key={
                 (freeClass.id ?? freeClass.brief ?? freeClass.name) +
@@ -111,9 +109,9 @@ const FreeClassesSection = () => {
               <ClassCard
                 imageUrl={freeClass.image || 'https://picsum.photos/400/200'}
                 title={freeClass.brief || freeClass.name || 'Class'}
-                grade={freeClass.grades?.map((g) => g.name).join(', ') || ''}
-                description={freeClass.description || ''}
+                description={freeClass.brief || ''}
                 titleButton={FREE_CLASSES_BUTTON_TEXT}
+                onButtonClick={() => handleClassClick(freeClass.id)}
               />
             </Flex>
           ))}

@@ -15,36 +15,92 @@ import {
   Stack,
   Menu,
   Text,
+  Loader,
+  HoverCard,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
 import { useAuth } from '@/contexts';
 import type { UserSectionProps, MobileDrawerProps } from '@/types';
+import { useSubjectQuery } from '@/hooks';
+import { PopularSubjectCard } from '@/components';
 
-const NAVIGATION_LINKS = [
+interface NavigationLink {
+  name: string;
+  href: string;
+}
+
+const NAVIGATION_LINKS: NavigationLink[] = [
   { name: 'Classes', href: '/classes' },
-  { name: 'Camps', href: '/camps' },
-  { name: 'Subjects', href: '/subjects' },
-  { name: 'Events', href: '/events' },
-  { name: 'Programs', href: '/programs' },
-  { name: 'About', href: '/about' },
   { name: 'Blog', href: '/blog' },
+  { name: 'Subjects', href: '/subjects' },
 ] as const;
+
+const placeholderIcon = 'https://via.placeholder.com/96x96.png?text=Subject';
+
+const SubjectHoverCard = () => {
+  const { subjects, isLoading } = useSubjectQuery({
+    page: 0,
+    pageSize: 100,
+  });
+
+  if (isLoading) return <Loader size="sm" />;
+
+  return (
+    <HoverCard>
+      <HoverCard.Target>
+        <Button
+          variant="white"
+          key="subject-link"
+          color="black"
+          component={Link}
+          href="/subjects"
+        >
+          Subjects
+        </Button>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>
+        <Flex px={10} wrap="wrap" gap={30} maw={950} justify="center">
+          {subjects.map((subject) => (
+            <PopularSubjectCard
+              width={147}
+              height={48}
+              imageSize={48}
+              gap={10}
+              key={subject.id}
+              id={subject.id}
+              name={subject.name}
+              imageSrc={
+                subject.iconBase64
+                  ? `data:image/png;base64,${subject.iconBase64}`
+                  : placeholderIcon
+              }
+            />
+          ))}
+        </Flex>
+      </HoverCard.Dropdown>
+    </HoverCard>
+  );
+};
 
 const NavigationLinks = () => {
   return (
     <>
-      {NAVIGATION_LINKS.map((link) => (
-        <Button
-          variant="white"
-          key={link.name}
-          color="black"
-          component={Link}
-          href={link.href}
-        >
-          {link.name}
-        </Button>
-      ))}
+      {NAVIGATION_LINKS.map((link) =>
+        link.name === 'Subjects' ? (
+          <SubjectHoverCard key={link.name} />
+        ) : (
+          <Button
+            variant="white"
+            key={link.name}
+            color="black"
+            component={Link}
+            href={link.href}
+          >
+            {link.name}
+          </Button>
+        )
+      )}
     </>
   );
 };
@@ -61,22 +117,14 @@ const Logo = () => (
   </Link>
 );
 
-const UserSection = ({ isLoggedIn, onLogout, isLoading }: UserSectionProps) => {
+const UserSection = ({ isLoggedIn, onLogout, userLogin }: UserSectionProps) => {
   const router = useRouter();
-
-  if (isLoading) {
-    return (
-      <div
-        style={{ width: 40, height: 40, display: 'flex', alignItems: 'center' }}
-      ></div>
-    );
-  }
 
   if (isLoggedIn) {
     return (
       <Group gap="xs">
         {/* Desktop Menu */}
-        <Menu shadow="md" width={200} position="bottom-end">
+        <Menu shadow="md" width={200}  position="bottom-end">
           <Menu.Target>
             <Avatar
               color="cyan"
@@ -85,14 +133,14 @@ const UserSection = ({ isLoggedIn, onLogout, isLoading }: UserSectionProps) => {
               visibleFrom="md"
               size="md"
             >
-              U
+              {userLogin?.role === 'ADMIN' ? 'A' : 'O'}
             </Avatar>
           </Menu.Target>
 
           <Menu.Dropdown>
             <Menu.Label>
-              <Text size="sm" fw={500}>
-                User
+              <Text size="md" fw={500}>
+                {userLogin?.sub}
               </Text>
               <Text size="xs" c="dimmed">
                 Logged In
@@ -102,6 +150,10 @@ const UserSection = ({ isLoggedIn, onLogout, isLoading }: UserSectionProps) => {
 
             <Menu.Item onClick={() => router.push('/management')}>
               Management
+            </Menu.Item>
+
+            <Menu.Item onClick={() => router.push('/current-profile')}>
+              Profile
             </Menu.Item>
 
             <Menu.Divider />
@@ -239,11 +291,8 @@ const MobileDrawer = ({
 };
 
 const Header = () => {
-  const { isLoggedIn, isLoading, logout } = useAuth();
+  const { isLoggedIn, isLoading, logout, user } = useAuth();
   const [isDrawerOpen, { open, close }] = useDisclosure(false);
-
-  // Debug logging
-  console.log('Header - Auth state:', { isLoggedIn, isLoading });
 
   return (
     <>
@@ -263,6 +312,7 @@ const Header = () => {
                 isLoggedIn={isLoggedIn}
                 onLogout={logout}
                 isLoading={isLoading}
+                userLogin={user}
               />
 
               {/* Mobile Menu Burger */}

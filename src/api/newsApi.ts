@@ -4,8 +4,8 @@ import type {
   CreateNewsRequest,
   UpdateNewsRequest,
   ApiConfig,
-  ApiFilters,
   ApiListResponse,
+  ApiSingleResponse
 } from '@/types';
 
 const config: ApiConfig = {
@@ -20,16 +20,14 @@ class NewsApiClient extends BaseApiClient<
 > {
   protected readonly endpoint = '/api/news';
 
- async getAll(
-    filters?: ClassApiFilters
-  ): Promise<ApiListResponse<Class> | undefined> {
-    const { buildQueryString } = await import('@/utils');
-    const qs = buildQueryString(
-      filters as
-        | Record<string, string | number | boolean | object | Date>
-        | undefined
-    );
-    return this.request<ApiListResponse<Class>>(`/api/news/admin`, {
+  async getAll(): Promise<ApiListResponse<News> | undefined> {
+    return this.request<ApiListResponse<News>>(`/api/news/admin`, {
+      method: 'GET',
+    });
+  }
+
+  async getById(id: string): Promise<ApiSingleResponse<News> | undefined> {
+    return this.request<ApiSingleResponse<News>>(`/api/news/public/${id}`, {
       method: 'GET',
     });
   }
