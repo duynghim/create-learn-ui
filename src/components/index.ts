@@ -15,3 +15,4 @@ export { default as PublicRegistrationForm } from './public-registration/PublicR
 export { default as NewsSection } from './landing/news-section/NewsSection'
 export { default as SafeHtml } from './html-santiner/HtmlSantiner';
 export { default as ExpertIcons } from './design-by-experts/DesignByExperts';
+export { default as PopularSubjectCard } from './popular-subject-card/PopularSubjectCard';

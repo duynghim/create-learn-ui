@@ -15,32 +15,98 @@ import {
   Stack,
   Menu,
   Text,
+  Loader,
+  HoverCard,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
 import { useAuth } from '@/contexts';
 import type { UserSectionProps, MobileDrawerProps } from '@/types';
+import { useSubjectQuery } from '@/hooks';
+import { PopularSubjectCard } from '@/components';
 
-const NAVIGATION_LINKS = [
+interface NavigationLink {
+  name: string;
+  href: string;
+}
+
+const NAVIGATION_LINKS: NavigationLink[] = [
   { name: 'Classes', href: '/classes' },
-  { name: 'Subjects', href: '/subjects' },
   { name: 'Blog', href: '/blog' },
+  { name: 'Subjects', href: '/subjects' },
 ] as const;
+
+const placeholderIcon = 'https://via.placeholder.com/96x96.png?text=Subject';
+
+const SubjectHoverCard = () => {
+  const { subjects, isLoading } = useSubjectQuery({
+    page: 0,
+    pageSize: 100,
+  });
+
+  if (isLoading) return <Loader size="sm" />;
+
+  return (
+    <HoverCard>
+      <HoverCard.Target>
+        <Button
+          variant="white"
+          key="subject-link"
+          color="black"
+          component={Link}
+          href="/subjects"
+        >
+          Subjects
+        </Button>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>
+        <Flex
+          px={10}
+          wrap="wrap"
+          gap={30}
+          maw={950}
+          justify="center"
+        >
+          {subjects.map((subject) => (
+            <PopularSubjectCard
+              width={147}
+              height={48}
+              imageSize={48}
+              gap={10}
+              key={subject.id}
+              id={subject.id}
+              name={subject.name}
+              imageSrc={
+                subject.iconBase64
+                  ? `data:image/png;base64,${subject.iconBase64}`
+                  : placeholderIcon
+              }
+            />
+          ))}
+        </Flex>
+      </HoverCard.Dropdown>
+    </HoverCard>
+  );
+};
 
 const NavigationLinks = () => {
   return (
     <>
-      {NAVIGATION_LINKS.map((link) => (
-        <Button
-          variant="white"
-          key={link.name}
-          color="black"
-          component={Link}
-          href={link.href}
-        >
-          {link.name}
-        </Button>
-      ))}
+      {NAVIGATION_LINKS.map((link) =>
+        link.name === 'Subjects' ? (
+          <SubjectHoverCard key={link.name} />
+        ) : (
+          <Button
+            variant="white"
+            key={link.name}
+            color="black"
+            component={Link}
+            href={link.href}
+          >
+            {link.name}
+          </Button>
+        )
+      )}
     </>
   );
 };

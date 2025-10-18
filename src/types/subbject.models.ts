@@ -27,3 +27,9 @@ export interface SubjectApiResponse {
 export interface SubjectApiFilters extends ApiFilters {
   name?: string;
 }
+
+export interface PopularSubjectCardProps {
+  id: number;
+  name: string;
+  imageSrc: string;
+}

@@ -1,17 +1,10 @@
-// src/components/landing/popular-subject-section/PopularSubjectSection.tsx
 'use client';
 
 import React from 'react';
-import { Flex, Text, Image, Container, Center, Loader } from '@mantine/core';
+import { Flex, Text, Container, Center, Loader } from '@mantine/core';
 import { useSubjectQuery } from '@/hooks';
-import type { Subject } from '@/types';
-
-interface PopularSubjectCardProps {
-  id: string | number;
-  name: string;
-  imageSrc: string;
-  description?: string;
-}
+import { PopularSubjectCard } from '@/components';
+import type { Subject ,PopularSubjectCardProps } from '@/types';
 
 const placeholderIcon = 'https://via.placeholder.com/96x96.png?text=Subject';
 
@@ -21,20 +14,7 @@ const toCardProps = (s: Subject): PopularSubjectCardProps => ({
   imageSrc: s.iconBase64
     ? `data:image/png;base64,${s.iconBase64}`
     : placeholderIcon,
-  description: s.description,
 });
-
-const PopularSubjectCard: React.FC<PopularSubjectCardProps> = ({
-  name,
-  imageSrc,
-}) => (
-  <Flex w={294} h={96} align="center" gap={20}>
-    <Image w={96} h={96} src={imageSrc} alt={name} radius="md" />
-    <Text fw="bold" c="#0000EE">
-      {name}
-    </Text>
-  </Flex>
-);
 
 const PopularSubjectSection: React.FC = () => {
   const { subjects, isLoading, error } = useSubjectQuery({
