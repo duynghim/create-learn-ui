@@ -16,3 +16,4 @@ export { default as NewsSection } from './landing/news-section/NewsSection'
 export { default as SafeHtml } from './html-santiner/HtmlSantiner';
 export { default as ExpertIcons } from './design-by-experts/DesignByExperts';
 export { default as PopularSubjectCard } from './popular-subject-card/PopularSubjectCard';
+export { default as NewsCard } from './news-card/NewsCard';

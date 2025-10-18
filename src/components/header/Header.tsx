@@ -1,4 +1,3 @@
-// src/components/header/Header.tsx
 'use client';
 
 import Image from 'next/image';
@@ -32,7 +31,7 @@ interface NavigationLink {
 
 const NAVIGATION_LINKS: NavigationLink[] = [
   { name: 'Classes', href: '/classes' },
-  { name: 'Blog', href: '/blog' },
+  { name: 'Blog', href: '/news' },
   { name: 'Subjects', href: '/subjects' },
 ] as const;
 

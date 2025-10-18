@@ -3,9 +3,6 @@
 import { Flex, Stack, Text } from '@mantine/core';
 import GradientBox from '@/components/gradient-box/GradientBox';
 import ClassCard from '@/components/class-card/ClassCard';
-import { useEffect, useState } from 'react';
-import type { Class } from '@/types';
-import { classApiClient } from '@/api';
 import { useClassQuery } from '@/hooks';
 import { useRouter } from 'next/navigation';
 
@@ -24,7 +21,7 @@ const TITLE_FONT_SIZES = { base: '2.57rem', sm: '2.78rem', lg: '2.99rem' };
 const DESCRIPTION_FONT_SIZE = '1.25rem';
 
 const FreeClassesSection = () => {
-  const { classes, isLoading } = useClassQuery({ page: 0, pageSize: 100 });
+  const { classes } = useClassQuery({ page: 0, pageSize: 100 });
   const router = useRouter();
 
   const handleClassClick = async (classId: string | number) => {
