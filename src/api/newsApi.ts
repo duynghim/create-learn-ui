@@ -5,6 +5,7 @@ import type {
   UpdateNewsRequest,
   ApiConfig,
   ApiListResponse,
+  ApiSingleResponse
 } from '@/types';
 
 const config: ApiConfig = {

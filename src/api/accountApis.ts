@@ -3,6 +3,7 @@ import type {
   Account,
   CreateAccountRequest,
   UpdateAccountRequest,
+  ApiSingleResponse,
 } from '@/types';
 import { BaseApiClient } from '@/api/baseApiClient';
 
@@ -17,6 +18,15 @@ class AccountApiClient extends BaseApiClient<
   UpdateAccountRequest
 > {
   protected readonly endpoint = '/api/accounts';
+
+  async getCurrentProfile(): Promise<ApiSingleResponse<Account> | undefined> {
+    return this.request<ApiSingleResponse<Account>>(
+      `${this.endpoint}/profile`,
+      {
+        method: 'GET',
+      }
+    );
+  }
 }
 
 export const accountApiClient = new AccountApiClient(config);

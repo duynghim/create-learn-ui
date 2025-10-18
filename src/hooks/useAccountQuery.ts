@@ -56,7 +56,18 @@ export const useAccountQuery = (params: ApiFilters = {}) => {
     },
   });
 
+  const getCurrentProfileQuery = useQuery({
+    queryKey: [...ACCOUNT_QUERY_KEY, 'current-profile'],
+    queryFn: async () => {
+      return await accountApiClient.getCurrentProfile();
+    },
+    staleTime: 5 * 60 * 1000, 
+  });
+
+  const currentProfile = getCurrentProfileQuery.data?.data ?? null;
+
   return {
+    currentProfile,
     accounts,
     totalElements,
     totalPages,

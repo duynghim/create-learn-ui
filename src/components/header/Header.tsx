@@ -60,13 +60,7 @@ const SubjectHoverCard = () => {
         </Button>
       </HoverCard.Target>
       <HoverCard.Dropdown>
-        <Flex
-          px={10}
-          wrap="wrap"
-          gap={30}
-          maw={950}
-          justify="center"
-        >
+        <Flex px={10} wrap="wrap" gap={30} maw={950} justify="center">
           {subjects.map((subject) => (
             <PopularSubjectCard
               width={147}
@@ -123,14 +117,14 @@ const Logo = () => (
   </Link>
 );
 
-const UserSection = ({ isLoggedIn, onLogout }: UserSectionProps) => {
+const UserSection = ({ isLoggedIn, onLogout, userLogin }: UserSectionProps) => {
   const router = useRouter();
 
   if (isLoggedIn) {
     return (
       <Group gap="xs">
         {/* Desktop Menu */}
-        <Menu shadow="md" width={200} position="bottom-end">
+        <Menu shadow="md" width={200}  position="bottom-end">
           <Menu.Target>
             <Avatar
               color="cyan"
@@ -139,14 +133,14 @@ const UserSection = ({ isLoggedIn, onLogout }: UserSectionProps) => {
               visibleFrom="md"
               size="md"
             >
-              U
+              {userLogin?.role === 'ADMIN' ? 'A' : 'O'}
             </Avatar>
           </Menu.Target>
 
           <Menu.Dropdown>
             <Menu.Label>
-              <Text size="sm" fw={500}>
-                User
+              <Text size="md" fw={500}>
+                {userLogin?.sub}
               </Text>
               <Text size="xs" c="dimmed">
                 Logged In
@@ -156,6 +150,10 @@ const UserSection = ({ isLoggedIn, onLogout }: UserSectionProps) => {
 
             <Menu.Item onClick={() => router.push('/management')}>
               Management
+            </Menu.Item>
+
+            <Menu.Item onClick={() => router.push('/current-profile')}>
+              Profile
             </Menu.Item>
 
             <Menu.Divider />
@@ -293,7 +291,7 @@ const MobileDrawer = ({
 };
 
 const Header = () => {
-  const { isLoggedIn, isLoading, logout } = useAuth();
+  const { isLoggedIn, isLoading, logout, user } = useAuth();
   const [isDrawerOpen, { open, close }] = useDisclosure(false);
 
   return (
@@ -314,6 +312,7 @@ const Header = () => {
                 isLoggedIn={isLoggedIn}
                 onLogout={logout}
                 isLoading={isLoading}
+                userLogin={user}
               />
 
               {/* Mobile Menu Burger */}

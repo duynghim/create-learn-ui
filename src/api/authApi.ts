@@ -77,6 +77,7 @@ class AuthApiClient {
       true
     );
   }
+  
 
   async logout(): Promise<void> {
     // Use direct backend call for logout
@@ -103,6 +104,37 @@ class AuthApiClient {
     } catch (error) {
       console.error('Token validation failed:', error);
       return { valid: false };
+    }
+  }
+  
+  async refresh(): Promise<{ accessToken: string; refreshToken: string }> {
+    try {
+      const refreshToken = this.getRefreshToken();
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
+      }
+      
+      const response = await this.request<{ accessToken: string; refreshToken: string }>(
+        '/api/auth/refresh',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${refreshToken}`
+          },
+        },
+        true // Call backend directly
+      );
+      
+      // Store the new tokens
+      this.setToken(response.accessToken);
+      this.setRefreshToken(response.refreshToken);
+      
+      return response;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      this.removeTokens(); // Clear tokens on refresh failure
+      throw error;
     }
   }
 
