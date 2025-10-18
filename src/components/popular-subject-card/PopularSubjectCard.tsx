@@ -11,6 +11,7 @@ interface PopularSubjectCardProps {
   imageSize?: number;
   gap?: number;
   id?: number;
+  fontSize?: string | number;
 }
 
 const PopularSubjectCard: React.FC<PopularSubjectCardProps> = ({
@@ -20,11 +21,12 @@ const PopularSubjectCard: React.FC<PopularSubjectCardProps> = ({
   height = 96,
   imageSize = 96,
   gap = 20,
+  fontSize = 16,
   id,
 }) => (
   <Flex w={width} h={height} align="center" gap={gap} id={id?.toString()}>
     <Image w={imageSize} h={imageSize} src={imageSrc} alt={name} radius="md" />
-    <Text fw="bold" c="#0000EE">
+    <Text fw="bold" c="#0000EE" fz={fontSize}>
       {name}
     </Text>
   </Flex>

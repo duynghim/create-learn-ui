@@ -20,6 +20,7 @@ type GradientBoxProps = BoxProps & {
   rowGap?: React.CSSProperties['rowGap'];
   style?: React.CSSProperties;
   children: React.ReactNode;
+  radius?: React.CSSProperties['borderRadius'];
 };
 
 // Extract constants for better maintainability
@@ -54,6 +55,7 @@ const GradientBox = ({
   children,
   gap,
   rowGap,
+  radius,
   ...props
 }: GradientBoxProps) => {
   const theme = useMantineTheme();
@@ -100,6 +102,7 @@ const GradientBox = ({
       rowGap={rowGap}
       style={{
         background: `linear-gradient(${deg}deg, ${colorFrom}, ${colorTo})`,
+        borderRadius: radius, 
         ...style,
       }}
     >

@@ -1,4 +1,3 @@
-// src/api/baseApiClient.ts
 import type {
   ApiConfig,
   ApiClient,
@@ -7,7 +6,7 @@ import type {
   ApiSingleResponse,
   ApiFilters,
 } from '@/types';
-import { fetchJSON, getAuthHeaders, buildQueryString } from '@/utils';
+import { fetchJSON, getAuthHeaders, buildQueryString, HttpError } from '@/utils';
 
 export abstract class BaseApiClient<
   T extends BaseEntity,
@@ -44,7 +43,28 @@ export abstract class BaseApiClient<
     options: RequestInit = {}
   ) {
     const url = `${this.baseURL}${endpoint}`;
-    return fetchJSON<TResponse>(url, this.buildRequestInit(options));
+    try {
+      return await fetchJSON<TResponse>(url, this.buildRequestInit(options));
+    } catch (err) {
+      // If unauthorized, try to refresh token and retry once
+      if (err instanceof HttpError && err.status === 401) {
+        try {
+          const { authApiClient } = await import('@/api/authApi');
+          // Prefer refresh() if available, fallback to refreshToken()
+          const refreshFn =
+            (authApiClient as unknown as { refresh?: () => Promise<unknown>; refreshToken?: () => Promise<unknown> }).refresh ??
+            (authApiClient as unknown as { refreshToken?: () => Promise<unknown> }).refreshToken;
+          if (typeof refreshFn === 'function') {
+            await refreshFn.call(authApiClient);
+            // Retry original request with new auth header
+            return await fetchJSON<TResponse>(url, this.buildRequestInit(options));
+          }
+        } catch {
+          // fall through to throw original error
+        }
+      }
+      throw err;
+    }
   }
 
   private serializeData(data: unknown): {

@@ -63,6 +63,7 @@ const SubjectHoverCard = () => {
         <Flex px={10} wrap="wrap" gap={30} maw={950} justify="center">
           {subjects.map((subject) => (
             <PopularSubjectCard
+              fontSize="0.875rem"
               width={147}
               height={48}
               imageSize={48}
@@ -124,7 +125,7 @@ const UserSection = ({ isLoggedIn, onLogout, userLogin }: UserSectionProps) => {
     return (
       <Group gap="xs">
         {/* Desktop Menu */}
-        <Menu shadow="md" width={200}  position="bottom-end">
+        <Menu shadow="md" width={200} position="bottom-end">
           <Menu.Target>
             <Avatar
               color="cyan"
