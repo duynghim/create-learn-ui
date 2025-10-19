@@ -31,6 +31,7 @@ export interface ApiSingleResponse<T> {
 }
 
 export interface ApiFilters {
+  id?: number;
   page?: number;
   size?: number;
   search?: string;

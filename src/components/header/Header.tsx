@@ -45,7 +45,7 @@ const SubjectHoverCard = () => {
   });
 
   const handleSubjectClick = (subjectId: number) => {
-    router.push(`/class?subjectId=${subjectId}`);
+    router.push(`/class/subject/${subjectId}`);
   };
 
   if (isLoading) return <Loader size="sm" />;
@@ -214,7 +214,7 @@ const MobileDrawer = ({
   };
 
   const handleSubjectClick = (subjectId: number) => {
-    router.push(`/classes?subjectId=${subjectId}`);
+    router.push(`/class/subject/${subjectId}`);
     onClose();
   };
 

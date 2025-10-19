@@ -1,3 +1,5 @@
+'use client';
+
 import { Class } from '@/types';
 import React from 'react';
 import { useRouter } from 'next/navigation';

@@ -11,3 +11,4 @@ export * from './useEntityCrud';
 export * from './useImageUpload';
 export * from './useAccountQuery';
 export * from './useRegistrationQuery';
+export * from './useClassPublicQuery';

@@ -4,25 +4,25 @@ import type {
   CreateClassRequest,
   UpdateClassRequest,
   ClassApiFilters,
-  ApiFilters,
 } from '@/types';
 
 const CLASS_QUERY_KEY = ['classes'] as const;
 
-export const useClassPublicQuery = (params: ApiFilters = {}) => {
+export const useClassPublicQuery = (params: ClassApiFilters = {}) => {
   const queryClient = useQueryClient();
-  const { page = 0, size = 10, search } = params;
+  const { page = 0, size = 10, search, subjectId } = params;
 
   const {
     data: response,
     isLoading,
     error,
   } = useQuery({
-    queryKey: [...CLASS_QUERY_KEY, { page, size, search }],
+    queryKey: [...CLASS_QUERY_KEY, { page, size, search, subjectId }],
     queryFn: async () => {
       const filters: ClassApiFilters = {
         page,
         size,
+        subjectId,
         ...(search && { search }),
       };
       return await classApiClient.getAllPublicClasses(filters);

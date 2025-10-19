@@ -99,7 +99,6 @@ const PublicRegistrationForm: React.FC<PublicRegistrationFormProps> = ({
             size="sm"
             type="submit"
             loading={isSubmitting}
-            color="fresh-green"
           >
             Register Now
           </Button>
