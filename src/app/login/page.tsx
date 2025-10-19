@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Button,
@@ -21,7 +21,6 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const LoginPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const {
     isLoggedIn,
     isLoading: authLoading,
@@ -50,11 +49,11 @@ const LoginPage = () => {
     console.log('🔄 Login page auth check:', { isLoggedIn, authLoading });
 
     if (!authLoading && isLoggedIn) {
-      const redirect = searchParams.get('redirect') || '/management';
+      const redirect = '/management';
       console.log('✅ User logged in, redirecting to:', redirect);
       router.replace(redirect);
     }
-  }, [isLoggedIn, authLoading, router, searchParams]);
+  }, [isLoggedIn, authLoading, router]);
 
   // Handle auth errors
   useEffect(() => {
