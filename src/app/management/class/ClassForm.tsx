@@ -78,12 +78,14 @@ const ClassForm: React.FC<ClassFormProps> = ({
       requirement: initialValues?.requirement || '',
       guarantee: initialValues?.guarantee || '',
       isDisplayed: initialValues?.isDisplayed ?? true,
-      subjectIds: initialValues?.subjects?.map(s => String(s.id)) || [],
-      gradeIds: initialValues?.grades?.map(g => String(g.id)) || [],
-      teacherId: initialValues?.teacher?.id ? String(initialValues.teacher.id) : '',
+      subjectIds: initialValues?.subjects?.map((s) => String(s.id)) || [],
+      gradeIds: initialValues?.grades?.map((g) => String(g.id)) || [],
+      teacherId: initialValues?.teacher?.id
+        ? String(initialValues.teacher.id)
+        : '',
       price: initialValues?.price ?? 0,
       schedules: initialValues?.scheduleResponses?.length
-        ? initialValues.scheduleResponses.map(s => ({
+        ? initialValues.scheduleResponses.map((s) => ({
             id: s.id,
             time: s.time || '',
             isNew: false,
@@ -92,13 +94,13 @@ const ClassForm: React.FC<ClassFormProps> = ({
         : [{ time: '', isNew: true, uid: uid() }],
     },
     validate: {
-      name: v => (v ? null : 'Name is required'),
-      brief: v => (v ? null : 'Brief is required'),
-      description: v => (v ? null : 'Description is required'),
-      teacherId: v => (v ? null : 'Teacher is required'),
-      price: v => (v >= 0 ? null : 'Price must be non-negative'),
+      name: (v) => (v ? null : 'Name is required'),
+      brief: (v) => (v ? null : 'Brief is required'),
+      description: (v) => (v ? null : 'Description is required'),
+      teacherId: (v) => (v ? null : 'Teacher is required'),
+      price: (v) => (v >= 0 ? null : 'Price must be non-negative'),
       schedules: {
-        time: value => (value ? null : 'Schedule time is required'),
+        time: (value) => (value ? null : 'Schedule time is required'),
       },
     },
   });
@@ -141,16 +143,16 @@ const ClassForm: React.FC<ClassFormProps> = ({
   );
 
   const subjectOptions = useMemo(
-    () => subjects.map(s => ({ value: String(s.id), label: s.name })),
+    () => subjects.map((s) => ({ value: String(s.id), label: s.name })),
     [subjects]
   );
   const gradeOptions = useMemo(
-    () => grades.map(g => ({ value: String(g.id), label: g.name })),
+    () => grades.map((g) => ({ value: String(g.id), label: g.name })),
     [grades]
   );
   const teacherOptions = useMemo(
     () =>
-      teachers.map(t => ({
+      teachers.map((t) => ({
         value: String(t.id),
         label: `${t.firstName} ${t.lastName}`,
       })),
@@ -179,7 +181,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
       if (form.values.schedules.length <= 1) return;
       const scheduleToRemove = form.values.schedules[index];
       if (scheduleToRemove.id && !scheduleToRemove.isNew) {
-        setDeletedScheduleIds(prev => [...prev, scheduleToRemove.id!]);
+        setDeletedScheduleIds((prev) => [...prev, scheduleToRemove.id!]);
       }
       form.removeListItem('schedules', index);
     },
@@ -189,7 +191,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
   const handleDeletedSchedules = useCallback(async () => {
     if (!deletedScheduleIds.length) return;
     await Promise.all(
-      deletedScheduleIds.map(scheduleId =>
+      deletedScheduleIds.map((scheduleId) =>
         scheduleApiClient.delete(String(scheduleId))
       )
     );
@@ -205,7 +207,10 @@ const ClassForm: React.FC<ClassFormProps> = ({
         if (!time) continue;
 
         if (s.isNew) {
-          const payload: CreateScheduleRequest = { time, clazzId: Number(classId) };
+          const payload: CreateScheduleRequest = {
+            time,
+            clazzId: Number(classId),
+          };
           createOrUpdate.push(scheduleApiClient.create(payload));
         } else if (s.id) {
           const payload: UpdateScheduleRequest = {
@@ -222,14 +227,16 @@ const ClassForm: React.FC<ClassFormProps> = ({
         queryClient.invalidateQueries({ queryKey: ['classes', classId] }),
         queryClient.invalidateQueries({ queryKey: ['classes'] }),
         queryClient.invalidateQueries({ queryKey: ['schedules'] }),
-        queryClient.invalidateQueries({ queryKey: ['schedules', 'class', classId] }),
+        queryClient.invalidateQueries({
+          queryKey: ['schedules', 'class', classId],
+        }),
       ]);
     },
     [handleDeletedSchedules, queryClient]
   );
 
   const handleSubmit = wrapSubmit<ExtendedFormValues>(
-    async payload => {
+    async (payload) => {
       const submitData: Partial<Class> = {
         ...payload,
         subjectIds: payload.subjectIds.map(Number),
@@ -237,7 +244,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
         teacherId: Number(payload.teacherId),
       };
 
-      const { schedules, ...classData } = submitData;
+      const { ...classData } = submitData;
 
       if (keepExistingImage && initialValues?.image) {
         classData.image = extractImagePath(initialValues.image);
@@ -253,7 +260,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
     },
     {
       imageField: 'image',
-      setImage: url => form.setFieldValue('image', url),
+      setImage: (url) => form.setFieldValue('image', url),
     }
   );
 
@@ -293,7 +300,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
           label="Description"
           withAsterisk
           value={form.values.description}
-          onChange={html => form.setFieldValue('description', html)}
+          onChange={(html) => form.setFieldValue('description', html)}
           minHeight={300}
           placeholder="Write the full content here…"
         />
@@ -368,7 +375,9 @@ const ClassForm: React.FC<ClassFormProps> = ({
         <FileInput
           label="Image"
           placeholder={
-            keepExistingImage ? 'Current image will be kept' : 'Select image (optional)'
+            keepExistingImage
+              ? 'Current image will be kept'
+              : 'Select image (optional)'
           }
           accept="image/*"
           value={selectedFile}
@@ -424,7 +433,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
 export default ClassForm;
 
-type GetInputProps = ReturnType<typeof useForm<any>>['getInputProps'];
+type GetInputProps = ReturnType<typeof useForm<unknown>>['getInputProps'];
 
 const ScheduleRow = React.memo(function ScheduleRow(props: {
   index: number;
@@ -442,7 +451,13 @@ const ScheduleRow = React.memo(function ScheduleRow(props: {
         {...getInputProps(`schedules.${index}.time`)}
         radius="md"
       />
-      <ActionIcon variant="light" color="blue" size="lg" onClick={onAdd} radius="md">
+      <ActionIcon
+        variant="light"
+        color="blue"
+        size="lg"
+        onClick={onAdd}
+        radius="md"
+      >
         <IconPlus size={16} />
       </ActionIcon>
       {canRemove && (

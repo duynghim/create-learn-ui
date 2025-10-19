@@ -2,14 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import {
-  Center,
-  Alert,
-  Loader,
-  Container,
-  Text,
-  Badge,
-} from '@mantine/core';
+import { Center, Alert, Loader, Container, Text, Badge } from '@mantine/core';
 import { useConsultationQuery, useEntityCrud } from '@/hooks';
 import type {
   Consultation,
@@ -30,11 +23,6 @@ const PAGE_SIZE = 10;
 
 const ConsultationsPage = () => {
   const [page, setPage] = useState(0);
-  const [sortField, setSortField] = useState<string>('');
-  const [sortDirection, setSortDirection] = useState<'ASC' | 'DESC'>('ASC');
-
-  // Construct sort parameter in the format "field,direction"
-  const sortParam = sortField ? `${sortField},${sortDirection}` : undefined;
 
   const {
     consultations,
@@ -48,7 +36,6 @@ const ConsultationsPage = () => {
   } = useConsultationQuery({
     page,
     size: PAGE_SIZE,
-    sort: sortParam,
   });
 
   const [opened, { open, close }] = useDisclosure(false);

@@ -9,10 +9,8 @@ import {
   BackgroundImage,
   Flex,
   Box,
-  Center,
   Container,
 } from '@mantine/core';
-import GradientBox from '@/components/gradient-box/GradientBox';
 import { ExpertIcons } from '@/components';
 
 const HERO_CONTENT = {
@@ -119,14 +117,6 @@ const MobileHero = () => {
 const HeroSection = () => {
   return (
     <Container maw="100%" px={0}>
-      {/*<GradientBox py={5}>*/}
-      {/*  /!*<Text c="white" mr={10} fw={500}>*!/*/}
-      {/*  /!*  {HERO_CONTENT.bannerText}*!/*/}
-      {/*  /!*</Text>*!/*/}
-      {/*  <Button variant="filled" color="fresh-green">*/}
-      {/*    {HERO_CONTENT.bannerCtaText}*/}
-      {/*  </Button>*/}
-      {/*</GradientBox>*/}
       <Box>
         <DesktopHero />
         <MobileHero />

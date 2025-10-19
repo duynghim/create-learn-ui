@@ -14,7 +14,6 @@ import {
 import { useNewsQuery, useEntityCrud } from '@/hooks';
 import type { News, CreateNewsRequest, UpdateNewsRequest } from '@/types';
 import NewsForm from './NewsForm';
-import { truncate } from '@/utils';
 import {
   FormModal,
   DeleteConfirmModal,

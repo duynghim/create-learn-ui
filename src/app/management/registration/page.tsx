@@ -16,7 +16,6 @@ import {
   DeleteConfirmModal,
   ColumnDef,
   EntityTable,
-  AddNewButton,
   PaginationBar,
 } from '@/components';
 
@@ -53,7 +52,6 @@ const RegistrationsPage = () => {
     handleEdit,
     handleDeleteClick,
     handleConfirmDelete,
-    handleAddNew,
     handleFormSubmit,
   } = useEntityCrud({
     entities: registrations,

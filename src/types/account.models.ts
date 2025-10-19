@@ -8,8 +8,8 @@ export interface Account extends BaseEntity {
   activated: boolean;
 }
 
-export interface CreateAccountRequest extends Partial<Account> {}
+export type CreateAccountRequest = Account;
 
-export interface UpdateAccountRequest extends Partial<Account> {}
+export type UpdateAccountRequest = Account;
 
-export interface AccountApiFilters extends ApiFilters {}
+export type AccountApiFilters = ApiFilters;
