@@ -36,8 +36,16 @@ class ClassApiClient extends BaseApiClient<
     });
   }
 
-  async getAllForAdmin(): Promise<ApiListResponse<Class> | undefined> {
-    return this.request<ApiListResponse<Class>>('/api/classes/admin', {
+  async getAllForAdmin(
+    filters?: ClassApiFilters
+  ): Promise<ApiListResponse<Class> | undefined> {
+    const { buildQueryString } = await import('@/utils');
+    const qs = buildQueryString(
+      filters as
+        | Record<string, string | number | boolean | object | Date>
+        | undefined
+    );
+    return this.request<ApiListResponse<Class>>(`/api/classes/admin${qs}`, {
       method: 'GET',
     });
   }

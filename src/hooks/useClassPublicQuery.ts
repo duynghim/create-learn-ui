@@ -9,7 +9,7 @@ import type {
 
 const CLASS_QUERY_KEY = ['classes'] as const;
 
-export const useClassQuery = (params: ApiFilters = {}) => {
+export const useClassPublicQuery = (params: ApiFilters = {}) => {
   const queryClient = useQueryClient();
   const { page = 0, size = 10, search } = params;
 
@@ -25,7 +25,7 @@ export const useClassQuery = (params: ApiFilters = {}) => {
         size,
         ...(search && { search }),
       };
-      return await classApiClient.getAllForAdmin(filters);
+      return await classApiClient.getAllPublicClasses(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

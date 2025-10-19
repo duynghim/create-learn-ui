@@ -18,7 +18,7 @@ import {
   Card,
 } from '@mantine/core';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useClassesPublicQuery } from '@/hooks/useClassesPublicQuery';
+import { useClassesPublicQuery } from '@/hooks/useClassPublicQuery';
 import { useSubjectQuery } from '@/hooks';
 import ClassCardWrapper from '@/components/class-card/ClassCardWrapper';
 

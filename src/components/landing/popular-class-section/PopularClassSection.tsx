@@ -11,13 +11,16 @@ import {
 } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import ClassCard from '../../class-card/ClassCard';
-import { useClassQuery } from '@/hooks';
+import { useClassPublicQuery } from '@/hooks/useClassPublicQuery';
 
 const POPULAR_CLASSES_BUTTON_TEXT = 'Learn More';
 const MAX_ITEMS = 4;
 
 const PopularClassSection = () => {
-  const { classes, isLoading } = useClassQuery({ page: 0, pageSize: 100 });
+  const { classes, isLoading } = useClassPublicQuery({
+    page: 0,
+    pageSize: 100,
+  });
   const router = useRouter();
 
   const handleClassClick = async (classId: string | number) => {
