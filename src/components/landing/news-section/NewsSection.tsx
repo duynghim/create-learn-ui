@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useNewsQuery } from '@/hooks';
-import { ClassCard, NewsCard } from '@/components';
+import { ClassCard } from '@/components';
 import {
   Alert,
   Center,

@@ -28,7 +28,7 @@ import React from 'react';
 interface SidebarItem {
   id: string;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<unknown>;
   href: string;
   description?: string;
 }
