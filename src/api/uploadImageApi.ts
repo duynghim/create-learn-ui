@@ -2,6 +2,7 @@ import { BaseApiClient } from './baseApiClient';
 import type { ApiConfig } from '@/types';
 
 interface FileUploadResponse {
+  id: number;
   status: number;
   message: string;
   timestamp: string;
