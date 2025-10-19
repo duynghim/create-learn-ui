@@ -13,6 +13,7 @@ import {
   Group,
   Badge,
   Stack,
+  Box,
 } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { classApiClient, registrationApiClient } from '@/api';
@@ -61,17 +62,12 @@ const ClassDetailPage = () => {
       };
 
       await registrationApiClient.create(submitData);
-
       showSuccess('Registration submitted successfully!');
       close();
     } catch (error) {
       console.error('Registration submission error:', error);
       showError('Failed to submit registration. Please try again.');
     }
-  };
-
-  const handleRegistrationClick = () => {
-    open();
   };
 
   if (isLoading) {
@@ -93,8 +89,10 @@ const ClassDetailPage = () => {
   }
 
   return (
-    <Container fluid p={0} h="100%">
+    <Container fluid p={0} h="100%" pb={80}>
+      {/* Main class info */}
       <Flex justify="center" direction={{ base: 'column', sm: 'row' }} gap={20}>
+        {/* Left side image and expert icons */}
         <Stack>
           <Image
             src={classData.image}
@@ -105,6 +103,8 @@ const ClassDetailPage = () => {
           />
           <ExpertIcons />
         </Stack>
+
+        {/* Right side class info */}
         <Flex
           maw={{ base: '100%', sm: 700 }}
           direction="column"
@@ -117,6 +117,7 @@ const ClassDetailPage = () => {
               ?.map((subject) => subject.name.toUpperCase())
               .join(', ')}
           </Text>
+
           <Text
             fz={{ base: '2.507rem', md: '2.7rem', lg: '2.99rem' }}
             c="fresh-blue"
@@ -124,12 +125,15 @@ const ClassDetailPage = () => {
           >
             {classData.name}
           </Text>
+
           <Text fw={500} fz="1.25rem">
             {classData.brief}
           </Text>
+
           <Text fw={500} fz="1rem">
             Schedule:
           </Text>
+
           <Group>
             {classData.scheduleResponses.map((schedule) => (
               <Badge key={schedule.id} variant="light" size="md">
@@ -137,23 +141,32 @@ const ClassDetailPage = () => {
               </Badge>
             ))}
           </Group>
-          <SafeHtml
-            html={classData.description}
-            className="class-description"
-          />
-          <Button
-            size="sm"
-            radius="md"
-            color="fresh-green"
-            onClick={handleRegistrationClick}
-            w="fit-content"
-            mt={28}
-          >
+
+          <Button size="sm" radius="md" onClick={open} w="fit-content" mt={28}>
             Register for Class
           </Button>
         </Flex>
       </Flex>
 
+      {/* ✅ Description section moved below everything */}
+      {classData.description && (
+        <Box
+          mx="auto"
+          mt={40}
+          mb={100}
+          px={{ base: 'md', sm: 'lg' }}
+          style={{
+            maxWidth: 900,
+          }}
+        >
+          <SafeHtml
+            html={classData.description}
+            className="class-description"
+          />
+        </Box>
+      )}
+
+      {/* Registration form modal */}
       <FormModal
         opened={opened}
         onCloseAction={close}

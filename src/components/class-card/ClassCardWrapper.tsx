@@ -15,7 +15,7 @@ const ClassCardWrapper: React.FC<ClassCardWrapperProps> = ({
   const router = useRouter();
 
   const handleButtonClick = () => {
-    router.push(`/classes/${classItem.id}`);
+    router.push(`/class/${classItem.id}`);
   };
 
   return (
