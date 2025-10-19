@@ -130,13 +130,13 @@ const NewsManagementPage = () => {
         ),
       },
 
-      {
-        header: 'Content',
-        key: 'content',
-        render: (newsItem) => (
-          <Text size="sm">{truncate(newsItem.content ?? '', 50)}</Text>
-        ),
-      },
+      // {
+      //   header: 'Content',
+      //   key: 'content',
+      //   render: (newsItem) => (
+      //     <Text size="sm">{truncate(newsItem.content ?? '', 50)}</Text>
+      //   ),
+      // },
       {
         header: 'Image',
         key: 'image',
