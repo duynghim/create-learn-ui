@@ -23,6 +23,7 @@ const AddNewButton: React.FC<AddNewButtonProps> = ({
           variant="outline"
           size="sm"
           radius="md"
+          color="fresh-cyan"
           {...buttonProps}
         >
           {label}

@@ -39,7 +39,9 @@ export interface ApiFilters {
 }
 
 export interface ApiClient<T, CreateT, UpdateT> {
-  getAll(filters?: ApiFilters): Promise<ApiListResponse<T> | undefined>;
+  getAllPublicClasses(
+    filters?: ApiFilters
+  ): Promise<ApiListResponse<T> | undefined>;
   getById(id: string): Promise<ApiSingleResponse<T> | undefined>;
   create(data: CreateT): Promise<ApiSingleResponse<T> | undefined>;
   update(id: string, data: UpdateT): Promise<ApiSingleResponse<T> | undefined>;

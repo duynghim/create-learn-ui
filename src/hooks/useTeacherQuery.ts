@@ -5,7 +5,7 @@ import type {
   CreateTeacherRequest,
   UpdateTeacherRequest,
   TeacherFilters,
-  ApiFilters
+  ApiFilters,
 } from '@/types';
 
 const TEACHER_QUERY_KEY = ['teachers'] as const;
@@ -26,7 +26,7 @@ export const useTeacherQuery = (params: ApiFilters = {}) => {
         size,
         ...(search && { search }),
       };
-      return await teacherApiClient.getAll(filters);
+      return await teacherApiClient.getAllPublicClasses(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -62,7 +62,7 @@ export const useTeacherQuery = (params: ApiFilters = {}) => {
     totalElements,
     totalPages,
     isLoading,
-    error: error ? (error).message : null,
+    error: error ? error.message : null,
     createTeacher: createMutation.mutateAsync,
     updateTeacher: (id: string, data: UpdateTeacherRequest) =>
       updateMutation.mutateAsync({ id, data }),

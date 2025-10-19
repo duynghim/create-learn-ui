@@ -5,7 +5,7 @@ import { Flex, Text, Image } from '@mantine/core';
 
 interface PopularSubjectCardProps {
   name: string;
-  imageSrc: string;
+  imageSrc?: string;
   width?: number;
   height?: number;
   imageSize?: number;

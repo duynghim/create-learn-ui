@@ -25,7 +25,7 @@ export const useScheduleQuery = (params: ApiFilters = {}) => {
         size,
         ...(search && { search }),
       };
-      return await scheduleApiClient.getAll(filters);
+      return await scheduleApiClient.getAllPublicClasses(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

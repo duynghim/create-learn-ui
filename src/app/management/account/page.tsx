@@ -97,22 +97,49 @@ const AccountsPage = () => {
       {
         header: 'Username',
         key: 'username',
-        render: (account) => <Text fw={500}>{account.username}</Text>,
+        render: (account) => (
+          <Text fw={500} size="0.875rem">
+            {account.username}
+          </Text>
+        ),
       },
       {
         header: 'Email',
         key: 'email',
-        render: (account) => <Text c="blue">{account.email}</Text>,
+        render: (account) => (
+          <Text
+            c="#00b0ff"
+            size="0.875rem"
+            style={{
+              textDecoration: 'none',
+              transition: 'color 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
+            {account.email}
+          </Text>
+        ),
       },
       {
         header: 'Phone',
         key: 'phone',
+        render: (account) => <Text size="0.875rem">{account.phone}</Text>,
       },
       {
         header: 'Status',
         key: 'activated',
         render: (account) => (
-          <Badge color={account.activated ? 'green' : 'red'} variant="light">
+          <Badge
+            color={account.activated ? 'fresh-green' : 'error-red'}
+            variant="light"
+            size="md"
+            styles={{
+              root: {
+                fontWeight: 500,
+                fontSize: '0.75rem',
+                textTransform: 'none',
+              },
+            }}
+          >
             {account.activated ? 'Active' : 'Inactive'}
           </Badge>
         ),

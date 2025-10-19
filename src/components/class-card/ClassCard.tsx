@@ -40,7 +40,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
           </Text>
         </Stack>
 
-        <Button color="fresh-green" fullWidth radius="md" onClick={onButtonClick}>
+        <Button fullWidth radius="md" onClick={onButtonClick}>
           {titleButton}
         </Button>
       </Flex>

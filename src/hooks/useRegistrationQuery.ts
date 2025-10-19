@@ -25,7 +25,7 @@ export const useRegistrationQuery = (params: ApiFilters = {}) => {
         size,
         ...(search && { search }),
       };
-      return await registrationApiClient.getAll(filters);
+      return await registrationApiClient.getAllPublicClasses(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -34,7 +34,7 @@ export const useRegistrationQuery = (params: ApiFilters = {}) => {
   const { data: classResponse, isLoading: isLoadingClassOptions } = useQuery({
     queryKey: ['classes', 'options'],
     queryFn: async () => {
-      return await classApiClient.getAll({ page: 0, size: 100 });
+      return await classApiClient.getAllPublicClasses({ page: 0, size: 100 });
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
   });

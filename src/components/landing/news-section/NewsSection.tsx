@@ -2,8 +2,16 @@
 
 import React from 'react';
 import { useNewsQuery } from '@/hooks';
-import { ClassCard } from '@/components';
-import { Alert, Center, Container, Loader, Stack, Text, Flex } from '@mantine/core';
+import { ClassCard, NewsCard } from '@/components';
+import {
+  Alert,
+  Center,
+  Container,
+  Loader,
+  Stack,
+  Text,
+  Flex,
+} from '@mantine/core';
 import { useRouter } from 'next/navigation';
 
 const NewsSection: React.FC = () => {
@@ -35,7 +43,8 @@ const NewsSection: React.FC = () => {
   }
 
   // Only show published news articles
-  const displayNews = news?.filter(article => article.isDisplay).slice(0, 8) || [];
+  const displayNews =
+    news?.filter((article) => article.isDisplay).slice(0, 8) || [];
 
   if (displayNews.length === 0) {
     return (
@@ -57,7 +66,7 @@ const NewsSection: React.FC = () => {
       >
         News for Kids and Parents
       </Text>
-      
+
       <Flex w="100%" wrap="wrap" justify="center" gap={40}>
         {displayNews.map((newsItem) => (
           <ClassCard

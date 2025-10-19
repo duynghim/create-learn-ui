@@ -30,7 +30,7 @@ interface NavigationLink {
 }
 
 const NAVIGATION_LINKS: NavigationLink[] = [
-  { name: 'Classes', href: '/classes' },
+  { name: 'Classes', href: '/class' },
   { name: 'Blog', href: '/news' },
   { name: 'Subjects', href: '/subjects' },
 ] as const;
@@ -38,15 +38,20 @@ const NAVIGATION_LINKS: NavigationLink[] = [
 const placeholderIcon = 'https://via.placeholder.com/96x96.png?text=Subject';
 
 const SubjectHoverCard = () => {
+  const router = useRouter();
   const { subjects, isLoading } = useSubjectQuery({
     page: 0,
     pageSize: 100,
   });
 
+  const handleSubjectClick = (subjectId: number) => {
+    router.push(`/class?subjectId=${subjectId}`);
+  };
+
   if (isLoading) return <Loader size="sm" />;
 
   return (
-    <HoverCard>
+    <HoverCard width={950} shadow="md" position="bottom">
       <HoverCard.Target>
         <Button
           variant="white"
@@ -61,21 +66,26 @@ const SubjectHoverCard = () => {
       <HoverCard.Dropdown>
         <Flex px={10} wrap="wrap" gap={30} maw={950} justify="center">
           {subjects.map((subject) => (
-            <PopularSubjectCard
-              fontSize="0.875rem"
-              width={147}
-              height={48}
-              imageSize={48}
-              gap={10}
+            <div
               key={subject.id}
-              id={subject.id}
-              name={subject.name}
-              imageSrc={
-                subject.iconBase64
-                  ? `data:image/png;base64,${subject.iconBase64}`
-                  : placeholderIcon
-              }
-            />
+              onClick={() => handleSubjectClick(subject.id)}
+              style={{ cursor: 'pointer' }}
+            >
+              <PopularSubjectCard
+                fontSize="0.875rem"
+                width={147}
+                height={48}
+                imageSize={48}
+                gap={10}
+                id={subject.id}
+                name={subject.name}
+                imageSrc={
+                  subject.iconBase64
+                    ? `data:image/png;base64,${subject.iconBase64}`
+                    : placeholderIcon
+                }
+              />
+            </div>
           ))}
         </Flex>
       </HoverCard.Dropdown>
@@ -174,21 +184,12 @@ const UserSection = ({ isLoggedIn, onLogout, userLogin }: UserSectionProps) => {
 
   return (
     <Group gap="xs">
-      <Button
-        visibleFrom="md"
-        color="fresh-green"
-        onClick={() => router.push('/login')}
-      >
+      <Button visibleFrom="md" onClick={() => router.push('/login')}>
         Login
       </Button>
 
       {/* Mobile Login Button */}
-      <Button
-        hiddenFrom="md"
-        color="fresh-green"
-        size="sm"
-        onClick={() => router.push('/login')}
-      >
+      <Button hiddenFrom="md" size="sm" onClick={() => router.push('/login')}>
         Login
       </Button>
     </Group>
@@ -202,9 +203,18 @@ const MobileDrawer = ({
   onLogout,
 }: MobileDrawerProps) => {
   const router = useRouter();
+  const { subjects, isLoading } = useSubjectQuery({
+    page: 0,
+    pageSize: 100,
+  });
 
   const handleNavigation = (path: string) => {
     router.push(path);
+    onClose();
+  };
+
+  const handleSubjectClick = (subjectId: number) => {
+    router.push(`/classes?subjectId=${subjectId}`);
     onClose();
   };
 
@@ -233,6 +243,40 @@ const MobileDrawer = ({
               {link.name}
             </Button>
           ))}
+
+          {/* Mobile Subject List */}
+          <Divider label="Subjects" labelPosition="center" my="sm" />
+
+          {isLoading ? (
+            <Loader size="sm" />
+          ) : (
+            <Stack gap="xs" mah={300} style={{ overflowY: 'auto' }}>
+              {subjects.map((subject) => (
+                <Button
+                  key={subject.id}
+                  variant="light"
+                  justify="flex-start"
+                  onClick={() => handleSubjectClick(subject.id)}
+                  fullWidth
+                  leftSection={
+                    <Image
+                      src={
+                        subject.iconBase64
+                          ? `data:image/png;base64,${subject.iconBase64}`
+                          : placeholderIcon
+                      }
+                      alt={subject.name}
+                      width={24}
+                      height={24}
+                      style={{ borderRadius: '4px' }}
+                    />
+                  }
+                >
+                  {subject.name}
+                </Button>
+              ))}
+            </Stack>
+          )}
         </Stack>
 
         <Divider my="md" />

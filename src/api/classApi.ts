@@ -7,6 +7,7 @@ import type {
   ApiConfig,
   ClassApiFilters,
   ApiListResponse,
+  ApiSingleResponse,
 } from '@/types';
 
 const config: ApiConfig = {
@@ -21,7 +22,7 @@ class ClassApiClient extends BaseApiClient<
 > {
   protected readonly endpoint = '/api/classes';
 
-  async getAll(
+  async getAllPublicClasses(
     filters?: ClassApiFilters
   ): Promise<ApiListResponse<Class> | undefined> {
     const { buildQueryString } = await import('@/utils');
@@ -56,8 +57,8 @@ class ClassApiClient extends BaseApiClient<
 
   async getById(id: string): Promise<ApiSingleResponse<Class> | undefined> {
     return this.request<ApiSingleResponse<Class>>(`/api/classes/public/${id}`, {
-      method: 'GET'
-    })
+      method: 'GET',
+    });
   }
 }
 

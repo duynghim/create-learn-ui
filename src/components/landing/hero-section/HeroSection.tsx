@@ -52,11 +52,7 @@ const HeroContent = () => {
         {HERO_CONTENT.subtitle}
       </Title>
       <Text fw={500}>{HERO_CONTENT.description}</Text>
-      <Button
-        w="fit-content"
-        color="fresh-blue"
-        onClick={handleScrollToFreeClasses}
-      >
+      <Button w="fit-content" onClick={handleScrollToFreeClasses}>
         {HERO_CONTENT.ctaText}
       </Button>
     </>

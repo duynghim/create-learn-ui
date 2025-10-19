@@ -5,7 +5,7 @@ import type {
   UpdateNewsRequest,
   ApiConfig,
   ApiListResponse,
-  ApiSingleResponse
+  ApiSingleResponse,
 } from '@/types';
 
 const config: ApiConfig = {
@@ -20,8 +20,14 @@ class NewsApiClient extends BaseApiClient<
 > {
   protected readonly endpoint = '/api/news';
 
-  async getAll(): Promise<ApiListResponse<News> | undefined> {
+  async getAllPublicClasses(): Promise<ApiListResponse<News> | undefined> {
     return this.request<ApiListResponse<News>>(`/api/news/admin`, {
+      method: 'GET',
+    });
+  }
+
+  async getAllPublic(): Promise<ApiListResponse<News> | undefined> {
+    return this.request<ApiListResponse<News>>(`/api/news/public`, {
       method: 'GET',
     });
   }

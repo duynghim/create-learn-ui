@@ -17,7 +17,7 @@ interface FormValues {
   customerName: string;
   customerEmail: string;
   phoneNumber: string;
-  status: 'PROCESSING' | 'PROCESSED' | 'REJECTED';
+  status: 'PROCESSING' | 'PROCESSED';
   clazzId: string;
 }
 
@@ -60,7 +60,6 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({
   const statusOptions = [
     { value: 'PROCESSING', label: 'Processing' },
     { value: 'PROCESSED', label: 'Processed' },
-    { value: 'REJECTED', label: 'Rejected' },
   ];
 
   const handleSubmit = async (values: FormValues) => {

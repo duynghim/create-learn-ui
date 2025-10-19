@@ -25,7 +25,7 @@ export const useAccountQuery = (params: ApiFilters = {}) => {
         size,
         ...(search && { search }),
       };
-      return await accountApiClient.getAll(filters);
+      return await accountApiClient.getAllPublicClasses(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -61,7 +61,7 @@ export const useAccountQuery = (params: ApiFilters = {}) => {
     queryFn: async () => {
       return await accountApiClient.getCurrentProfile();
     },
-    staleTime: 5 * 60 * 1000, 
+    staleTime: 5 * 60 * 1000,
   });
 
   const currentProfile = getCurrentProfileQuery.data?.data ?? null;
@@ -72,7 +72,7 @@ export const useAccountQuery = (params: ApiFilters = {}) => {
     totalElements,
     totalPages,
     isLoading,
-    error: error ? (error).message : null,
+    error: error ? error.message : null,
     createAccount: createMutation.mutateAsync,
     updateAccount: (id: string, data: UpdateAccountRequest) =>
       updateMutation.mutateAsync({ id, data }),

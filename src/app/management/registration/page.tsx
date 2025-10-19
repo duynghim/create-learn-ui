@@ -83,7 +83,7 @@ const RegistrationsPage = () => {
           phoneNumber: data.phoneNumber!,
           status: data.status!,
           clazzId: data.clazzId!,
-        } as UpdateRegistrationRequest;
+        } as unknown as UpdateRegistrationRequest;
       } else {
         return {
           customerName: data.customerName!,
@@ -101,24 +101,40 @@ const RegistrationsPage = () => {
       {
         header: 'Customer Name',
         key: 'customerName',
-        render: (registration) => <Text>{registration.customerName}</Text>,
+        render: (registration) => (
+          <Text fw={500} size="0.875rem">
+            {registration.customerName}
+          </Text>
+        ),
       },
       {
         header: 'Email',
         key: 'customerEmail',
         render: (registration) => (
-          <Text c="blue">{registration.customerEmail}</Text>
+          <Text
+            c="#00b0ff"
+            size="0.875rem"
+            style={{
+              textDecoration: 'none',
+              transition: 'color 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
+            {registration.customerEmail}
+          </Text>
         ),
       },
       {
         header: 'Phone',
         key: 'phoneNumber',
+        render: (registration) => (
+          <Text size="0.875rem">{registration.phoneNumber}</Text>
+        ),
       },
       {
         header: 'Class',
         key: 'classResponse',
         render: (registration) => (
-          <Text size="sm" fw={500}>
+          <Text size="sm">
             {registration.classResponse?.name || 'No class assigned'}
           </Text>
         ),
@@ -127,43 +143,51 @@ const RegistrationsPage = () => {
         header: 'Teacher',
         key: 'teacher',
         render: (registration) => (
-          <Text size="sm">
+          <Text size="0.875rem">
             {registration.classResponse?.teacher
               ? `${registration.classResponse.teacher.firstName} ${registration.classResponse.teacher.lastName}`
               : 'No teacher assigned'}
           </Text>
         ),
       },
-      {
-        header: 'Price',
-        key: 'price',
-        render: (registration) => (
-          <Text size="sm" fw={500} c="green">
-            {registration.classResponse?.price
-              ? `$${registration.classResponse.price.toLocaleString()}`
-              : 'No price set'}
-          </Text>
-        ),
-      },
+      // {
+      //   header: 'Price',
+      //   key: 'price',
+      //   render: (registration) => (
+      //     <Text size="0.875rem" fw={500} c="green">
+      //       {registration.classResponse?.price
+      //         ? `$${registration.classResponse.price.toLocaleString()}`
+      //         : 'No price set'}
+      //     </Text>
+      //   ),
+      // },
       {
         header: 'Status',
         key: 'status',
         render: (registration) => (
           <Badge
             color={
-              registration.status === 'PROCESSING'
-                ? 'green'
-                : registration.status === 'PROCESSED'
-                  ? 'red'
+              registration.status === 'PROCESSED'
+                ? 'fresh-green'
+                : registration.status === 'PROCESSING'
+                  ? 'error-red'
                   : 'orange'
             }
             variant="light"
+            size="md"
+            styles={{
+              root: {
+                fontWeight: 500,
+                fontSize: '0.75rem',
+                textTransform: 'none',
+              },
+            }}
           >
-            {registration.status === 'PROCESSING'
-              ? 'Processing'
-              : registration.status === 'PROCESSED'
-                ? 'Processed'
-                : 'Processing'}
+            {registration.status === 'PROCESSED'
+              ? 'Processed'
+              : registration.status === 'PROCESSING'
+                ? 'Processing'
+                : 'Pending'}
           </Badge>
         ),
       },
@@ -171,7 +195,7 @@ const RegistrationsPage = () => {
         header: 'Created Date',
         key: 'createdAt',
         render: (registration) => (
-          <Text size="sm">
+          <Text size="0.875rem" c="rgba(0, 0, 0, 0.6)">
             {registration.createdAt
               ? new Date(registration.createdAt).toLocaleDateString()
               : '-'}
@@ -202,7 +226,7 @@ const RegistrationsPage = () => {
 
   return (
     <Container fluid p={0} maw="100%">
-      <AddNewButton label="Add New Registration" onClick={handleAddNew} />
+      {/*<AddNewButton label="Add New Registration" onClick={handleAddNew} />*/}
 
       <FormModal
         opened={opened}

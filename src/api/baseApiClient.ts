@@ -6,7 +6,12 @@ import type {
   ApiSingleResponse,
   ApiFilters,
 } from '@/types';
-import { fetchJSON, getAuthHeaders, buildQueryString, HttpError } from '@/utils';
+import {
+  fetchJSON,
+  getAuthHeaders,
+  buildQueryString,
+  HttpError,
+} from '@/utils';
 
 export abstract class BaseApiClient<
   T extends BaseEntity,
@@ -52,12 +57,24 @@ export abstract class BaseApiClient<
           const { authApiClient } = await import('@/api/authApi');
           // Prefer refresh() if available, fallback to refreshToken()
           const refreshFn =
-            (authApiClient as unknown as { refresh?: () => Promise<unknown>; refreshToken?: () => Promise<unknown> }).refresh ??
-            (authApiClient as unknown as { refreshToken?: () => Promise<unknown> }).refreshToken;
+            (
+              authApiClient as unknown as {
+                refresh?: () => Promise<unknown>;
+                refreshToken?: () => Promise<unknown>;
+              }
+            ).refresh ??
+            (
+              authApiClient as unknown as {
+                refreshToken?: () => Promise<unknown>;
+              }
+            ).refreshToken;
           if (typeof refreshFn === 'function') {
             await refreshFn.call(authApiClient);
             // Retry original request with new auth header
-            return await fetchJSON<TResponse>(url, this.buildRequestInit(options));
+            return await fetchJSON<TResponse>(
+              url,
+              this.buildRequestInit(options)
+            );
           }
         } catch {
           // fall through to throw original error
@@ -189,7 +206,9 @@ export abstract class BaseApiClient<
     form.append(key, this.normalizeValue(value));
   }
 
-  async getAll(filters?: ApiFilters): Promise<ApiListResponse<T> | undefined> {
+  async getAllPublicClasses(
+    filters?: ApiFilters
+  ): Promise<ApiListResponse<T> | undefined> {
     const qs = buildQueryString(
       filters as
         | Record<string, string | number | boolean | object | Date>

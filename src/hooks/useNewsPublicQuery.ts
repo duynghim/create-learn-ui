@@ -9,7 +9,7 @@ import type {
 
 const NEWS_QUERY_KEY = ['news'] as const;
 
-export const useNewsQuery = (params: ApiFilters = {}) => {
+export const useNewsPublicQuery = (params: ApiFilters = {}) => {
   const queryClient = useQueryClient();
   const { page = 0, size = 10, search } = params;
 
@@ -25,7 +25,7 @@ export const useNewsQuery = (params: ApiFilters = {}) => {
         size,
         ...(search && { search }),
       };
-      return await newsApiClient.getAllPublicClasses(filters);
+      return await newsApiClient.getAllPublic(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

@@ -26,7 +26,7 @@ export const useConsultationQuery = (params: ApiFilters = {}) => {
         ...(search && { search }),
         ...(sort && { sort }),
       };
-      return await consultationApiClient.getAll(filters);
+      return await consultationApiClient.getAllPublicClasses(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

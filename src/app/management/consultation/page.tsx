@@ -2,10 +2,24 @@
 
 import React, { useState, useMemo } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Center, Alert, Loader, Container, Text, Badge, Group, Select, Button } from '@mantine/core';
+import {
+  Center,
+  Alert,
+  Loader,
+  Container,
+  Text,
+  Badge,
+  Group,
+  Select,
+  Button,
+} from '@mantine/core';
 import { IconArrowUp, IconArrowDown, IconX } from '@tabler/icons-react';
 import { useConsultationQuery, useEntityCrud } from '@/hooks';
-import type { Consultation, CreateConsultationRequest, UpdateConsultationRequest } from '@/types';
+import type {
+  Consultation,
+  CreateConsultationRequest,
+  UpdateConsultationRequest,
+} from '@/types';
 import ConsultationForm from './ConsultationForm';
 
 import {
@@ -13,7 +27,6 @@ import {
   DeleteConfirmModal,
   ColumnDef,
   EntityTable,
-  AddNewButton,
   PaginationBar,
 } from '@/components';
 
@@ -36,10 +49,10 @@ const ConsultationsPage = () => {
     createConsultation,
     updateConsultation,
     deleteConsultation,
-  } = useConsultationQuery({ 
-    page, 
-    size: PAGE_SIZE, 
-    sort: sortParam 
+  } = useConsultationQuery({
+    page,
+    size: PAGE_SIZE,
+    sort: sortParam,
   });
 
   const [opened, { open, close }] = useDisclosure(false);
@@ -48,8 +61,10 @@ const ConsultationsPage = () => {
     { open: openDeleteModal, close: closeDeleteModal },
   ] = useDisclosure(false);
 
-  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
-  const [consultationToDelete, setConsultationToDelete] = useState<Consultation | null>(null);
+  const [selectedConsultation, setSelectedConsultation] =
+    useState<Consultation | null>(null);
+  const [consultationToDelete, setConsultationToDelete] =
+    useState<Consultation | null>(null);
 
   const {
     handleEdit,
@@ -85,7 +100,7 @@ const ConsultationsPage = () => {
           email: data.email!,
           content: data.content!,
           status: data.status!,
-        } as UpdateConsultationRequest;
+        } as unknown as UpdateConsultationRequest;
       } else {
         return {
           customerName: data.customerName!,
@@ -130,31 +145,55 @@ const ConsultationsPage = () => {
 
   const columns: ColumnDef<Consultation>[] = useMemo(
     () => [
-      { 
-        header: 'Customer Name', 
+      {
+        header: 'Customer Name',
         key: 'customerName',
         render: (consultation) => (
-          <Text fw={500}>{consultation.customerName}</Text>
-        )
+          <Text fw={500} size="0.875rem">
+            {consultation.customerName}
+          </Text>
+        ),
       },
-      { 
-        header: 'Email', 
+      {
+        header: 'Email',
         key: 'email',
         render: (consultation) => (
-          <Text c="blue">{consultation.email}</Text>
-        )
+          <Text
+            c="#00b0ff"
+            size="0.875rem"
+            style={{
+              textDecoration: 'none',
+              transition: 'color 250ms cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
+            {consultation.email}
+          </Text>
+        ),
       },
-      { 
-        header: 'Phone', 
-        key: 'phoneNumber' 
+      {
+        header: 'Phone',
+        key: 'phoneNumber',
+        render: (consultation) => (
+          <Text size="0.875rem">{consultation.phoneNumber}</Text>
+        ),
       },
       {
         header: 'Status',
         key: 'status',
         render: (consultation) => (
-          <Badge 
-            color={consultation.status === 'PROCESSED' ? 'green' : 'orange'} 
+          <Badge
+            color={
+              consultation.status === 'PROCESSED' ? 'fresh-green' : 'error-red'
+            }
             variant="light"
+            size="md"
+            styles={{
+              root: {
+                fontWeight: 500,
+                fontSize: '0.75rem',
+                textTransform: 'none',
+              },
+            }}
           >
             {consultation.status === 'PROCESSED' ? 'Processed' : 'Processing'}
           </Badge>
@@ -164,7 +203,7 @@ const ConsultationsPage = () => {
         header: 'Content',
         key: 'content',
         render: (consultation) => (
-          <Text truncate maw={200}>
+          <Text truncate maw={200} size="0.875rem">
             {consultation.content}
           </Text>
         ),
@@ -173,8 +212,10 @@ const ConsultationsPage = () => {
         header: 'Created Date',
         key: 'createdDate',
         render: (consultation) => (
-          <Text size="sm">
-            {consultation.createdAt ? new Date(consultation.createdAt).toLocaleDateString() : '-'}
+          <Text size="0.875rem">
+            {consultation.createdAt
+              ? new Date(consultation.createdAt).toLocaleDateString()
+              : '-'}
           </Text>
         ),
       },
@@ -202,44 +243,52 @@ const ConsultationsPage = () => {
 
   return (
     <Container fluid p={0} maw="100%">
-      <Group justify="space-between" mb="md">
-        <AddNewButton label="Add New Consultation" onClick={handleAddNew} />
-        
-        <Group gap="sm">
-          <Select
-            placeholder="Sort by field"
-            data={sortOptions}
-            value={sortField || null}
-            onChange={handleSortChange}
-            clearable
-            size="sm"
-            w={150}
-          />
-          
-          {sortField && (
-            <Button
-              variant="light"
-              size="sm"
-              leftSection={sortDirection === 'ASC' ? <IconArrowUp size={16} /> : <IconArrowDown size={16} />}
-              onClick={() => setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC')}
-            >
-              {sortDirection === 'ASC' ? 'Ascending' : 'Descending'}
-            </Button>
-          )}
-          
-          {sortField && (
-            <Button
-              variant="subtle"
-              size="sm"
-              leftSection={<IconX size={16} />}
-              onClick={clearSort}
-              color="red"
-            >
-              Clear
-            </Button>
-          )}
-        </Group>
-      </Group>
+      {/*<Group justify="space-between" mb="md">*/}
+      {/*  /!*<AddNewButton label="Add New Consultation" onClick={handleAddNew} />*!/*/}
+
+      {/*  <Group gap="sm">*/}
+      {/*    <Select*/}
+      {/*      placeholder="Sort by field"*/}
+      {/*      data={sortOptions}*/}
+      {/*      value={sortField || null}*/}
+      {/*      onChange={handleSortChange}*/}
+      {/*      clearable*/}
+      {/*      size="sm"*/}
+      {/*      w={150}*/}
+      {/*    />*/}
+
+      {/*    {sortField && (*/}
+      {/*      <Button*/}
+      {/*        variant="light"*/}
+      {/*        size="sm"*/}
+      {/*        leftSection={*/}
+      {/*          sortDirection === 'ASC' ? (*/}
+      {/*            <IconArrowUp size={16} />*/}
+      {/*          ) : (*/}
+      {/*            <IconArrowDown size={16} />*/}
+      {/*          )*/}
+      {/*        }*/}
+      {/*        onClick={() =>*/}
+      {/*          setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC')*/}
+      {/*        }*/}
+      {/*      >*/}
+      {/*        {sortDirection === 'ASC' ? 'Ascending' : 'Descending'}*/}
+      {/*      </Button>*/}
+      {/*    )}*/}
+
+      {/*    {sortField && (*/}
+      {/*      <Button*/}
+      {/*        variant="subtle"*/}
+      {/*        size="sm"*/}
+      {/*        leftSection={<IconX size={16} />}*/}
+      {/*        onClick={clearSort}*/}
+      {/*        color="red"*/}
+      {/*      >*/}
+      {/*        Clear*/}
+      {/*      </Button>*/}
+      {/*    )}*/}
+      {/*  </Group>*/}
+      {/*</Group>*/}
 
       <FormModal
         opened={opened}
@@ -256,7 +305,7 @@ const ConsultationsPage = () => {
             setSelectedConsultation(null);
             close();
           }}
-          onSubmit={(data) => handleFormSubmit(data, selectedConsultation, !!selectedConsultation)}
+          onSubmit={(data) => handleFormSubmit(data, selectedConsultation)}
         />
       </FormModal>
 
@@ -267,7 +316,9 @@ const ConsultationsPage = () => {
           closeDeleteModal();
         }}
         onConfirm={() => handleConfirmDelete(consultationToDelete)}
-        entityLabel={consultationToDelete?.customerName || consultationToDelete?.email}
+        entityLabel={
+          consultationToDelete?.customerName || consultationToDelete?.email
+        }
       />
 
       <EntityTable<Consultation>

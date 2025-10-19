@@ -171,7 +171,6 @@ const LoginPage = () => {
                 mt="xl"
                 size="md"
                 radius="md"
-                color="fresh-blue"
                 type="submit"
                 w={{ base: '80%', md: '389px' }}
                 maw={389}
