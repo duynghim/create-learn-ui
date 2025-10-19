@@ -9,11 +9,7 @@ import {
   Container,
   Text,
   Badge,
-  Group,
-  Select,
-  Button,
 } from '@mantine/core';
-import { IconArrowUp, IconArrowDown, IconX } from '@tabler/icons-react';
 import { useConsultationQuery, useEntityCrud } from '@/hooks';
 import type {
   Consultation,
@@ -70,7 +66,6 @@ const ConsultationsPage = () => {
     handleEdit,
     handleDeleteClick,
     handleConfirmDelete,
-    handleAddNew,
     handleFormSubmit,
   } = useEntityCrud({
     entities: consultations,
@@ -112,36 +107,6 @@ const ConsultationsPage = () => {
       }
     },
   });
-
-  const sortOptions = [
-    { value: 'status', label: 'Status' },
-    { value: 'createdDate', label: 'Created Date' }, // Changed from createdAt to createdDate
-  ];
-
-  const handleSortChange = (field: string | null) => {
-    if (!field) {
-      setSortField('');
-      setSortDirection('ASC');
-      setPage(0); // Reset to first page when clearing sort
-      return;
-    }
-
-    if (sortField === field) {
-      // Toggle direction if same field
-      setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC');
-    } else {
-      // New field, start with ASC
-      setSortField(field);
-      setSortDirection('ASC');
-    }
-    setPage(0); // Reset to first page when changing sort
-  };
-
-  const clearSort = () => {
-    setSortField('');
-    setSortDirection('ASC');
-    setPage(0);
-  };
 
   const columns: ColumnDef<Consultation>[] = useMemo(
     () => [
@@ -243,53 +208,6 @@ const ConsultationsPage = () => {
 
   return (
     <Container fluid p={0} maw="100%">
-      {/*<Group justify="space-between" mb="md">*/}
-      {/*  /!*<AddNewButton label="Add New Consultation" onClick={handleAddNew} />*!/*/}
-
-      {/*  <Group gap="sm">*/}
-      {/*    <Select*/}
-      {/*      placeholder="Sort by field"*/}
-      {/*      data={sortOptions}*/}
-      {/*      value={sortField || null}*/}
-      {/*      onChange={handleSortChange}*/}
-      {/*      clearable*/}
-      {/*      size="sm"*/}
-      {/*      w={150}*/}
-      {/*    />*/}
-
-      {/*    {sortField && (*/}
-      {/*      <Button*/}
-      {/*        variant="light"*/}
-      {/*        size="sm"*/}
-      {/*        leftSection={*/}
-      {/*          sortDirection === 'ASC' ? (*/}
-      {/*            <IconArrowUp size={16} />*/}
-      {/*          ) : (*/}
-      {/*            <IconArrowDown size={16} />*/}
-      {/*          )*/}
-      {/*        }*/}
-      {/*        onClick={() =>*/}
-      {/*          setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC')*/}
-      {/*        }*/}
-      {/*      >*/}
-      {/*        {sortDirection === 'ASC' ? 'Ascending' : 'Descending'}*/}
-      {/*      </Button>*/}
-      {/*    )}*/}
-
-      {/*    {sortField && (*/}
-      {/*      <Button*/}
-      {/*        variant="subtle"*/}
-      {/*        size="sm"*/}
-      {/*        leftSection={<IconX size={16} />}*/}
-      {/*        onClick={clearSort}*/}
-      {/*        color="red"*/}
-      {/*      >*/}
-      {/*        Clear*/}
-      {/*      </Button>*/}
-      {/*    )}*/}
-      {/*  </Group>*/}
-      {/*</Group>*/}
-
       <FormModal
         opened={opened}
         onCloseAction={() => {

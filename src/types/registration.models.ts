@@ -36,7 +36,7 @@ export interface Registration extends BaseEntity {
       profileImageUrl: string;
     };
     price: number;
-    scheduleResponses: any[];
+    scheduleResponses: unknown[];
   };
 }
 

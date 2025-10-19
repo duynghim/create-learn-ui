@@ -199,7 +199,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
     async (classId: string, schedules: ScheduleEntry[]) => {
       await handleDeletedSchedules();
 
-      const createOrUpdate: Promise<any>[] = [];
+      const createOrUpdate: Promise<unknown>[] = [];
       for (const s of schedules) {
         const time = s.time?.trim();
         if (!time) continue;
