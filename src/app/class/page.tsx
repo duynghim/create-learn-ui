@@ -18,9 +18,9 @@ import {
   Card,
 } from '@mantine/core';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useClassesPublicQuery } from '@/hooks/useClassPublicQuery';
 import { useSubjectQuery } from '@/hooks';
 import ClassCardWrapper from '@/components/class-card/ClassCardWrapper';
+import { useClassPublicQuery } from '@/hooks/useClassPublicQuery';
 
 const DeskTopSection = ({ subjectName }: { subjectName?: string }) => {
   return (
@@ -127,10 +127,12 @@ const AllClasses = () => {
   );
 
   const {
-    data: response,
+    classes: response,
+    totalPages,
+    totalElements,
     isLoading,
     error,
-  } = useClassesPublicQuery({
+  } = useClassPublicQuery({
     subjectId: subjectId ? parseInt(subjectId) : undefined,
     gradeId: gradeId ? parseInt(gradeId) : undefined,
     type,
@@ -207,8 +209,7 @@ const AllClasses = () => {
     );
   }
 
-  const classes = response?.data.data || [];
-  const totalPages = response?.data.totalPages || 0;
+  const classes = response || [];
 
   return (
     <Container fluid px={0}>

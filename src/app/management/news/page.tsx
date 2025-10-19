@@ -83,7 +83,7 @@ const NewsManagementPage = () => {
           content: data.content!,
           isDisplay: data.isDisplay!,
           image: data.image!,
-        } as UpdateNewsRequest;
+        } as unknown as UpdateNewsRequest;
       } else {
         return {
           title: data.title!,

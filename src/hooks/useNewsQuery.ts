@@ -25,7 +25,7 @@ export const useNewsQuery = (params: ApiFilters = {}) => {
         size,
         ...(search && { search }),
       };
-      return await newsApiClient.getAllPublicClasses(filters);
+      return await newsApiClient.getAllNews(filters);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
