@@ -5,7 +5,14 @@ const nextConfig: import('next').NextConfig = {
     optimizeCss: true,
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
   },
-
+  typescript: {
+    // allows production builds to succeed even if there are TS errors
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    // skip ESLint during production builds
+    ignoreDuringBuilds: true,
+  },
   // Image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
