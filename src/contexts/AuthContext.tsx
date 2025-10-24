@@ -85,6 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkAuthStatus = useCallback(async () => {
     const token = authApiClient.getStoredToken();
 
+    // No token: clearly not logged in
     if (!token) {
       const nextState: AuthState = {
         isLoggedIn: false,
@@ -97,27 +98,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
 
-    // Try decode user from token quickly to avoid flicker
+    // Try to decode user quickly from existing token
     const decoded = decodeAccessTokenUser(token);
 
-    // If expired, optionally try refresh; otherwise logout-ish state
-    if (decoded && isExpired(decoded.exp)) {
+    // Token present and decodable
+    if (decoded) {
+      // If NOT expired, mark logged in and stop loading
+      if (!isExpired(decoded.exp)) {
+        const nextState: AuthState = {
+          isLoggedIn: true,
+          user: decoded,
+          isLoading: false,
+          error: null,
+        };
+        setAuthState(nextState);
+        writeSnapshot({ isLoggedIn: nextState.isLoggedIn, user: nextState.user });
+        return;
+      }
+
+      // Expired: attempt refresh
       try {
         const refreshed = await authApiClient.refresh();
         authApiClient.setToken(refreshed.accessToken);
         const freshUser = decodeAccessTokenUser(refreshed.accessToken);
         const nextState: AuthState = {
           isLoggedIn: !!freshUser,
-          user: freshUser,
+          user: freshUser ?? null,
           isLoading: false,
           error: null,
         };
         setAuthState(nextState);
-        writeSnapshot({
-          isLoggedIn: nextState.isLoggedIn,
-          user: nextState.user,
-        });
+        writeSnapshot({ isLoggedIn: nextState.isLoggedIn, user: nextState.user });
+        return;
       } catch {
+        // Refresh failed: clear tokens and mark logged out
         authApiClient.removeTokens();
         setAuthState({
           isLoggedIn: false,
@@ -126,8 +140,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           error: null,
         });
         writeSnapshot({ isLoggedIn: false, user: null });
+        return;
       }
     }
+
+    // Token existed but couldn't decode: treat as logged out
+    authApiClient.removeTokens();
+    setAuthState({
+      isLoggedIn: false,
+      user: null,
+      isLoading: false,
+      error: null,
+    });
+    writeSnapshot({ isLoggedIn: false, user: null });
   }, [writeSnapshot]);
 
   const login = useCallback(

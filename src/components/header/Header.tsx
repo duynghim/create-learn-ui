@@ -16,6 +16,7 @@ import {
   Text,
   Loader,
   HoverCard,
+  Box,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
@@ -66,7 +67,7 @@ const SubjectHoverCard = () => {
       <HoverCard.Dropdown>
         <Flex px={10} wrap="wrap" gap={30} maw={950} justify="center">
           {subjects.map((subject) => (
-            <div
+            <Box
               key={subject.id}
               onClick={() => handleSubjectClick(subject.id)}
               style={{ cursor: 'pointer' }}
@@ -85,7 +86,7 @@ const SubjectHoverCard = () => {
                     : placeholderIcon
                 }
               />
-            </div>
+            </Box>
           ))}
         </Flex>
       </HoverCard.Dropdown>
