@@ -1,0 +1,160 @@
+/**
+ * Rich Text Editor Image Styles
+ * Ensures all images are centered and have consistent dimensions
+ */
+
+/* Base styles for all images in the rich text editor */
+.rich-text-editor-content img,
+.editor-image {
+  /* Center the image */
+  display: block;
+  margin: 1rem auto;
+  
+  /* Fixed dimensions with aspect ratio preservation */
+  max-width: 600px;
+  width: 100%;
+  height: auto;
+  
+  /* Responsive behavior */
+  max-height: 400px;
+  object-fit: contain;
+  
+  /* Visual enhancements */
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  /* Prevent distortion */
+  image-rendering: auto;
+  image-rendering: crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  
+  /* Smooth transitions */
+  transition: all 0.2s ease;
+}
+
+/* Hover effects for better UX */
+.rich-text-editor-content img:hover,
+.editor-image:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .rich-text-editor-content img,
+  .editor-image {
+    max-width: 100%;
+    margin: 0.75rem auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .rich-text-editor-content img,
+  .editor-image {
+    max-width: 100%;
+    margin: 0.5rem auto;
+    border-radius: 6px;
+  }
+}
+
+/* Specific class for centered images with fixed dimensions */
+.editor-image-centered {
+  display: block !important;
+  margin: 1rem auto !important;
+  max-width: 600px !important;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+/* Image selection state */
+.editor-image.ProseMirror-selectednode {
+  outline: 2px solid var(--mantine-color-blue-5);
+  outline-offset: 2px;
+}
+
+/* Image wrapper for deletion controls */
+.image-wrapper {
+  position: relative;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.image-wrapper:hover {
+  transform: translateY(-1px);
+}
+
+/* Image delete button positioning */
+.image-delete-button {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.image-wrapper:hover .image-delete-button {
+  opacity: 1;
+}
+
+/* Image loading state */
+.editor-image[src=""] {
+  background: var(--mantine-color-gray-1);
+  border: 2px dashed var(--mantine-color-gray-4);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor-image[src=""]:before {
+  content: "Loading image...";
+  color: var(--mantine-color-gray-6);
+  font-size: 14px;
+}
+
+/* Image error state */
+.editor-image[alt*="error"] {
+  background: var(--mantine-color-red-0);
+  border: 2px dashed var(--mantine-color-red-4);
+  color: var(--mantine-color-red-7);
+}
+
+/* Ensure images in different contexts maintain centering */
+.ProseMirror img,
+.tiptap img {
+  display: block;
+  margin: 1rem auto;
+  max-width: 600px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Print styles */
+@media print {
+  .rich-text-editor-content img,
+  .editor-image {
+    max-width: 100%;
+    page-break-inside: avoid;
+    margin: 0.5rem auto;
+  }
+  
+  .image-delete-button,
+  .image-wrapper:hover .image-delete-button {
+    display: none !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .editor-image[src=""] {
+    background: var(--mantine-color-dark-6);
+    border-color: var(--mantine-color-dark-4);
+  }
+  
+  .editor-image[src=""]:before {
+    color: var(--mantine-color-dark-2);
+  }
+}

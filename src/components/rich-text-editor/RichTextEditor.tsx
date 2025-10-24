@@ -1,128 +1,150 @@
+/**
+ * RichTextEditor - A comprehensive rich text editor component built with TipTap and Mantine
+ * 
+ * Features:
+ * - Rich text formatting (bold, italic, underline, etc.)
+ * - Headings, lists, and block elements
+ * - Image upload and URL insertion
+ * - Link management
+ * - Text alignment
+ * - Undo/Redo functionality
+ * - Drag and drop support
+ * - Performance optimized with memoization
+ */
+
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { RichTextEditor } from '@mantine/tiptap';
-import { Box, Input } from '@mantine/core';
-import { useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Highlight from '@tiptap/extension-highlight';
-import TextAlign from '@tiptap/extension-text-align';
-import Superscript from '@tiptap/extension-superscript';
-import Subscript from '@tiptap/extension-subscript';
-import Link from '@tiptap/extension-link';
+import { Box, Input, Alert } from '@mantine/core';
+import { IconAlertCircle } from '@tabler/icons-react';
 
-type Props = {
-  value: string;
-  onChange: (html: string) => void;
-  label?: string;
-  withAsterisk?: boolean;
-  error?: string | null;
-  minHeight?: number;
-  placeholder?: string;
-};
+// Internal imports
+import { RichTextEditorProps } from './types';
+import { DEFAULT_PLACEHOLDER } from './constants';
+import { useEditorConfig, useImageUpload } from './hooks';
+import { ImageControls, EditorToolbar, ImageManager } from './components';
 
-const RichContentEditor: React.FC<Props> = ({
+// Import CSS styles
+import './styles.css';
+
+/**
+ * RichContentEditor - Main component for rich text editing
+ */
+const RichContentEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
   label = 'Content',
   withAsterisk = false,
   error,
   minHeight = 220,
-  placeholder,
+  placeholder = DEFAULT_PLACEHOLDER,
+  disabled = false,
+  maxFileSize,
+  acceptedImageTypes,
 }) => {
-  const editor = useEditor({
-    shouldRerenderOnTransaction: true,
-    // ✨ key fix: avoid SSR hydration mismatch
-    immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({ link: false }),
-      Link.configure({
-        openOnClick: true,
-        autolink: true,
-        HTMLAttributes: {
-          rel: 'noopener noreferrer',
-          target: '_blank',
-        },
-      }),
-      Superscript,
-      Subscript,
-      Highlight,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    ],
-    content: value || '',
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html);
+  // Initialize editor configuration
+  const { editor, config } = useEditorConfig({
+    value,
+    onChange,
+    config: {
+      minHeight,
+      maxFileSize,
+      acceptedImageTypes,
     },
+    disabled,
   });
 
-  // Keep editor content in sync if the external value changes
+  // Initialize image upload functionality
+  const imageUpload = useImageUpload();
+
+  // Sync editor content with prop value
   useEffect(() => {
-    if (!editor) return;
-    const html = editor.getHTML();
-    if (value !== html) {
-      // ✨ pass false so this doesn't emit an update and re-loop
-      editor.commands.setContent(value || '', false);
+    if (!editor || disabled) return;
+    
+    const currentContent = editor.getHTML();
+    if (value !== currentContent) {
+      editor.commands.setContent(value || '');
     }
-  }, [value, editor]);
+  }, [value, editor, disabled]);
+
+  // Memoize image controls to prevent unnecessary re-renders
+  const imageControls = useMemo(() => {
+    if (!editor) return null;
+
+    return (
+      <ImageControls
+        editor={editor}
+        loading={imageUpload.loading}
+        onUploadStart={imageUpload.onUploadStart}
+        onUploadEnd={imageUpload.onUploadEnd}
+        maxFileSize={config.maxFileSize}
+        acceptedTypes={config.acceptedImageTypes}
+        onError={imageUpload.onError}
+      />
+    );
+  }, [
+    editor,
+    imageUpload.loading,
+    imageUpload.onUploadStart,
+    imageUpload.onUploadEnd,
+    imageUpload.onError,
+    config.maxFileSize,
+    config.acceptedImageTypes,
+  ]);
+
+  // Memoize toolbar to prevent unnecessary re-renders
+  const toolbar = useMemo(() => (
+    <EditorToolbar 
+      editor={editor} 
+      imageControls={imageControls} 
+    />
+  ), [editor, imageControls]);
 
   return (
-    <Input.Wrapper label={label} withAsterisk={withAsterisk} error={error}>
+    <Input.Wrapper 
+      label={label} 
+      withAsterisk={withAsterisk} 
+      error={error}
+    >
+      {/* Display upload errors */}
+      {imageUpload.error && (
+        <Alert
+          icon={<IconAlertCircle size={16} />}
+          color="red"
+          variant="light"
+          mb="xs"
+          onClose={imageUpload.clearError}
+          withCloseButton
+        >
+          {imageUpload.error}
+        </Alert>
+      )}
+
       <Box
         style={{
           borderRadius: 'var(--mantine-radius-md)',
           overflow: 'hidden',
+          opacity: disabled ? 0.6 : 1,
+          pointerEvents: disabled ? 'none' : 'auto',
         }}
       >
         <RichTextEditor editor={editor}>
-          <RichTextEditor.Toolbar sticky stickyOffset={0}>
-            <RichTextEditor.ControlsGroup>
-              <RichTextEditor.Bold />
-              <RichTextEditor.Italic />
-              <RichTextEditor.Underline />
-              <RichTextEditor.Strikethrough />
-              <RichTextEditor.ClearFormatting />
-              <RichTextEditor.Highlight />
-              <RichTextEditor.Code />
-            </RichTextEditor.ControlsGroup>
-
-            <RichTextEditor.ControlsGroup>
-              <RichTextEditor.H1 />
-              <RichTextEditor.H2 />
-              <RichTextEditor.H3 />
-              <RichTextEditor.H4 />
-            </RichTextEditor.ControlsGroup>
-
-            <RichTextEditor.ControlsGroup>
-              <RichTextEditor.Blockquote />
-              <RichTextEditor.Hr />
-              <RichTextEditor.BulletList />
-              <RichTextEditor.OrderedList />
-              <RichTextEditor.Subscript />
-              <RichTextEditor.Superscript />
-            </RichTextEditor.ControlsGroup>
-
-            <RichTextEditor.ControlsGroup>
-              <RichTextEditor.Link />
-              <RichTextEditor.Unlink />
-            </RichTextEditor.ControlsGroup>
-
-            <RichTextEditor.ControlsGroup>
-              <RichTextEditor.AlignLeft />
-              <RichTextEditor.AlignCenter />
-              <RichTextEditor.AlignJustify />
-              <RichTextEditor.AlignRight />
-            </RichTextEditor.ControlsGroup>
-
-            <RichTextEditor.ControlsGroup>
-              <RichTextEditor.Undo />
-              <RichTextEditor.Redo />
-            </RichTextEditor.ControlsGroup>
-          </RichTextEditor.Toolbar>
-
+          {toolbar}
+          
           <RichTextEditor.Content
-            data-placeholder={placeholder || 'Write the full content here…'}
-            style={{ minHeight }}
+            data-placeholder={placeholder}
+            style={{ 
+              minHeight: config.minHeight,
+              cursor: disabled ? 'not-allowed' : 'text',
+            }}
+          />
+          
+          {/* Image Management */}
+          <ImageManager 
+            editor={editor}
+            enableDeletion={!disabled}
+            showHoverEffects={!disabled}
           />
         </RichTextEditor>
       </Box>
@@ -130,4 +152,5 @@ const RichContentEditor: React.FC<Props> = ({
   );
 };
 
-export default RichContentEditor;
+// Export memoized component to prevent unnecessary re-renders
+export default React.memo(RichContentEditor);
