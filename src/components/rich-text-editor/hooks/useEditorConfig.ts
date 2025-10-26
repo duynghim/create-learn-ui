@@ -5,7 +5,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useEditor } from '@tiptap/react';
+import { ReactRenderer, useEditor } from '@tiptap/react';
+import type { Editor as CoreEditor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import TextAlign from '@tiptap/extension-text-align';
@@ -15,6 +16,7 @@ import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import { EditorConfig } from '../types';
 import { DEFAULT_EDITOR_CONFIG } from '../constants';
+import Youtube from '@tiptap/extension-youtube';
 
 interface UseEditorConfigProps {
   value: string;
@@ -41,8 +43,8 @@ export const useEditorConfig = ({
   // Configure editor extensions
   const extensions = useMemo(
     () => [
-      StarterKit.configure({ 
-        link: false // We use the Link extension separately for better control
+      StarterKit.configure({
+        link: false, // We use the Link extension separately for better control
       }),
       Link.configure({
         openOnClick: true,
@@ -55,16 +57,27 @@ export const useEditorConfig = ({
       Superscript,
       Subscript,
       Highlight,
-      TextAlign.configure({ 
-        types: ['heading', 'paragraph'] 
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
       }),
-      Image.configure({ 
+      Image.configure({
         allowBase64: editorConfig.allowBase64,
         HTMLAttributes: {
           class: 'editor-image editor-image-centered',
-          style: 'max-width: 600px; width: 100%; height: auto; display: block; margin: 1rem auto; object-fit: contain;',
+          style:
+            'max-width: 600px; width: 100%; height: auto; display: block; margin: 1rem auto; object-fit: contain;',
         },
         inline: false,
+      }),
+      Youtube.configure({
+        HTMLAttributes: {
+          class: 'youtube-video-centered',
+        },
+        controls: true,
+        nocookie: true,
+        progressBarColor: 'red',
+        inline: false,
+        allowFullscreen: true,
       }),
     ],
     [editorConfig.allowBase64]
@@ -89,8 +102,8 @@ export const useEditorConfig = ({
       handlePaste: (view, event) => {
         // Handle pasted images with consistent styling
         const items = Array.from(event.clipboardData?.items || []);
-        const imageItem = items.find(item => item.type.startsWith('image/'));
-        
+        const imageItem = items.find((item) => item.type.startsWith('image/'));
+
         if (imageItem) {
           event.preventDefault();
           const file = imageItem.getAsFile();
@@ -105,7 +118,8 @@ export const useEditorConfig = ({
                       src: dataUrl,
                       alt: 'Pasted image',
                       class: 'editor-image editor-image-centered',
-                      style: 'max-width: 600px; width: 100%; height: auto; display: block; margin: 1rem auto; object-fit: contain;'
+                      style:
+                        'max-width: 600px; width: 100%; height: auto; display: block; margin: 1rem auto; object-fit: contain;',
                     })
                   )
                 );
@@ -120,8 +134,8 @@ export const useEditorConfig = ({
       handleDrop: (view, event) => {
         // Handle dropped images with consistent styling
         const files = Array.from(event.dataTransfer?.files || []);
-        const imageFile = files.find(file => file.type.startsWith('image/'));
-        
+        const imageFile = files.find((file) => file.type.startsWith('image/'));
+
         if (imageFile) {
           event.preventDefault();
           const reader = new FileReader();
@@ -129,15 +143,22 @@ export const useEditorConfig = ({
             const dataUrl = e.target?.result as string;
             if (dataUrl) {
               const { tr } = view.state;
-              const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+              const pos = view.posAtCoords({
+                left: event.clientX,
+                top: event.clientY,
+              });
               if (pos) {
                 view.dispatch(
-                  tr.insert(pos.pos, view.state.schema.nodes.image.create({
-                    src: dataUrl,
-                    alt: 'Dropped image',
-                    class: 'editor-image editor-image-centered',
-                    style: 'max-width: 600px; width: 100%; height: auto; display: block; margin: 1rem auto; object-fit: contain;'
-                  }))
+                  tr.insert(
+                    pos.pos,
+                    view.state.schema.nodes.image.create({
+                      src: dataUrl,
+                      alt: 'Dropped image',
+                      class: 'editor-image editor-image-centered',
+                      style:
+                        'max-width: 600px; width: 100%; height: auto; display: block; margin: 1rem auto; object-fit: contain;',
+                    })
+                  )
                 );
               }
             }
@@ -152,25 +173,28 @@ export const useEditorConfig = ({
         if (event.key === 'Delete' || event.key === 'Backspace') {
           const { state } = view;
           const { selection } = state;
-          
+
           // Check if we're at an image node
           const node = state.doc.nodeAt(selection.from);
           if (node && node.type.name === 'image') {
             event.preventDefault();
-            const tr = state.tr.delete(selection.from, selection.from + node.nodeSize);
+            const tr = state.tr.delete(
+              selection.from,
+              selection.from + node.nodeSize
+            );
             view.dispatch(tr);
             return true;
           }
-          
+
           // Check if selection contains an image
           let hasImage = false;
-          state.doc.nodesBetween(selection.from, selection.to, (node, pos) => {
+          state.doc.nodesBetween(selection.from, selection.to, (node) => {
             if (node.type.name === 'image') {
               hasImage = true;
               return false; // Stop iteration
             }
           });
-          
+
           if (hasImage) {
             event.preventDefault();
             const tr = state.tr.deleteSelection();

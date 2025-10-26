@@ -16,7 +16,7 @@
   height: auto;
   
   /* Responsive behavior */
-  max-height: 400px;
+  /*max-height: 400px;*/
   object-fit: contain;
   
   /* Visual enhancements */
@@ -131,7 +131,13 @@
   height: auto;
   object-fit: contain;
 }
-
+.youtube-video-centered {
+  display: block !important;
+  margin: 1rem auto !important;
+  max-width: 600px !important;
+  width: 100% !important;
+  object-fit: contain !important;
+}
 /* Print styles */
 @media print {
   .rich-text-editor-content img,

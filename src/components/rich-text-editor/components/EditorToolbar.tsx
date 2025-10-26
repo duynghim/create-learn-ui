@@ -7,13 +7,15 @@
 import React from 'react';
 import { RichTextEditor } from '@mantine/tiptap';
 import { EditorToolbarProps } from '../types';
+import Youtube from '@tiptap/extension-youtube';
+import { YoutubeControls } from './youtube-extension/YoutubeControl';
 
 /**
  * EditorToolbar component containing all editor controls
  */
-const EditorToolbar: React.FC<EditorToolbarProps> = ({ 
-  editor, 
-  imageControls 
+const EditorToolbar: React.FC<EditorToolbarProps> = ({
+  editor,
+  imageControls,
 }) => {
   if (!editor) {
     return null;
@@ -65,7 +67,10 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       </RichTextEditor.ControlsGroup>
 
       {/* Image controls */}
-      {imageControls}
+      <RichTextEditor.ControlsGroup>
+        {imageControls}
+        <YoutubeControls editor={editor} />
+      </RichTextEditor.ControlsGroup>
 
       {/* Undo/Redo controls */}
       <RichTextEditor.ControlsGroup>
