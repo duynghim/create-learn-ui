@@ -50,6 +50,7 @@ const nextConfig: import('next').NextConfig = {
       },
     ];
   },
+  output: 'standalone',
 };
 
 module.exports = nextConfig;
